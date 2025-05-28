@@ -5,6 +5,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { routing } from "@/i18n/routing";
 import ThemeProvider from "@/components/theme/ThemeProvider";
 import "./globals.css";
+import OneTapComponent from "@/components/OneTapComponent";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,6 +40,7 @@ export default async function LocaleLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <OneTapComponent />
         <ThemeProvider
           attribute='class'
           defaultTheme='system'

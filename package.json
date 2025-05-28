@@ -11,8 +11,11 @@
   "dependencies": {
     "@radix-ui/react-dropdown-menu": "^2.1.15",
     "@radix-ui/react-slot": "^1.2.3",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.49.8",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "google-one-tap": "^1.0.6",
     "lucide-react": "^0.511.0",
     "next": "15.3.2",
     "next-intl": "^4.1.0",
@@ -25,6 +28,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/google-one-tap": "^1.2.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

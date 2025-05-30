@@ -3,10 +3,10 @@
 import { Button } from "@/components/ui/button";
 import { signInWithOAuth } from "@/lib/supabase/actions";
 
-export default function SignInWithGoogle() {
+export default function ConnectWithGoogle() {
   return (
     <Button onClick={() => signInWithOAuth("google")}>
-      Sign in with Google
+      Connect with Google
     </Button>
   );
 }

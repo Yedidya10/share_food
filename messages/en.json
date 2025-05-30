@@ -2,5 +2,17 @@
   "HomePage": {
     "title": "Hello world!",
     "about": "Go to the about page"
+  },
+  "header": {
+    "login": {
+      "connectWith": "Connect with {provider}",
+      "logout": "Log out",
+      "email": "Email"
+    },
+    "accountMenu": {
+      "profile": "Profile",
+      "posts": "Posts",
+      "settings": "Settings"
+    }
   }
 }

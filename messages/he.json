@@ -2,5 +2,17 @@
   "HomePage": {
     "title": "שלום עולם!",
     "about": "לעבור לדף אודות"
+  },
+  "header": {
+    "login": {
+      "connectWith": "התחבר עם {provider}",
+      "logout": "התנתק",
+      "email": "אימייל"
+    },
+    "accountMenu": {
+      "profile": "פרופיל",
+      "posts": "הפוסטים שלי",
+      "settings": "הגדרות"
+    }
   }
 }

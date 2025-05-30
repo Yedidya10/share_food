@@ -5,6 +5,7 @@
   },
   "header": {
     "login": {
+      "welcome": "Welcome, {name}!",
       "connectWith": "Connect with {provider}",
       "logout": "Log out",
       "email": "Email"

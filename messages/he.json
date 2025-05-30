@@ -5,6 +5,7 @@
   },
   "header": {
     "login": {
+      "welcome": "ברוך הבא, {name}!",
       "connectWith": "התחבר עם {provider}",
       "logout": "התנתק",
       "email": "אימייל"

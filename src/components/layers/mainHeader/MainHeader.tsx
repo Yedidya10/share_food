@@ -17,6 +17,9 @@ export default async function MainHeader() {
         <AccountMenu
           user={data.user}
           translation={{
+            welcome: tLogin("welcome", {
+              name: data.user.user_metadata.full_name || "User",
+            }),
             logout: tLogin("logout"),
             profile: tAccountMenu("profile"),
             posts: tAccountMenu("posts"),

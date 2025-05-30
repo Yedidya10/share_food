@@ -6,6 +6,7 @@ import { routing } from "@/i18n/routing";
 import ThemeProvider from "@/components/theme/ThemeProvider";
 import "./globals.css";
 import OneTapComponent from "@/components/OneTapComponent";
+import MainHeader from "@/components/layers/mainHeader/MainHeader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +36,8 @@ export default async function LocaleLayout({
     notFound();
   }
 
+
+
   return (
     <html lang={locale} suppressHydrationWarning={true}>
       <body
@@ -47,7 +50,10 @@ export default async function LocaleLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <NextIntlClientProvider>{children}</NextIntlClientProvider>
+          <NextIntlClientProvider>
+            <MainHeader/>
+            {children}
+          </NextIntlClientProvider>
         </ThemeProvider>
       </body>
     </html>

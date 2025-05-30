@@ -36,10 +36,10 @@ export default async function LocaleLayout({
     notFound();
   }
 
-
+  const dir = locale === "he" ? "rtl" : "ltr";
 
   return (
-    <html lang={locale} suppressHydrationWarning={true}>
+    <html lang={locale} suppressHydrationWarning={true} dir={dir}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -51,7 +51,7 @@ export default async function LocaleLayout({
           disableTransitionOnChange
         >
           <NextIntlClientProvider>
-            <MainHeader/>
+            <MainHeader />
             {children}
           </NextIntlClientProvider>
         </ThemeProvider>

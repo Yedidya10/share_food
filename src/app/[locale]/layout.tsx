@@ -25,9 +25,11 @@ export const metadata: Metadata = {
 
 export default async function LocaleLayout({
   children,
+  login,
   params,
 }: Readonly<{
   children: React.ReactNode;
+  login: React.ReactNode;
   params: Promise<{ locale: string }>;
 }>) {
   // Ensure that the incoming `locale` is valid
@@ -52,7 +54,9 @@ export default async function LocaleLayout({
         >
           <NextIntlClientProvider>
             <MainHeader />
+            <div className='pt-20' />
             {children}
+            {login}
           </NextIntlClientProvider>
         </ThemeProvider>
       </body>

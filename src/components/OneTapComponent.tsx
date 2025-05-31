@@ -45,7 +45,7 @@ export default function OneTapComponent() {
 
         // global google
         google.accounts.id.initialize({
-          client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
+          client_id: process.env.GOOGLE_CLIENT_ID!,
           callback: async (response: CredentialResponse) => {
             try {
               // send id token returned in response.credential to supabase

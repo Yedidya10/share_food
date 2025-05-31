@@ -9,15 +9,15 @@ import {
 } from "@/components/ui/dialog";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 
 export default function LoginModal() {
   const tLogin = useTranslations("header.login");
   const router = useRouter();
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     router.back();
-  };
+  }, [router]);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -25,7 +25,7 @@ export default function LoginModal() {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
+  }, [handleClose]);
 
   return (
     <Dialog open onOpenChange={handleClose}>

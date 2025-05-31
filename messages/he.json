@@ -15,5 +15,32 @@
       "posts": "הפוסטים שלי",
       "settings": "הגדרות"
     }
+  },
+  "form": {
+    "generic": {
+      "submit": "שלח",
+      "cancel": "ביטול",
+      "reset": "איפוס",
+      "loading": "טוען...",
+      "error": "אירעה שגיאה",
+      "required": "נדרש"
+    },
+    "postItem": {
+      "title": "כותרת",
+      "description": "תיאור",
+      "uploadImages": "העלאת תמונות",
+      "streetName": "שם הרחוב",
+      "streetNumber": "מספר רחוב",
+      "city": "עיר",
+      "postalCode": "מיקוד",
+      "country": "מדינה",
+      "phoneNumber": "מספר טלפון",
+      "isHaveWhatsApp": "יש לך וואטסאפ?",
+      "email": "אימייל"
+    }
+  },
+  "countries": {
+    "il": "ישראל",
+    "usa": "ארצות הברית"
   }
 }

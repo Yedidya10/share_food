@@ -15,5 +15,47 @@
       "posts": "Posts",
       "settings": "Settings"
     }
+  },
+  "form": {
+    "generic": {
+      "submit": "Submit",
+      "cancel": "Cancel",
+      "required": "Required",
+      "reset": "Reset",
+      "loading": "Loading...",
+      "error": "An error occurred"
+    },
+    "postItem": {
+      "title": "Title",
+      "description": "Description",
+      "titlePlaceholder": "Enter the title of your post",
+      "descriptionPlaceholder": "Enter the description of your post",
+      "uploadImages": "Upload Images",
+      "uploadImagesPlaceholder": "Drag and drop images here or click to select",
+      "streetName": "Street Name",
+      "streetNameError": "Please enter a valid street name",
+      "streetNumber": "Street Number",
+      "streetNamePlaceholder": "e.g. Main St",
+      "streetNumberPlaceholder": "e.g. 123",
+      "city": "City",
+      "cityPlaceholder": "Select a city",
+      "cityError": "Please select a city",
+      "postalCode": "Postal Code",
+      "postalCodePlaceholder": "e.g. 12345",
+      "postalCodeError": "Please enter a valid postal code",
+      "country": "Country",
+      "countryPlaceholder": "Select a country",
+      "countryError": "Please select a country",
+      "phoneNumber": "Phone Number",
+      "phoneNumberPlaceholder": "e.g. 0541234567",
+      "isHaveWhatsApp": "Do you have WhatsApp?",
+      "isHaveWhatsAppTip": "Check if you can be contacted via WhatsApp.",
+      "email": "Email",
+      "invalidEmail": "Invalid email address"
+    }
+  },
+  "countries": {
+    "il": "Israel",
+    "usa": "United States"
   }
 }

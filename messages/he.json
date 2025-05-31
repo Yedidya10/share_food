@@ -7,6 +7,7 @@
     "login": {
       "welcome": "ברוך הבא, {name}!",
       "connectWith": "התחבר עם {provider}",
+      "login": "שלום אורח, התחבר",
       "logout": "התנתק",
       "email": "אימייל"
     },

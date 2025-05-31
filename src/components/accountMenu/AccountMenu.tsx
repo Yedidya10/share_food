@@ -42,7 +42,7 @@ export default function AccountMenu({
         <DropdownMenuTrigger asChild>
           <Button
             variant='outline'
-            className='flex items-center gap-2 px-2 py-6'
+            className='flex items-center gap-2 px-1 pl-3 py-5 rounded-full cursor-pointer'
           >
             <Avatar>
               <AvatarImage src={user.user_metadata.avatar_url} />

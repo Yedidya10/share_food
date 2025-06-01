@@ -42,6 +42,10 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning={true} dir={dir}>
+      <head>
+        <link rel='manifest' href='/manifest.webmanifest' />
+        <link rel='icon' href='/icon-192x192.png' />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

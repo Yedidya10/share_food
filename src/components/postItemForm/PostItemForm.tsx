@@ -27,104 +27,48 @@ import { useState } from "react";
 import PostItemButton from "../postItemButton/PostItemButton";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client"; // Adjust the import path as needed
-
-const formSchema = z.object({
-  title: z
-    .string()
-    .max(50, {
-      message: "Title must be at most 50 characters.",
-    })
-    .min(5, {
-      message: "Title must be at least 5 characters.",
-    }),
-  description: z
-    .string()
-    .max(300, {
-      message: "Description must be at most 300 characters.",
-    })
-    .min(20, {
-      message: "Description must be at least 20 characters.",
-    }),
-  images: z.array(z.instanceof(File)).max(3, {
-    message: "You can upload a maximum of 3 images.",
-  }),
-  streetName: z
-    .string()
-    .max(50, {
-      message: "Street name must be at most 50 characters.",
-    })
-    .min(2, {
-      message: "Street name must be at least 2 characters.",
-    }),
-  streetNumber: z
-    .string()
-    .max(10, {
-      message: "Street number must be at most 10 characters.",
-    })
-    .min(1, {
-      message: "Street number must be at least 1 character.",
-    }),
-  city: z
-    .string()
-    .max(50, {
-      message: "City must be at most 50 characters.",
-    })
-    .min(2, {
-      message: "City must be at least 2 characters.",
-    }),
-  country: z
-    .string()
-    .max(50, {
-      message: "Country must be at most 50 characters.",
-    })
-    .min(2, {
-      message: "Country must be at least 2 characters.",
-    }),
-  postalCode: z
-    .string()
-    .max(20, {
-      message: "Postal code must be at most 20 characters.",
-    })
-    .min(2, {
-      message: "Postal code must be at least 2 characters.",
-    }),
-  phoneNumber: z
-    .string()
-    .max(10, {
-      message: "Phone number must be at most 10 characters.",
-    })
-    .min(10, {
-      message: "Phone number must be at least 10 characters.",
-    })
-    .optional(),
-  isHaveWhatsApp: z.boolean().optional(),
-  email: z
-    .string()
-    .email({
-      message: "Invalid email address.",
-    })
-    .optional(),
-});
+import { Separator } from "../ui/separator";
 
 export default function PostItemForm({
   translation,
 }: {
   translation: {
+    formTitle: string;
+    formDescription: string;
     title: string;
+    titlePlaceholder: string;
+    titleError: string;
     description: string;
-    uploadImages?: string; // Optional, if you want to add image upload later
+    descriptionPlaceholder: string;
+    descriptionError: string;
+    uploadImages: string;
+    addressDetails: string;
     streetName: string;
+    streetNamePlaceholder: string;
+    streetNameError: string;
     streetNumber: string;
+    streetNumberPlaceholder: string;
+    streetNumberError: string;
     city: string;
+    cityPlaceholder: string;
+    cityError: string;
     country: string;
     postalCode: string;
+    postalCodePlaceholder: string;
+    postalCodeError: string;
+    contactDetails: string;
     phoneNumber: string;
+    phoneNumberPlaceholder: string;
+    phoneNumberError: string;
     isHaveWhatsApp: string;
+    isHaveWhatsAppTip: string;
     email: string;
-    submit: string;
+    emailPlaceholder: string;
+    emailError: string;
+    submitButton: string;
     cancel: string;
-    required: string; // Optional, if you want to show required field messages
-    reset: string; // Optional, if you want to add a reset button later
+    required: string;
+    reset: string;
     countries: {
       israel: string;
       usa: string;
@@ -134,12 +78,94 @@ export default function PostItemForm({
   const supabase = createClient();
   const [openModal, setOpenModal] = useState(false);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+
+  const formSchema = z.object({
+    title: z
+      .string()
+      .min(5, {
+        message: translation.titleError,
+      })
+      .max(50, {
+        message: translation.titleError,
+      }),
+    description: z
+      .string()
+      .max(300, {
+        message: translation.descriptionError,
+      })
+      .min(20, {
+        message: translation.descriptionError,
+      }),
+    images: z.array(z.instanceof(File)).max(3, {
+      message: "You can upload a maximum of 3 images.",
+    }),
+    streetName: z
+      .string()
+      .max(50, {
+        message: translation.streetNameError,
+      })
+      .min(2, {
+        message: translation.streetNameError,
+      }),
+    streetNumber: z
+      .string()
+      .max(10, {
+        message: translation.streetNumberError,
+      })
+      .min(1, {
+        message: translation.streetNumberError,
+      }),
+    city: z
+      .string()
+      .max(10, {
+        message: translation.cityError,
+      })
+      .min(2, {
+        message: translation.cityError,
+      }),
+    country: z
+      .string()
+      .max(50, {
+        message: "Country must be at most 50 characters.",
+      })
+      .min(2, {
+        message: "Country must be at least 2 characters.",
+      }),
+    postalCode: z
+      .string()
+      .max(20, {
+        message: translation.postalCodeError,
+      })
+      .min(2, {
+        message: translation.postalCodeError,
+      }),
+    phoneNumber: z
+      .string()
+      .max(10, {
+        message: translation.phoneNumberError,
+      })
+      .min(10, {
+        message: translation.phoneNumberError,
+      })
+      .optional(),
+    isHaveWhatsApp: z.boolean().optional(),
+    email: z
+      .string()
+      .email({
+        message: translation.emailError,
+      })
+      .optional(),
+  });
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    mode: "onChange",
+    reValidateMode: "onChange",
     defaultValues: {
       title: "",
       description: "",
+      images: [],
       streetName: "",
       streetNumber: "",
       city: "",
@@ -147,36 +173,50 @@ export default function PostItemForm({
       postalCode: "",
       phoneNumber: "",
       isHaveWhatsApp: false,
-      email: "", // Assuming you might want to handle email later
+      email: "",
     },
   });
 
-  // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+    console.log("country:", form.getValues("country"));
 
-    const files: File[] = values.images || [];
-    if (!files.length) {
-      alert("No images selected");
+    const { data: sessionData, error: sessionError } =
+      await supabase.auth.getSession();
+
+    if (sessionError) {
+      console.error("Session error:", sessionError.message);
       return;
     }
 
+    const userId = sessionData.session?.user.id;
+
+    function sanitizeFileName(fileName: string) {
+      return fileName
+        .replace(/[\u200B-\u200F\u202A-\u202E]/g, "")
+        .replace(/\s+/g, "_");
+    }
+
+    const files: File[] = values.images || [];
     const uploadedUrls: string[] = [];
 
     for (const file of files) {
-      const filePath = `images/${Date.now()}_${file.name}`;
-      const { error } = await supabase.storage
+      console.log(file);
+      const cleanName = sanitizeFileName(file.name);
+      const filePath = `public/${Date.now()}_${cleanName}}`;
+
+      const { data, error } = await supabase.storage
         .from("share-food-images")
         .upload(filePath, file);
 
       if (error) {
         console.error("Upload error:", error.message);
       } else {
+        console.log("File uploaded successfully:", data);
         const { data: publicUrl } = supabase.storage
           .from("share-food-images")
           .getPublicUrl(filePath);
+
+        console.log("Public URL:", publicUrl);
 
         if (publicUrl?.publicUrl) {
           uploadedUrls.push(publicUrl.publicUrl);
@@ -184,22 +224,43 @@ export default function PostItemForm({
       }
     }
 
-    console.log("Uploaded image URLs:", uploadedUrls);
+    const { error: insertError } = await supabase.from("items").insert([
+      {
+        title: values.title,
+        description: values.description,
+        images: uploadedUrls, // assuming the column is type: text[] (array of strings)
+        street_name: values.streetName,
+        street_number: values.streetNumber,
+        city: values.city,
+        country: values.country,
+        postal_code: values.postalCode,
+        phone_number: values.phoneNumber || null,
+        is_have_whatsapp: values.isHaveWhatsApp ?? false,
+        email: values.email || null,
+        user_id: userId,
+      },
+    ]);
+
+    if (insertError) {
+      console.error("Insert error:", insertError.message);
+    } else {
+      // אפשר לנקות את הטופס או להעביר דף
+      // form.reset();
+      // setPreviewUrls([]); // Clear preview URLs after successful submission
+    }
   }
 
   return (
     <>
       <PostItemButton onClick={() => setOpenModal(true)} />
       <Dialog open={openModal} onOpenChange={setOpenModal}>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
-            <DialogContent className='sm:max-w-[525px] h-[80vh] overflow-y-auto flex flex-col gap-8'>
-              <DialogHeader>
-                <DialogTitle>Edit profile</DialogTitle>
-                <DialogDescription>
-                  Post an food item for to share with others.
-                </DialogDescription>
-              </DialogHeader>
+        <DialogContent className='sm:max-w-[725px] h-[80vh] overflow-y-auto flex flex-col gap-8'>
+          <DialogHeader>
+            <DialogTitle>{translation.formTitle}</DialogTitle>
+            <DialogDescription>{translation.formDescription}</DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
               <FormField
                 control={form.control}
                 name='title'
@@ -207,11 +268,11 @@ export default function PostItemForm({
                   <FormItem>
                     <FormLabel>{translation.title}</FormLabel>
                     <FormControl>
-                      <Input placeholder='Enter item title' {...field} />
+                      <Input
+                        placeholder={translation.titlePlaceholder}
+                        {...field}
+                      />
                     </FormControl>
-                    <FormDescription>
-                      The title of the item you want to post.
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -223,7 +284,10 @@ export default function PostItemForm({
                   <FormItem>
                     <FormLabel>{translation.description}</FormLabel>
                     <FormControl>
-                      <Input placeholder='Enter item description' {...field} />
+                      <Input
+                        placeholder={translation.descriptionPlaceholder}
+                        {...field}
+                      />
                     </FormControl>
                     <FormDescription>
                       A brief description of the item.
@@ -237,7 +301,7 @@ export default function PostItemForm({
                 name='images'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Upload Images</FormLabel>
+                    <FormLabel>{translation.uploadImages}</FormLabel>
                     <FormControl>
                       <Input
                         type='file'
@@ -259,8 +323,6 @@ export default function PostItemForm({
                       Select one or more images to upload.
                     </FormDescription>
                     <FormMessage />
-
-                    {/* תצוגה מקדימה */}
                     {previewUrls.length > 0 && (
                       <div className='grid grid-cols-3 gap-2 mt-4'>
                         {previewUrls.map((url, idx) => (
@@ -278,151 +340,174 @@ export default function PostItemForm({
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name='streetName'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{translation.streetName}</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Enter street name' {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      The street name of the item&apos;s location.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='streetNumber'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{translation.streetNumber}</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Enter street number' {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      The street number of the item&apos;s location.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='city'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{translation.city}</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Enter city' {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      The city where the item is located.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                disabled
-                name='country'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{translation.country}</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Enter country' {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      The country where the item is located.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='postalCode'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{translation.postalCode}</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Enter postal code' {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      The postal code of the item&apos;s location.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='phoneNumber'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{translation.phoneNumber}</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Enter phone number' {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Your contact phone number.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='isHaveWhatsApp'
-                render={({ field }) => (
-                  <FormItem className='flex space-x-3'>
-                    <FormControl>
-                      <Input
-                        type='checkbox'
-                        className='h-5 w-5'
-                        checked={field.value}
-                        onChange={(e) => field.onChange(e.target.checked)}
-                      />
-                    </FormControl>
-                    <div className=' flex flex-col gap-2'>
-                      <FormLabel>{translation.isHaveWhatsApp}</FormLabel>
-                      <FormDescription className=' text-xs'>
-                        Check if you can be contacted via WhatsApp.
+              <Separator />
+              <div className='flex flex-col space-y-4'>
+                <h3 className='text-lg font-semibold'>
+                  {translation.addressDetails}
+                </h3>
+                <div className='flex space-x-4 flex-start'>
+                  <FormField
+                    control={form.control}
+                    name='streetName'
+                    render={({ field }) => (
+                      <FormItem className='w-60'>
+                        <FormLabel>{translation.streetName}</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder={translation.streetNamePlaceholder}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name='streetNumber'
+                    render={({ field }) => (
+                      <FormItem className='w-33'>
+                        <FormLabel>{translation.streetNumber}</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder={translation.streetNumberPlaceholder}
+                            {...field}
+                          />
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name='city'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{translation.city}</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder={translation.cityPlaceholder}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name='country'
+                    render={({ field }) => (
+                      <FormItem className='w-23'>
+                        <FormLabel>{translation.country}</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder={translation.countries.israel}
+                            {...field}
+                            disabled
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name='postalCode'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{translation.postalCode}</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder={translation.postalCodePlaceholder}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+              <Separator />
+              <div className='flex flex-col space-y-4'>
+                <h3 className='text-lg font-semibold'>
+                  {translation.contactDetails}
+                </h3>
+                <FormField
+                  control={form.control}
+                  name='phoneNumber'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{translation.phoneNumber}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={translation.phoneNumberPlaceholder}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Your contact phone number.
                       </FormDescription>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='email'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{translation.email}</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Enter email' {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Your contact email address.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='isHaveWhatsApp'
+                  render={({ field }) => (
+                    <FormItem className='flex space-x-3'>
+                      <FormControl>
+                        <Input
+                          type='checkbox'
+                          className='h-5 w-5'
+                          checked={field.value}
+                          onChange={(e) => field.onChange(e.target.checked)}
+                        />
+                      </FormControl>
+                      <div className=' flex flex-col gap-2'>
+                        <FormLabel>{translation.isHaveWhatsApp}</FormLabel>
+                        <FormDescription className=' text-xs'>
+                          {translation.isHaveWhatsAppTip}
+                        </FormDescription>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='email'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{translation.email}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={translation.emailPlaceholder}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Your contact email address.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
               <DialogFooter>
                 <DialogClose asChild>
-                  <Button variant='outline'>Cancel</Button>
+                  <Button type='button' variant='outline'>
+                    {translation.cancel}
+                  </Button>
                 </DialogClose>
-                <Button type='submit'>Submit</Button>
+                <Button type='submit'>{translation.submitButton}</Button>
               </DialogFooter>
-            </DialogContent>
-          </form>
-        </Form>
+            </form>
+          </Form>
+        </DialogContent>
       </Dialog>
     </>
   );

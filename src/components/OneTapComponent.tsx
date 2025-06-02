@@ -2,16 +2,15 @@
 
 import Script from "next/script";
 import { createClient } from "@/lib/supabase/client";
-import google, { CredentialResponse } from "google-one-tap";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function OneTapComponent() {
   const supabase = createClient();
   const router = useRouter();
+  const [scriptLoaded, setScriptLoaded] = useState(false);
 
-  // generate nonce to use for google id token sign-in
-  const generateNonce = async (): Promise<string[]> => {
+  const generateNonce = async (): Promise<[string, string]> => {
     const nonce = btoa(
       String.fromCharCode(...crypto.getRandomValues(new Uint8Array(32)))
     );
@@ -27,58 +26,66 @@ export default function OneTapComponent() {
   };
 
   useEffect(() => {
-    const initializeGoogleOneTap = () => {
-      console.log("Initializing Google One Tap");
-      window.addEventListener("load", async () => {
-        const [nonce, hashedNonce] = await generateNonce();
-        console.log("Nonce: ", nonce, hashedNonce);
+    if (!scriptLoaded) return;
 
-        // check if there's already an existing session before initializing the one-tap UI
-        const { data, error } = await supabase.auth.getSession();
-        if (error) {
-          console.error("Error getting session", error);
-        }
-        if (data.session) {
-          router.push("/");
-          return;
-        }
+    const initializeGoogleOneTap = async () => {
+      const [nonce, hashedNonce] = await generateNonce();
 
-        // global google
-        google.accounts.id.initialize({
-          client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
-          callback: async (response: CredentialResponse) => {
-            try {
-              // send id token returned in response.credential to supabase
-              const { data, error } = await supabase.auth.signInWithIdToken({
-                provider: "google",
-                token: response.credential,
-                nonce,
-              });
+      const { data, error } = await supabase.auth.getSession();
+      if (error) {
+        console.error("Error getting session", error);
+        return;
+      }
+      if (data.session) {
+        router.push("/");
+        return;
+      }
 
-              if (error) throw error;
-              console.log("Session data: ", data);
-              console.log("Successfully logged in with Google One Tap");
+      if (
+        typeof window === "undefined" ||
+        !window.google ||
+        !window.google.accounts ||
+        !window.google.accounts.id
+      ) {
+        console.error("Google One Tap script not loaded properly");
+        return;
+      }
 
-              // redirect to protected page
-              router.push("/");
-            } catch (error) {
-              console.error("Error logging in with Google One Tap", error);
-            }
-          },
-          nonce: hashedNonce,
-          // with chrome's removal of third-party cookies, we need to use FedCM instead (https://developers.google.com/identity/gsi/web/guides/fedcm-migration)
-          use_fedcm_for_prompt: true,
-        });
-        google.accounts.id.prompt(); // Display the One Tap UI
+      window.google.accounts.id.initialize({
+        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        callback: async (response: any) => {
+          try {
+            const { error } = await supabase.auth.signInWithIdToken({
+              provider: "google",
+              token: response.credential,
+              nonce,
+            });
+
+            if (error) throw error;
+            console.log("Successfully signed in");
+            router.push("/");
+          } catch (error) {
+            console.error("Login error", error);
+          }
+        },
+        nonce: hashedNonce,
+        use_fedcm_for_prompt: true,
       });
+
+      window.google.accounts.id.prompt();
     };
+
     initializeGoogleOneTap();
-    return () => window.removeEventListener("load", initializeGoogleOneTap);
-  }, []);
+  }, [scriptLoaded]);
 
   return (
     <>
-      <Script src='https://accounts.google.com/gsi/client' />
+      <Script
+        src='https://accounts.google.com/gsi/client'
+        strategy='afterInteractive'
+        onLoad={() => setScriptLoaded(true)}
+      />
       <div id='oneTap' className='fixed top-0 right-0 z-[100]' />
     </>
   );

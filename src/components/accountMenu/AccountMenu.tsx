@@ -67,7 +67,7 @@ export default function AccountMenu({
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Link
-                href='/dashboard/posts'
+                href='/dashboard/my-items'
                 className='flex items-center w-full gap-2'
               >
                 <CiBoxList />

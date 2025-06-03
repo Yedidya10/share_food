@@ -7,6 +7,7 @@ import ThemeProvider from "@/components/theme/ThemeProvider";
 import "./globals.css";
 import OneTapComponent from "@/components/OneTapComponent";
 import MainHeader from "@/components/layers/mainHeader/MainHeader";
+import FeedbackButton from "@/components/feedbackButton/FeedbackButton";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -61,6 +62,7 @@ export default async function LocaleLayout({
             <div className='pt-20' />
             {children}
             {login}
+            <FeedbackButton />
           </NextIntlClientProvider>
         </ThemeProvider>
       </body>

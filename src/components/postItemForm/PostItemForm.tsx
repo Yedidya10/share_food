@@ -178,8 +178,6 @@ export default function PostItemForm({
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("country:", form.getValues("country"));
-
     const { data: sessionData, error: sessionError } =
       await supabase.auth.getSession();
 
@@ -202,7 +200,7 @@ export default function PostItemForm({
     for (const file of files) {
       console.log(file);
       const cleanName = sanitizeFileName(file.name);
-      const filePath = `public/${Date.now()}_${cleanName}}`;
+      const filePath = `public/${cleanName}`;
 
       const { data, error } = await supabase.storage
         .from("share-food-images")

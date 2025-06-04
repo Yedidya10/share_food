@@ -26,8 +26,11 @@ import {
 import { useState } from "react";
 import PostItemButton from "../postItemButton/PostItemButton";
 import Image from "next/image";
-import { createClient } from "@/lib/supabase/client"; // Adjust the import path as needed
+import { createClient } from "@/lib/supabase/client";
 import { Separator } from "../ui/separator";
+import PhoneInput from "@/components/phoneInput/PhoneInput";
+import { useLocale } from "next-intl";
+import { Checkbox } from "../ui/checkbox";
 
 export default function PostItemForm({
   translation,
@@ -57,6 +60,7 @@ export default function PostItemForm({
     postalCodePlaceholder: string;
     postalCodeError: string;
     contactDetails: string;
+    contactViaSite: string;
     phoneNumber: string;
     phoneNumberPlaceholder: string;
     phoneNumberError: string;
@@ -75,6 +79,7 @@ export default function PostItemForm({
     };
   };
 }) {
+  const locale = useLocale();
   const supabase = createClient();
   const [openModal, setOpenModal] = useState(false);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
@@ -139,12 +144,14 @@ export default function PostItemForm({
       .min(2, {
         message: translation.postalCodeError,
       }),
+    contactByPhone: z.boolean().optional(),
+    contactByEmail: z.boolean().optional(),
     phoneNumber: z
       .string()
-      .max(10, {
+      .max(13, {
         message: translation.phoneNumberError,
       })
-      .min(10, {
+      .min(13, {
         message: translation.phoneNumberError,
       })
       .optional(),
@@ -171,6 +178,8 @@ export default function PostItemForm({
       city: "",
       country: translation.countries.israel, // Default
       postalCode: "",
+      contactByPhone: false,
+      contactByEmail: false,
       phoneNumber: "",
       isHaveWhatsApp: false,
       email: "",
@@ -178,15 +187,16 @@ export default function PostItemForm({
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const { data: sessionData, error: sessionError } =
-      await supabase.auth.getSession();
+    const { data: userData, error: userError } = await supabase.auth.getUser();
 
-    if (sessionError) {
-      console.error("Session error:", sessionError.message);
+    console.log("values data:", values);
+
+    if (userError) {
+      console.error("Session error:", JSON.stringify(userError, null, 2));
       return;
     }
 
-    const userId = sessionData.session?.user.id;
+    const userId = userData?.user?.id;
 
     function sanitizeFileName(fileName: string) {
       return fileName
@@ -198,7 +208,6 @@ export default function PostItemForm({
     const uploadedUrls: string[] = [];
 
     for (const file of files) {
-      console.log(file);
       const cleanName = sanitizeFileName(file.name);
       const filePath = `public/${cleanName}`;
 
@@ -232,9 +241,11 @@ export default function PostItemForm({
         city: values.city,
         country: values.country,
         postal_code: values.postalCode,
+        full_name: userData?.user?.user_metadata?.full_name || null,
         phone_number: values.phoneNumber || null,
         is_have_whatsapp: values.isHaveWhatsApp ?? false,
         email: values.email || null,
+        status: "pending", // Default status
         user_id: userId,
       },
     ]);
@@ -343,12 +354,12 @@ export default function PostItemForm({
                 <h3 className='text-lg font-semibold'>
                   {translation.addressDetails}
                 </h3>
-                <div className='flex space-x-4 flex-start'>
+                <div className='flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0'>
                   <FormField
                     control={form.control}
                     name='streetName'
                     render={({ field }) => (
-                      <FormItem className='w-60'>
+                      <FormItem className='w-full'>
                         <FormLabel>{translation.streetName}</FormLabel>
                         <FormControl>
                           <Input
@@ -364,7 +375,7 @@ export default function PostItemForm({
                     control={form.control}
                     name='streetNumber'
                     render={({ field }) => (
-                      <FormItem className='w-33'>
+                      <FormItem className='w-full'>
                         <FormLabel>{translation.streetNumber}</FormLabel>
                         <FormControl>
                           <Input
@@ -372,16 +383,17 @@ export default function PostItemForm({
                             {...field}
                           />
                         </FormControl>
-
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+                </div>
+                <div className='flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0'>
                   <FormField
                     control={form.control}
                     name='city'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className='w-full'>
                         <FormLabel>{translation.city}</FormLabel>
                         <FormControl>
                           <Input
@@ -397,7 +409,7 @@ export default function PostItemForm({
                     control={form.control}
                     name='country'
                     render={({ field }) => (
-                      <FormItem className='w-23'>
+                      <FormItem className='w-full'>
                         <FormLabel>{translation.country}</FormLabel>
                         <FormControl>
                           <Input
@@ -414,7 +426,7 @@ export default function PostItemForm({
                     control={form.control}
                     name='postalCode'
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className='w-full'>
                         <FormLabel>{translation.postalCode}</FormLabel>
                         <FormControl>
                           <Input
@@ -429,69 +441,114 @@ export default function PostItemForm({
                 </div>
               </div>
               <Separator />
-              <div className='flex flex-col space-y-4'>
-                <h3 className='text-lg font-semibold'>
+              <div className='flex flex-col space-y-6'>
+                <h3 className='text-xl font-semibold'>
                   {translation.contactDetails}
                 </h3>
+                <p className='text-sm text-muted-foreground'>
+                  בחר איך ניתן ליצור איתך קשר. אפשר לבחור יותר מאפשרות אחת.
+                </p>
+                <div className='rounded-lg border px-4 py-3 bg-muted/50 flex items-start gap-3'>
+                  <Checkbox
+                    defaultChecked
+                    disabled
+                    className='mt-1 h-5 w-5'
+                    id='contactViaSite'
+                  />
+                  <div>
+                    <FormLabel className='font-medium' htmlFor='contactViaSite'>
+                      {translation.contactViaSite}
+                    </FormLabel>
+                    <p className='text-xs text-muted-foreground'>
+                      האפשרות הזו תמיד זמינה באתר.
+                    </p>
+                  </div>
+                </div>
                 <FormField
                   control={form.control}
-                  name='phoneNumber'
+                  name='contactByPhone'
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{translation.phoneNumber}</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={translation.phoneNumberPlaceholder}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Your contact phone number.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name='isHaveWhatsApp'
-                  render={({ field }) => (
-                    <FormItem className='flex space-x-3'>
-                      <FormControl>
-                        <Input
-                          type='checkbox'
+                    <div className='rounded-lg border px-4 py-3 space-y-3'>
+                      <div className='flex items-center gap-3'>
+                        <Checkbox
                           className='h-5 w-5'
                           checked={field.value}
-                          onChange={(e) => field.onChange(e.target.checked)}
+                          id='contactByPhone'
+                          onCheckedChange={(checked) => field.onChange(checked)}
                         />
-                      </FormControl>
-                      <div className=' flex flex-col gap-2'>
-                        <FormLabel>{translation.isHaveWhatsApp}</FormLabel>
-                        <FormDescription className=' text-xs'>
-                          {translation.isHaveWhatsAppTip}
-                        </FormDescription>
+                        <FormLabel
+                          className='m-0 font-medium'
+                          htmlFor='contactByPhone'
+                        >
+                          {translation.phoneNumber}
+                        </FormLabel>
                       </div>
-                      <FormMessage />
-                    </FormItem>
+                      {field.value && (
+                        <FormField
+                          control={form.control}
+                          name='phoneNumber'
+                          render={({ field }) => (
+                            <FormItem dir='ltr' className='w-full max-w-xs'>
+                              <FormLabel dir={locale === "he" ? "rtl" : "ltr"}>
+                                {translation.phoneNumber}
+                              </FormLabel>
+                              <FormControl>
+                                <PhoneInput
+                                  value={field.value}
+                                  placeholder={
+                                    translation.phoneNumberPlaceholder
+                                  }
+                                  onChange={field.onChange}
+                                />
+                              </FormControl>
+                              <FormMessage
+                                dir={locale === "he" ? "rtl" : "ltr"}
+                              />
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </div>
                   )}
                 />
                 <FormField
                   control={form.control}
-                  name='email'
+                  name='contactByEmail'
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{translation.email}</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={translation.emailPlaceholder}
-                          {...field}
+                    <div className='rounded-lg border px-4 py-3 space-y-3'>
+                      <div className='flex items-center gap-3'>
+                        <Checkbox
+                          className='h-5 w-5'
+                          checked={field.value}
+                          id='contactByEmail'
+                          onCheckedChange={(checked) => field.onChange(checked)}
                         />
-                      </FormControl>
-                      <FormDescription>
-                        Your contact email address.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
+                        <FormLabel
+                          className='m-0 font-medium'
+                          htmlFor='contactByEmail'
+                        >
+                          {translation.email}
+                        </FormLabel>
+                      </div>
+                      {field.value && (
+                        <FormField
+                          control={form.control}
+                          name='email'
+                          render={({ field }) => (
+                            <FormItem className='w-full max-w-xs'>
+                              <FormLabel>{translation.email}</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder={translation.emailPlaceholder}
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </div>
                   )}
                 />
               </div>

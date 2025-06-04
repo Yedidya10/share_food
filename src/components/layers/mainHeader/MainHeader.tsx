@@ -51,6 +51,7 @@ export default async function MainHeader() {
                 postalCodeError: tPostItemForm("postalCodeError"),
                 country: tPostItemForm("country"),
                 contactDetails: tPostItemForm("contactDetails"),
+                contactViaSite: tPostItemForm("contactViaSite"),
                 phoneNumber: tPostItemForm("phoneNumber"),
                 phoneNumberPlaceholder: tPostItemForm("phoneNumberPlaceholder"),
                 phoneNumberError: tPostItemForm("phoneNumberError"),

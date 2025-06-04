@@ -51,13 +51,14 @@
       "postalCodeError": "אנא הכנס מיקוד תקף (7 ספרות)",
       "country": "מדינה",
       "contactDetails": "פרטי יצירת קשר",
+      "contactViaSite": "יצירת קשר דרך האתר",
       "phoneNumber": "מספר טלפון",
-      "phoneNumberPlaceholder": "למשל, 0541234567",
-      "phoneNumberError": "אנא הכנס מספר טלפון תקף (10 ספרות)",
+      "phoneNumberPlaceholder": "+972 54 123 4567",
+      "phoneNumberError": "אנא הכנס מספר טלפון תקף. פורמט: +972541234567",
       "isHaveWhatsApp": "יש לך וואטסאפ?",
       "isHaveWhatsAppTip": "סמן אם ניתן ליצור איתך קשר דרך וואטסאפ.",
       "email": "אימייל",
-      "emailPlaceholder": "למשל, 'name@mail.com'",
+      "emailPlaceholder": "name@mail.com",
       "emailError": "אנא הכנס אימייל תקין",
       "submitButton": "צור פוסט"
     }

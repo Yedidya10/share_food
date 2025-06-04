@@ -2,12 +2,10 @@
 
 import Script from "next/script";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function OneTapComponent() {
   const supabase = createClient();
-  const router = useRouter();
   const [scriptLoaded, setScriptLoaded] = useState(false);
 
   const generateNonce = async (): Promise<[string, string]> => {
@@ -37,7 +35,6 @@ export default function OneTapComponent() {
         return;
       }
       if (data.session) {
-        router.push("/");
         return;
       }
 
@@ -64,7 +61,6 @@ export default function OneTapComponent() {
 
             if (error) throw error;
             console.log("Successfully signed in");
-            router.push("/");
           } catch (error) {
             console.error("Login error", error);
           }

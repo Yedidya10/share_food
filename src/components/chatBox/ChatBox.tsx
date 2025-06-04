@@ -1,86 +1,56 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { AuthError } from "@supabase/supabase-js";
+import dayjs from "dayjs";
+import { Input } from "../ui/input";
+import { Form, FormControl, FormField, FormItem } from "../ui/form";
+import { Button } from "../ui/button";
+import { useForm } from "react-hook-form";
 
 type Message = {
   id: string;
   sender_id: string;
-  receiver_id: string;
+  conversation_id: string;
   content: string;
   created_at: string;
 };
 
-type Props = {
-  chatWithUserId: string;
-};
+export default function ChatBox({
+  conversationId,
+  userId,
+  initialMessages = [],
+}: {
+  conversationId: string;
+  userId?: string;
+  initialMessages: Message[];
+}) {
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
 
-export default function ChatBox({ chatWithUserId }: Props) {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState("");
-  const [userId, setUserId] = useState<string | null>(null);
-  const [authChecked, setAuthChecked] = useState(false);
-  const [sessionError, setSessionError] = useState<AuthError | string | null>(
-    null
-  );
+  const form = useForm({
+    mode: "onChange",
+    defaultValues: {
+      message: "",
+    },
+  });
 
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
 
   useEffect(() => {
-    // Get session on mount
-    const getSession = async () => {
-      const { data: sessionData, error: sessionError } =
-        await supabase.auth.getSession();
-      if (sessionError || !sessionData?.session?.user) {
-        setSessionError(sessionError || "No user session");
-        setUserId(null);
-      } else {
-        setUserId(sessionData.session.user.id);
-      }
-      setAuthChecked(true);
-    };
-    getSession();
-  }, [supabase]);
-
-  useEffect(() => {
-    if (!userId) return;
-
-    // Load messages between current user and selected user
-    const loadMessages = async () => {
-      const { data, error } = await supabase
-        .from("messages")
-        .select("*")
-        .or(
-          `and(sender_id.eq.${userId},receiver_id.eq.${chatWithUserId}),and(sender_id.eq.${chatWithUserId},receiver_id.eq.${userId})`
-        )
-        .order("created_at", { ascending: true });
-
-      if (!error && data) {
-        setMessages(data);
-      }
-    };
-
-    loadMessages();
-
-    // Realtime subscription
     const channel = supabase
-      .channel("chat-room")
+      .channel(`chat-room-${conversationId}`)
       .on(
         "postgres_changes",
         {
           event: "INSERT",
           schema: "public",
           table: "messages",
+          filter: `conversation_id=eq.${conversationId}`,
         },
         (payload) => {
           const msg = payload.new as Message;
-          if (
-            (msg.sender_id === userId && msg.receiver_id === chatWithUserId) ||
-            (msg.sender_id === chatWithUserId && msg.receiver_id === userId)
-          ) {
-            setMessages((prev) => [...prev, msg]);
-          }
+          setMessages((prev) => [...prev, msg]);
         }
       )
       .subscribe();
@@ -88,76 +58,129 @@ export default function ChatBox({ chatWithUserId }: Props) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [userId, chatWithUserId, supabase]);
+  }, [conversationId, supabase]);
 
-  const sendMessage = async () => {
-    if (!newMessage.trim() || !userId) return;
-
-    await supabase.from("messages").insert([
-      {
-        sender_id: userId,
-        receiver_id: chatWithUserId,
-        content: newMessage.trim(),
-      },
-    ]);
-
-    setNewMessage("");
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  if (!authChecked) {
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const groupMessagesByDate = () => {
+    const groups: { date: string; messages: Message[] }[] = [];
+
+    messages.forEach((msg) => {
+      const createdAt = new Date(msg.created_at);
+      const msgDateObj = dayjs(createdAt);
+
+      let displayDate = msgDateObj.format("DD/MM/YYYY");
+      if (dayjs().isSame(msgDateObj, "day")) {
+        displayDate = "היום";
+      } else if (dayjs().subtract(1, "day").isSame(msgDateObj, "day")) {
+        displayDate = "אתמול";
+      }
+
+      const existingGroup = groups.find((g) => g.date === displayDate);
+      if (existingGroup) {
+        existingGroup.messages.push(msg);
+      } else {
+        groups.push({ date: displayDate, messages: [msg] });
+      }
+    });
+
+    return groups;
+  };
+
+  if (!userId) {
     return (
-      <div className='flex items-center justify-center h-screen'>
-        <p className='text-gray-500'>Checking authentication...</p>
+      <div className='flex items-center justify-center'>
+        <p className='text-gray-500'>בודק התחברות...</p>
       </div>
     );
   }
 
-  if (sessionError || !userId) {
+  if (!userId) {
     return (
-      <div className='flex items-center justify-center h-screen'>
-        <p className='text-gray-500'>
-          You need to be logged in to view this page.
-        </p>
+      <div className='flex items-center justify-center'>
+        <p className='text-gray-500'>עליך להתחבר כדי להשתמש בצ&apos;אט.</p>
       </div>
     );
+  }
+
+  async function onSubmit(data: { message: string }) {
+    if (!data.message.trim()) return;
+
+    const newMsg = {
+      sender_id: userId!,
+      conversation_id: conversationId,
+      content: data.message.trim(),
+    };
+
+    const { error } = await supabase.from("messages").insert(newMsg);
+
+    if (error) {
+      console.error("Error sending message:", error);
+      console.error("Error details:", JSON.stringify(error, null, 2));
+      alert("שגיאה בשליחת ההודעה. אנא נסה שוב מאוחר יותר.");
+      return;
+    }
+
+    form.reset();
   }
 
   return (
-    <div className='p-4 border'>
-      <div className='overflow-y-auto space-y-2 h-[calc(100vh-160px)] p-2'>
-        {messages.length === 0 ? (
-          <div className='text-center text-muted-foreground text-sm mt-8'>
-            עדיין אין הודעות. התחילו שיחה 🎉
-          </div>
-        ) : (
-          messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`p-2 text-sm rounded shadow-sm transition ${
-                msg.sender_id === userId
-                  ? "bg-blue-100 text-right rounded-tl-lg ml-auto"
-                  : "bg-gray-200 text-left rounded-tr-lg mr-auto"
-              }`}
-            >
-              {msg.content}
+    <div>
+      {messages.length > 0 && (
+        <div className='border p-4 h-[calc(100vh-200px)] overflow-y-auto'>
+          {groupMessagesByDate().map((group, index) => (
+            <div key={index} className='flex flex-col items-center pl-2'>
+              <div className='text-center text-xs text-gray-400 my-2'>
+                {group.date}
+              </div>
+              {group.messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`px-2 py-1 text-sm rounded transition w-max max-w-[70%] mb-1 flex flex-col ${
+                    msg.sender_id === userId
+                      ? "bg-blue-100 text-blue-800 self-end dark:bg-blue-200"
+                      : "bg-gray-100 text-gray-800 self-start dark:bg-gray-200"
+                  }`}
+                >
+                  <div>{msg.content}</div>
+                  <div className='text-[10px] text-gray-500 text-end mt-1'>
+                    {dayjs(msg.created_at).format("HH:mm")}
+                  </div>
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
             </div>
-          ))
-        )}
-      </div>
-
-      <div className='flex space-x-2'>
-        <input
-          className='flex-1 border rounded p-2'
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          placeholder='כתוב הודעה...'
-        />
-        <button
-          onClick={sendMessage}
-          className='bg-blue-500 text-white rounded px-4'
-        >
-          שלח
-        </button>
+          ))}
+        </div>
+      )}
+      <div className='flex space-x-2 pt-9'>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className='flex w-full space-x-2'
+          >
+            <FormField
+              control={form.control}
+              name='message'
+              render={({ field }) => (
+                <FormItem className='flex-1'>
+                  <FormControl>
+                    <Input {...field} placeholder='כתוב הודעה...' />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <Button type='submit' className='whitespace-nowrap'>
+              שלח
+            </Button>
+          </form>
+        </Form>
       </div>
     </div>
   );

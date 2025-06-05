@@ -5,6 +5,12 @@ import AccountMenu from "@/components/accountMenu/AccountMenu";
 import PostItemForm from "@/components/postItemForm/PostItemForm";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { MessageCircle } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default async function MainHeader() {
   const tLogin = await getTranslations("header.login");
@@ -23,6 +29,16 @@ export default async function MainHeader() {
       <div className='flex items-center justify-between gap-2'>
         {data?.user ? (
           <>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant='outline' className='h-10'>
+                  <Link href='/chat' className='flex items-center gap-2'>
+                    <MessageCircle />
+                  </Link>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Chat</TooltipContent>
+            </Tooltip>
             <PostItemForm
               translation={{
                 formTitle: tPostItemForm("formTitle"),

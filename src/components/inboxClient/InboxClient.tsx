@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
+import dayjs from "dayjs";
 import Image from "next/image";
 
 type Message = {
@@ -214,13 +215,21 @@ export default function InboxClient({ userId }: { userId: string }) {
                     {partnerName}
                   </p>
                   <p className='text-xs text-gray-400 whitespace-nowrap dark:text-gray-400'>
-                    {conv.last_message
+                    {conv.last_message &&
+                    dayjs().isSame(conv.last_message.created_at, "day")
                       ? new Date(
                           conv.last_message.created_at
                         ).toLocaleTimeString("he-IL", {
                           hour: "2-digit",
                           minute: "2-digit",
                         })
+                      : conv.last_message &&
+                        dayjs()
+                          .subtract(1, "day")
+                          .isSame(conv.last_message.created_at, "day")
+                      ? "אתמול"
+                      : conv.last_message
+                      ? dayjs(conv.last_message.created_at).format("DD/MM/YYYY")
                       : ""}
                   </p>
                 </div>

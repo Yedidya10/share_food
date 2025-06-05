@@ -154,14 +154,32 @@ export default function PostItemForm({
       .min(13, {
         message: translation.phoneNumberError,
       })
-      .optional(),
+      .superRefine((val: string, ctx) => {
+        // @ts-expect-error parent is not typed in Zod context
+        const contactByPhone = ctx.parent?.contactByPhone;
+        if (contactByPhone && !val) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: translation.phoneNumberError,
+          });
+        }
+      }),
     isHaveWhatsApp: z.boolean().optional(),
     email: z
       .string()
       .email({
         message: translation.emailError,
       })
-      .optional(),
+      .superRefine((val: string, ctx) => {
+        // @ts-expect-error parent is not typed in Zod context
+        const contactByEmail = ctx.parent?.contactByEmail;
+        if (contactByEmail && !val) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: translation.emailError,
+          });
+        }
+      }),
   });
 
   // 1. Define your form.

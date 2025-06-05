@@ -1,13 +1,12 @@
-import { MyItemsList } from "@/components/myItemsList/MyItemsList";
+import MyItemsList from "@/components/myItemsList/MyItemsList";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function MyItemsPage() {
   const supabase = await createClient();
 
-  const { data: sessionData, error: sessionError } =
-    await supabase.auth.getSession();
+  const { data: userData, error: userError } = await supabase.auth.getUser();
 
-  if (sessionError || !sessionData?.session?.user) {
+  if (userError) {
     return (
       <div className='flex items-center justify-center h-screen'>
         <p className='text-gray-500'>
@@ -21,9 +20,8 @@ export default async function MyItemsPage() {
   const { data: items, error: itemsError } = await supabase
     .from("items")
     .select("*")
-    .eq("user_id", sessionData.session.user.id);
+    .eq("user_id", userData?.user?.id);
   if (itemsError) {
-    console.error("Error fetching items:", itemsError);
     return (
       <div className='flex items-center justify-center h-screen'>
         <p className='text-red-500'>
@@ -42,14 +40,7 @@ export default async function MyItemsPage() {
 
   return (
     <MyItemsList
-      items={items.map((item) => ({
-        id: item.id,
-        title: item.title,
-        description: item.description,
-        images: item.images,
-
-        status: (item.status as "pending" | "published") || "draft",
-      }))}
+      items={items}
     />
   );
 }

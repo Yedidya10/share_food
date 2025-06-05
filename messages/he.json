@@ -27,8 +27,8 @@
       "required": "נדרש"
     },
     "postItem": {
-      "formTitle": "יצירת פוסט חדש",
-      "formDescription": "מלא את הפרטים למטה כדי ליצור פוסט חדש.",
+      "formTitle": "יצירת פריט חדש",
+      "formDescription": "מלא את הפרטים למטה כדי ליצור פריט חדש.",
       "title": "כותרת",
       "titlePlaceholder": "למשל, 'שק תפוח אדמה'",
       "titleError": "אנא הכנס כותרת תקפה (5-50 תווים)",
@@ -60,7 +60,19 @@
       "email": "אימייל",
       "emailPlaceholder": "name@mail.com",
       "emailError": "אנא הכנס אימייל תקין",
-      "submitButton": "צור פוסט"
+      "submitButton": "צור פוסט",
+      "status": {
+        "title": "סטטוס",
+        "pending": "בהמתנה",
+        "published": "פורסם",
+        "archived": "ארכיון",
+        "rejected": "נדחה"
+      }
+    },
+    "editItem": {
+      "formTitle": "עריכת פריט",
+      "formDescription": "עדכן את הפרטים למטה כדי לערוך את הפריט.",
+      "submitButton": "עדכן פריט"
     }
   },
   "countries": {

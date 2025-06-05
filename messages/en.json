@@ -27,8 +27,8 @@
       "error": "An error occurred"
     },
     "postItem": {
-      "formTitle": "Create a new post",
-      "formDescription": "Fill in the details below to create a new post.",
+      "formTitle": "Create a new Item",
+      "formDescription": "Fill in the details below to create a new item.",
       "title": "Title",
       "titlePlaceholder": "e.g. 'Potato sack'",
       "titleError": "Please enter a valid title (5-50 characters)",
@@ -65,7 +65,19 @@
       "email": "Email",
       "emailPlaceholder": "name@mail.com",
       "emailError": "Please enter a valid email address",
-      "submitButton": "Create Post"
+      "submitButton": "Create Post",
+      "status": {
+        "title": "Status",
+        "pending": "Pending",
+        "published": "Published",
+        "draft": "Draft",
+        "rejected": "Rejected"
+      }
+    },
+    "editItem": {
+      "formTitle": "Edit Item",
+      "formDescription": "Update the details of your item below.",
+      "submitButton": "Update Item"
     }
   },
   "countries": {

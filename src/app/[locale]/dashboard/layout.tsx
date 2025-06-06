@@ -1,4 +1,4 @@
-import DashboardMenu from "@/components/dashboardMenu/DashboardMenu";
+import UserDashboardMenu from "@/components/userDashboardMenu/UserDashboardMenu";
 
 export default function DashboardLayout({
   children,
@@ -6,8 +6,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <DashboardMenu>
+    <UserDashboardMenu>
       <main className='flex-1 p-4'>{children}</main>
-    </DashboardMenu>
+    </UserDashboardMenu>
   );
 }

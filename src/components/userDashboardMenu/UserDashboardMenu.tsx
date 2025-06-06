@@ -10,7 +10,7 @@ const navItems = [
   { label: 'Settings', href: '/dashboard/settings' },
 ];
 
-export default function DashboardMenu({ children }: { children: React.ReactNode }) {
+export default function UserDashboardMenu({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   return (

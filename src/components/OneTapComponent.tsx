@@ -73,7 +73,7 @@ export default function OneTapComponent() {
     };
 
     initializeGoogleOneTap();
-  }, [scriptLoaded]);
+  }, [scriptLoaded, supabase.auth]);
 
   return (
     <>

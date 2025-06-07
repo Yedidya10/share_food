@@ -25,6 +25,8 @@ import StartChatButton from "../startChatButton/StartChatButton";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import ItemsSkeleton from "../skeletons/itemsSkeleton/ItemsSkeleton";
+import { render } from "@react-email/render";
+import WelcomeEmail from "@/components/emailTemplates/welcomeEmail/WelcomeEmail";
 
 type Item = {
   user_id: string;
@@ -59,7 +61,52 @@ export default function PostGrid({ items }: { items: Item[] }) {
     const { data: authData } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (event === "SIGNED_IN") {
-          setUserId(session?.user?.id || null);
+          const user = session?.user;
+          setUserId(user?.id || null);
+
+          if (user?.created_at === user?.updated_at) {
+            supabase.from("profiles").upsert(
+              {
+                id: user?.id,
+                email: user?.email,
+                full_name: user?.user_metadata?.full_name || "",
+                first_name: user?.user_metadata?.full_name?.split(" ")[0] || "",
+                last_name: user?.user_metadata?.full_name?.split(" ")[1] || "",
+                phone: user?.phone || "",
+                avatar_url: user?.user_metadata?.avatar_url || "",
+                // role: "new_user",
+                created_at: session?.user.created_at,
+                updated_at: session?.user.updated_at,
+              },
+              { onConflict: "id" }
+            );
+
+            async function sendWelcomeEmail() {
+              try {
+                const html = await render(
+                  <WelcomeEmail
+                    userName={
+                      user?.user_metadata?.full_name.split(" ")[0] || ""
+                    }
+                    actionUrl='https://sharefood-six.vercel.app'
+                  />
+                );
+
+                fetch("/api/send-welcome-oauth", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    email: user?.email,
+                    html,
+                  }),
+                });
+              } catch (error) {
+                console.error(error);
+              }
+            }
+
+            sendWelcomeEmail();
+          }
         }
 
         if (event === "SIGNED_OUT") {

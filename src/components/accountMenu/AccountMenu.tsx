@@ -23,6 +23,11 @@ export default function AccountMenu({
   translation, // Translation function, if needed
 }: {
   user: { user_metadata: { avatar_url?: string; full_name?: string } };
+  setUser: React.Dispatch<
+    React.SetStateAction<{
+      user_metadata: { avatar_url?: string; full_name?: string };
+    } | null>
+  >;
   translation: {
     welcome: string;
     logout: string;

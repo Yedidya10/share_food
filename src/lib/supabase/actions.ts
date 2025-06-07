@@ -72,6 +72,17 @@ export async function signInWithOAuth(provider: Provider) {
     },
   });
 
+  console.log("NODE_ENV:", process.env.NODE_ENV);
+  console.log("NEXT_PUBLIC_URL:", process.env.NEXT_PUBLIC_URL);
+  console.log(
+    "Redirecting to:",
+    `${
+      process.env.NODE_ENV === "development"
+        ? "https://localhost:3000"
+        : process.env.NEXT_PUBLIC_URL
+    }/auth/callback`
+  );
+
   if (data.url) {
     redirect(data.url); // use the redirect API for your server framework
   }

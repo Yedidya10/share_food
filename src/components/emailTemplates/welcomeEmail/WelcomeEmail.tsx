@@ -1,95 +1,182 @@
-import { Html } from "@react-email/html";
-import { Head } from "@react-email/head";
-import { Preview } from "@react-email/preview";
-import { Section } from "@react-email/section";
-import { Container } from "@react-email/container";
-import { Heading } from "@react-email/heading";
-import { Text } from "@react-email/text";
-import { Button } from "@react-email/button";
+import {
+  Body,
+  Button,
+  Column,
+  Container,
+  Head,
+  Heading,
+  Html,
+  Img,
+  Link,
+  Preview,
+  Row,
+  Section,
+  Tailwind,
+  Text,
+} from "@react-email/components";
+import type * as React from "react";
 
-type WelcomeEmailProps = {
-  userName: string;
-  actionUrl: string;
-};
+interface ShareFoodWelcomeEmailProps {
+  steps: {
+    id: number;
+    Description: React.ReactNode;
+  }[];
+  links: {
+    title: string;
+    href: string;
+  }[];
+  userName?: string;
+}
 
-export default function WelcomeEmail({
+const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
+  ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+  : "";
+
+export const ShareFoodWelcomeEmail = ({
+  steps,
+  links,
   userName = "משתמש יקר",
-  actionUrl = "https://your-website.com",
-}: WelcomeEmailProps) {
+}: ShareFoodWelcomeEmailProps) => {
   return (
     <Html lang='he'>
       <Head />
-      <Preview>ברוך הבא ל-Share Food! אנחנו שמחים שהצטרפת :)</Preview>
-      <Section style={main}>
-        <Container style={container}>
-          <Heading style={heading}>שלום {userName},</Heading>
+      <Tailwind
+        config={{
+          theme: {
+            extend: {
+              colors: {
+                brand: "#4CAF50",
+                offwhite: "#fafbfb",
+              },
+              spacing: {
+                0: "0px",
+                20: "20px",
+                45: "45px",
+              },
+            },
+          },
+        }}
+      >
+        <Preview>ברוך הבא ל-Share Food – יחד מצמצמים את בזבוז המזון</Preview>
+        <Body className='bg-offwhite font-sans text-base' dir='rtl'>
+          <Img
+            src={`${baseUrl}/static/sharefood-logo.png`}
+            width='160'
+            height='auto'
+            alt='Share Food'
+            className='mx-auto my-20'
+          />
+          <Container className='bg-white p-45'>
+            <Heading className='my-0 text-center leading-8'>
+              שלום {userName}, ברוך הבא ל-Share Food!
+            </Heading>
 
-          <Text style={text}>
-            תודה שהצטרפת לקהילת <strong>Share Food</strong>!
-          </Text>
+            <Section>
+              <Row>
+                <Text className='text-base'>
+                  אנחנו שמחים שהצטרפת לקהילה שפועלת להפחתת בזבוז המזון בישראל.
+                  יחד אנחנו יכולים ליצור שינוי אמיתי – במקום לזרוק אוכל טוב לפח,
+                  ניתן לחלוק אותו עם מי שזקוק לו.
+                </Text>
 
-          <Text style={text}>
-            אם יש לך שאלות או זקוק לעזרה, אל תהסס לפנות אלינו.
-          </Text>
+                <Text className='text-base mt-4'>כך תוכל להתחיל:</Text>
+              </Row>
+            </Section>
 
-          <Button style={button} href={actionUrl}>
-            כניסה לאתר
-          </Button>
+            <ul className='mt-4'>
+              {steps?.map((step) => (
+                <li className='mb-4' key={step.id}>
+                  {step.Description}
+                </li>
+              ))}
+            </ul>
 
-          <Text style={text}>בהצלחה!</Text>
+            <Section className='text-center mt-6'>
+              <Button className='rounded-lg bg-brand px-[18px] py-3 text-white'>
+                התחבר למערכת
+              </Button>
+            </Section>
 
-          <Text style={footer}>בברכה,</Text>
-          <Text style={footer}>ידידיה אברג&apos;ל - מייסד</Text>
-        </Container>
-      </Section>
+            <Section className='mt-45'>
+              <Row className='text-center'>
+                {links?.map((link) => (
+                  <Column key={link.title} className='py-2'>
+                    <Link
+                      className='font-bold text-black underline'
+                      href={link.href}
+                    >
+                      {link.title}
+                    </Link>{" "}
+                    <span className='text-green-600'>→</span>
+                  </Column>
+                ))}
+              </Row>
+            </Section>
+          </Container>
+
+          <Container className='mt-20'>
+            <Section>
+              <Row>
+                <Column className='px-20 text-right'>
+                  <Link href='https://your-domain.com/unsubscribe'>
+                    הסר מהרשימה
+                  </Link>
+                </Column>
+                <Column className='text-left'>
+                  <Link href='https://your-domain.com/preferences'>
+                    ניהול העדפות
+                  </Link>
+                </Column>
+              </Row>
+            </Section>
+            <Text className='mb-45 text-center text-gray-400'>
+              Share Food, תל אביב, ישראל
+            </Text>
+          </Container>
+        </Body>
+      </Tailwind>
     </Html>
   );
-}
-
-// Styles
-const main = {
-  backgroundColor: "#f9f9f9",
-  padding: "24px 0",
-  direction: "rtl" as const,
 };
 
-const container = {
-  backgroundColor: "#ffffff",
-  borderRadius: "12px",
-  padding: "24px",
-  maxWidth: "600px",
-  margin: "0 auto",
-  fontFamily: "Arial, sans-serif",
-  color: "#333333",
-  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
-  textAlign: "right" as const,
-};
+ShareFoodWelcomeEmail.PreviewProps = {
+  steps: [
+    {
+      id: 1,
+      Description: (
+        <li className='mb-20' key={1}>
+          <strong>פרסם שאריות אוכל טובות.</strong> העלה פריטים שלא תצרוך כדי
+          שאחרים יוכלו להיעזר בהם.
+        </li>
+      ),
+    },
+    {
+      id: 2,
+      Description: (
+        <li className='mb-20' key={2}>
+          <strong>מצא אוכל בסביבה שלך.</strong> חפש תרומות מזון באזור שלך וקח
+          חלק בפתרון חברתי.
+        </li>
+      ),
+    },
+    {
+      id: 3,
+      Description: (
+        <li className='mb-20' key={3}>
+          <strong>שתף חברים.</strong> ככל שיותר יצטרפו – כך נוכל לעזור ליותר
+          אנשים ולמנוע בזבוז מיותר.
+        </li>
+      ),
+    },
+  ],
+  links: [
+    {
+      title: "בקרו באתר שלנו",
+      href: "https://your-domain.com",
+    },
+    { title: "קראו עוד על הפרויקט", href: "https://your-domain.com/about" },
+    { title: "צרו קשר", href: "https://your-domain.com/contact" },
+  ],
+} satisfies ShareFoodWelcomeEmailProps;
 
-const heading = {
-  fontSize: "20px",
-  color: "#2c3e50",
-  marginBottom: "16px",
-};
-
-const text = {
-  fontSize: "14px",
-  lineHeight: "1.6",
-  marginBottom: "12px",
-};
-
-const footer = {
-  fontSize: "12px",
-  marginBottom: "4px",
-};
-
-const button = {
-  display: "inline-block",
-  // Black background color for the button
-  backgroundColor: "#2c3e50",
-  color: "#ffffff",
-  fontSize: "14px",
-  padding: "12px 24px",
-  borderRadius: "8px",
-  textDecoration: "none",
-  margin: "16px 0",
-};
+export default ShareFoodWelcomeEmail;

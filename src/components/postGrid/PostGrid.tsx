@@ -88,7 +88,45 @@ export default function PostGrid({ items }: { items: Item[] }) {
                     userName={
                       user?.user_metadata?.full_name.split(" ")[0] || ""
                     }
-                    actionUrl='https://sharefood-six.vercel.app'
+                    steps={[
+                      {
+                        id: 1,
+                        Description: (
+                          <>
+                            <p>
+                              ברוך הבא ל-Share Food – יחד מצמצמים את בזבוז המזון
+                            </p>
+                            <p>
+                              אנו שמחים שהצטרפת אלינו! Share Food הוא פרויקט
+                              קהילתי שנועד לעזור לך למצוא מזון עודף ולשתף אותו
+                              עם אחרים.
+                            </p>
+                          </>
+                        ),
+                      },
+                      {
+                        id: 2,
+                        Description: (
+                          <>
+                            <p>
+                              כדי להתחיל, פשוט לחץ על כפתור &quot;פרסם
+                              פריט&quot; למעלה והתחל לשתף את המזון העודף שלך עם
+                              הקהילה.
+                            </p>
+                          </>
+                        ),
+                      },
+                    ]}
+                    links={[
+                      {
+                        href: "https://sharefood.org.il",
+                        title: "בקר באתר Share Food",
+                      },
+                      {
+                        href: "https://sharefood.org.il/terms",
+                        title: "תנאי השימוש",
+                      },
+                    ]}
                   />
                 );
 

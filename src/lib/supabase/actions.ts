@@ -58,7 +58,7 @@ export async function logout() {
   redirect("/");
 }
 
-const getURL = () => {
+const getSiteUrl = () => {
   let url =
     process?.env?.NEXT_PUBLIC_SITE_URL ?? // Set this to your site URL in production env.
     process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
@@ -70,17 +70,24 @@ const getURL = () => {
   return url;
 };
 
-export async function signInWithOAuth(provider: Provider) {
+export async function signInWithOAuth({
+  provider,
+  redirectTo = "/",
+}: {
+  provider: Provider;
+  redirectTo?: string;
+}) {
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signInWithOAuth({
+  const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
     options: {
-      redirectTo: getURL(),
+      redirectTo: `${getSiteUrl()}/auth/callback?next=${encodeURIComponent(
+        redirectTo
+      )}`,
     },
   });
 
-  if (error) {
-    redirect("/error");
-  }
+  if (error) redirect("/error");
+  if (data?.url) redirect(data.url);
 }

@@ -22,6 +22,9 @@ import { FaWhatsapp } from "react-icons/fa";
 import { Button } from "../ui/button";
 import { Tooltip } from "../ui/tooltip";
 import StartChatButton from "../startChatButton/StartChatButton";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import ItemsSkeleton from "../skeletons/itemsSkeleton/ItemsSkeleton";
 
 type Item = {
   user_id: string;
@@ -42,13 +45,38 @@ type Item = {
   created_at: string;
 };
 
-export default function PostGrid({
-  userId,
-  items,
-}: {
-  userId: string | undefined;
-  items: Item[];
-}) {
+export default function PostGrid({ items }: { items: Item[] }) {
+  const [userId, setUserId] = useState<string | null>(null);
+  const [isLoadingUserId, setIsLoadingUserId] = useState(true);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUserId(session?.user?.id || null);
+      setIsLoadingUserId(false);
+    });
+
+    const { data: authData } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === "SIGNED_IN") {
+          setUserId(session?.user?.id || null);
+        }
+
+        if (event === "SIGNED_OUT") {
+          setUserId(null);
+        }
+      }
+    );
+
+    return () => {
+      authData?.subscription?.unsubscribe();
+    };
+  }, []);
+
+  if (isLoadingUserId) {
+    return <ItemsSkeleton />;
+  }
+
   return (
     <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6 p-4'>
       {items.map(

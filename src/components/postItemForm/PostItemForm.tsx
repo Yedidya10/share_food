@@ -101,9 +101,14 @@ export default function PostItemForm({
       .min(20, {
         message: translation.descriptionError,
       }),
-    images: z.array(z.instanceof(File)).max(3, {
-      message: "You can upload a maximum of 3 images.",
-    }),
+    images: z
+      .array(z.instanceof(File))
+      .max(3, {
+        message: "ניתן להעלות עד 3 תמונות בלבד.",
+      })
+      .min(1, {
+        message: "נדרש להעלות לפחות תמונה אחת.",
+      }),
     streetName: z
       .string()
       .max(50, {
@@ -130,56 +135,26 @@ export default function PostItemForm({
       }),
     country: z
       .string()
-      .max(50, {
-        message: "Country must be at most 50 characters.",
+      .max(20, {
+        message: "Country must be at most 20 characters.",
       })
       .min(2, {
         message: "Country must be at least 2 characters.",
       }),
     postalCode: z
       .string()
-      .max(20, {
+      .max(7, {
         message: translation.postalCodeError,
       })
-      .min(2, {
+      .min(5, {
         message: translation.postalCodeError,
-      }),
+      })
+      .optional(),
     contactByPhone: z.boolean().optional(),
-    contactByEmail: z.boolean().optional(),
-    phoneNumber: z
-      .string()
-      .max(13, {
-        message: translation.phoneNumberError,
-      })
-      .min(13, {
-        message: translation.phoneNumberError,
-      })
-      .superRefine((val: string, ctx) => {
-        // @ts-expect-error parent is not typed in Zod context
-        const contactByPhone = ctx.parent?.contactByPhone;
-        if (contactByPhone && !val) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: translation.phoneNumberError,
-          });
-        }
-      }),
+    phoneNumber: z.string().optional(),
     isHaveWhatsApp: z.boolean().optional(),
-    email: z
-      .string()
-      .email({
-        message: translation.emailError,
-      })
-      .superRefine((val: string, ctx) => {
-        // @ts-expect-error parent is not typed in Zod context
-        const contactByEmail = ctx.parent?.contactByEmail;
-        if (contactByEmail && !val) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: translation.emailError,
-          });
-        }
-      }),
+    contactByEmail: z.boolean().optional(),
+    email: z.string().optional(),
   });
 
   // 1. Define your form.
@@ -205,75 +180,83 @@ export default function PostItemForm({
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const { data: userData, error: userError } = await supabase.auth.getUser();
+    try {
+      const { data: userData, error: userError } =
+        await supabase.auth.getUser();
 
-    console.log("values data:", values);
+      console.log("values data:", values);
 
-    if (userError) {
-      console.error("Session error:", JSON.stringify(userError, null, 2));
-      return;
-    }
+      if (userError) {
+        console.error("Session error:", JSON.stringify(userError, null, 2));
+        return;
+      }
 
-    const userId = userData?.user?.id;
+      const userId = userData?.user?.id;
 
-    function sanitizeFileName(fileName: string) {
-      return fileName
-        .replace(/[\u200B-\u200F\u202A-\u202E]/g, "")
-        .replace(/\s+/g, "_");
-    }
+      function sanitizeFileName(fileName: string) {
+        return fileName
+          .replace(/[\u200B-\u200F\u202A-\u202E]/g, "")
+          .replace(/\s+/g, "_");
+      }
 
-    const files: File[] = values.images || [];
-    const uploadedUrls: string[] = [];
+      const files: File[] = values.images || [];
+      const uploadedUrls: string[] = [];
 
-    for (const file of files) {
-      const cleanName = sanitizeFileName(file.name);
-      const filePath = `public/${cleanName}`;
+      for (const file of files) {
+        const cleanName = sanitizeFileName(file.name);
+        const filePath = `public/${cleanName}`;
 
-      const { data, error } = await supabase.storage
-        .from("share-food-images")
-        .upload(filePath, file);
-
-      if (error) {
-        console.error("Upload error:", error.message);
-      } else {
-        console.log("File uploaded successfully:", data);
-        const { data: publicUrl } = supabase.storage
+        const { data, error } = await supabase.storage
           .from("share-food-images")
-          .getPublicUrl(filePath);
+          .upload(filePath, file);
 
-        console.log("Public URL:", publicUrl);
+        if (error) {
+          console.error("Upload error:", error.message);
+        } else {
+          console.log("File uploaded successfully:", data);
+          const { data: publicUrl } = supabase.storage
+            .from("share-food-images")
+            .getPublicUrl(filePath);
 
-        if (publicUrl?.publicUrl) {
-          uploadedUrls.push(publicUrl.publicUrl);
+          console.log("Public URL:", publicUrl);
+
+          if (publicUrl?.publicUrl) {
+            uploadedUrls.push(publicUrl.publicUrl);
+          }
         }
       }
-    }
 
-    const { error: insertError } = await supabase.from("items").insert([
-      {
-        title: values.title,
-        description: values.description,
-        images: uploadedUrls, // assuming the column is type: text[] (array of strings)
-        street_name: values.streetName,
-        street_number: values.streetNumber,
-        city: values.city,
-        country: values.country,
-        postal_code: values.postalCode,
-        full_name: userData?.user?.user_metadata?.full_name || null,
-        phone_number: values.phoneNumber || null,
-        is_have_whatsapp: values.isHaveWhatsApp ?? false,
-        email: values.email || null,
-        status: "pending", // Default status
-        user_id: userId,
-      },
-    ]);
+      const { error: insertError } = await supabase.from("items").insert([
+        {
+          title: values.title,
+          description: values.description,
+          images: uploadedUrls,
+          street_name: values.streetName,
+          street_number: values.streetNumber,
+          city: values.city,
+          country: values.country,
+          postal_code: values.postalCode,
+          full_name: userData?.user?.user_metadata?.full_name || null,
+          phone_number: values.phoneNumber || null,
+          is_have_whatsapp: values.isHaveWhatsApp ?? false,
+          email: values.email || null,
+          status: "pending", // Default status
+          user_id: userId,
+        },
+      ]);
 
-    if (insertError) {
-      console.error("Insert error:", insertError.message);
-    } else {
-      // אפשר לנקות את הטופס או להעביר דף
-      // form.reset();
-      // setPreviewUrls([]); // Clear preview URLs after successful submission
+      if (insertError) {
+        form.setError("root", {
+          type: "manual",
+          message: "Failed to submit the form. Please try again.",
+        });
+        throw new Error(`Insert error: ${insertError.message}`);
+      } else {
+        form.reset();
+        setPreviewUrls([]); // Clear preview URLs after successful submission
+      }
+    } catch (error) {
+      console.error(error);
     }
   }
 
@@ -485,14 +468,16 @@ export default function PostItemForm({
                 <FormField
                   control={form.control}
                   name='contactByPhone'
-                  render={({ field }) => (
+                  render={({ field: contactByPhoneField }) => (
                     <div className='rounded-lg border px-4 py-3 space-y-3'>
                       <div className='flex items-center gap-3'>
                         <Checkbox
                           className='h-5 w-5'
-                          checked={field.value}
+                          checked={contactByPhoneField.value}
                           id='contactByPhone'
-                          onCheckedChange={(checked) => field.onChange(checked)}
+                          onCheckedChange={(checked) =>
+                            contactByPhoneField.onChange(checked)
+                          }
                         />
                         <FormLabel
                           className='m-0 font-medium'
@@ -501,22 +486,24 @@ export default function PostItemForm({
                           {translation.phoneNumber}
                         </FormLabel>
                       </div>
-                      {field.value && (
+                      {contactByPhoneField.value && (
                         <FormField
                           control={form.control}
                           name='phoneNumber'
-                          render={({ field }) => (
+                          render={({ field: phoneNumberField }) => (
                             <FormItem dir='ltr' className='w-full max-w-xs'>
                               <FormLabel dir={locale === "he" ? "rtl" : "ltr"}>
                                 {translation.phoneNumber}
                               </FormLabel>
                               <FormControl>
                                 <PhoneInput
-                                  value={field.value}
+                                  // if contactByPhone is true, then the phone input is required
+                                  required={contactByPhoneField.value}
+                                  value={phoneNumberField.value}
                                   placeholder={
                                     translation.phoneNumberPlaceholder
                                   }
-                                  onChange={field.onChange}
+                                  onChange={phoneNumberField.onChange}
                                 />
                               </FormControl>
                               <FormMessage
@@ -532,14 +519,16 @@ export default function PostItemForm({
                 <FormField
                   control={form.control}
                   name='contactByEmail'
-                  render={({ field }) => (
+                  render={({ field: contactByEmailField }) => (
                     <div className='rounded-lg border px-4 py-3 space-y-3'>
                       <div className='flex items-center gap-3'>
                         <Checkbox
                           className='h-5 w-5'
-                          checked={field.value}
+                          checked={contactByEmailField.value}
                           id='contactByEmail'
-                          onCheckedChange={(checked) => field.onChange(checked)}
+                          onCheckedChange={(checked) =>
+                            contactByEmailField.onChange(checked)
+                          }
                         />
                         <FormLabel
                           className='m-0 font-medium'
@@ -548,17 +537,19 @@ export default function PostItemForm({
                           {translation.email}
                         </FormLabel>
                       </div>
-                      {field.value && (
+                      {contactByEmailField.value && (
                         <FormField
                           control={form.control}
                           name='email'
-                          render={({ field }) => (
+                          render={({ field: emailField }) => (
                             <FormItem className='w-full max-w-xs'>
                               <FormLabel>{translation.email}</FormLabel>
                               <FormControl>
                                 <Input
+                                  type='email'
+                                  required={contactByEmailField.value}
                                   placeholder={translation.emailPlaceholder}
-                                  {...field}
+                                  {...emailField}
                                 />
                               </FormControl>
                               <FormMessage />

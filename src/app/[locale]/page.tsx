@@ -3,7 +3,6 @@ import { createClient } from "@/lib/supabase/server";
 
 export default async function Home() {
   const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
 
   const { data: itemsData, error: itemsError } = await supabase
     .from("items")
@@ -21,5 +20,5 @@ export default async function Home() {
     );
   }
 
-  return <PostGrid userId={userData.user?.id} items={itemsData || []} />;
+  return <PostGrid items={itemsData || []} />;
 }

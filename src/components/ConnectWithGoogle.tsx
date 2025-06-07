@@ -3,6 +3,7 @@
 import { FaGoogle } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { signInWithOAuth } from "@/lib/supabase/actions";
+import { usePathname } from "next/navigation";
 
 export default function ConnectWithGoogle({
   translation,
@@ -11,9 +12,12 @@ export default function ConnectWithGoogle({
     ConnectWithGoogle: string;
   };
 }) {
+  const pathname = usePathname();
   return (
     <Button
-      onClick={() => signInWithOAuth("google")}
+      onClick={() =>
+        signInWithOAuth({ provider: "google", redirectTo: pathname })
+      }
       className='bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 w-full flex items-center justify-center cursor-pointer'
     >
       <FaGoogle className='text-gray-900 dark:text-gray-100' />

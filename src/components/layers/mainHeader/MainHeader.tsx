@@ -1,44 +1,54 @@
-import { getTranslations } from "next-intl/server";
-import { createClient } from "@/lib/supabase/server";
+"use client";
+
+import { useTranslations } from "next-intl";
+import { createClient } from "@/lib/supabase/client";
 import { ModeToggle } from "@/components/theme/ModeToggle";
 import AccountMenu from "@/components/accountMenu/AccountMenu";
 import PostItemForm from "@/components/postItemForm/PostItemForm";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { MessageCircle } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import ChatButton from "@/components/chatButton/ChatButton";
+import { useEffect, useState } from "react";
 
-export default async function MainHeader() {
-  const tLogin = await getTranslations("header.login");
-  const tAccountMenu = await getTranslations("header.accountMenu");
-  const tGenericForm = await getTranslations("form.generic");
-  const tPostItemForm = await getTranslations("form.postItem");
-  const tCountries = await getTranslations("countries");
+export default function MainHeader() {
+  const [user, setUser] = useState<{
+    user_metadata: { avatar_url?: string; full_name?: string };
+  } | null>(null);
+  const [isUserConnected, setIsUserConnected] = useState(false);
+  const tLogin = useTranslations("header.login");
+  const tAccountMenu = useTranslations("header.accountMenu");
+  const tGenericForm = useTranslations("form.generic");
+  const tPostItemForm = useTranslations("form.postItem");
+  const tCountries = useTranslations("countries");
 
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getUser();
+  useEffect(() => {
+    const supabase = createClient();
+    const { data: authData } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
+          setUser(session?.user || null);
+          setIsUserConnected(true);
+        }
+
+        if (event === "SIGNED_OUT") {
+          setUser(null);
+          setIsUserConnected(false);
+        }
+      }
+    );
+
+    return () => {
+      authData?.subscription?.unsubscribe();
+    };
+  }, []);
 
   return (
-    // Style the header bg like glassmorphism
     <header className='flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 fixed top-0 left-0 right-0 z-50 h-20 bg-white dark:bg-gray-900 backdrop-blur-sm bg-opacity-50 dark:bg-opacity-50'>
       <div></div>
       <div className='flex items-center justify-between gap-2'>
-        {data?.user ? (
+        {user && isUserConnected ? (
           <>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant='outline' className='h-10'>
-                  <Link href='/chat' className='flex items-center gap-2'>
-                    <MessageCircle />
-                  </Link>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Chat</TooltipContent>
-            </Tooltip>
+            <ChatButton />
             <PostItemForm
               translation={{
                 formTitle: tPostItemForm("formTitle"),
@@ -87,10 +97,11 @@ export default async function MainHeader() {
               }}
             />
             <AccountMenu
-              user={data.user}
+              user={user}
+              setUser={setUser}
               translation={{
                 welcome: tLogin("welcome", {
-                  name: data.user.user_metadata.full_name || "User",
+                  name: user.user_metadata.full_name || "User",
                 }),
                 logout: tLogin("logout"),
                 profile: tAccountMenu("profile"),

@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import Image from "next/image";

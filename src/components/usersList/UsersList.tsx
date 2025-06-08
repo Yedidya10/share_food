@@ -11,19 +11,20 @@ import {
 } from "@/components/ui/tooltip";
 import { useState } from "react";
 
-type usersDataType = {
+type profilesDataType = {
   id: string;
   email: string;
-  role: "admin" | "user" | "moderator" | "new_user";
+  role: "admin" | "user" | "moderator";
   full_name: string;
 };
 
 export default function UsersList({
-  usersData,
+  profilesData,
 }: {
-  usersData: usersDataType[];
+  profilesData: profilesDataType[];
 }) {
-  const [users, setUsers] = useState<Array<usersDataType>>(usersData);
+  const [profiles, setProfiles] =
+    useState<Array<profilesDataType>>(profilesData);
 
   const deleteUser = async (id: string) => {
     const supabase = createClient();
@@ -36,27 +37,27 @@ export default function UsersList({
 
     // Trigger a re-fetch of the items or update the state
     // This could be done by lifting the state up to a parent component
-    setUsers((prevItems) => prevItems.filter((item) => item.id !== id));
+    setProfiles((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
   return (
     <div className='space-y-4'>
-      {users.map((user) => (
+      {profiles.map((profile) => (
         <div
-          key={user.id}
+          key={profile.id}
           className='border rounded p-4 flex flex-col md:flex-row md:items-center justify-between'
         >
           <div className='flex items-center space-x-4'>
             <Image
               src={"/default-avatar.png"}
-              alt={user.full_name}
+              alt={profile.full_name}
               width={50}
               height={50}
               className='rounded-full'
             />
             <div>
-              <h3 className='text-lg font-semibold'>{user.full_name}</h3>
-              <p className='text-sm text-gray-500'>{user.email}</p>
+              <h3 className='text-lg font-semibold'>{profile.full_name}</h3>
+              <p className='text-sm text-gray-500'>{profile.email}</p>
               {/* {user.phone_number && (
                 <p className='text-sm text-gray-500'>
                   Phone: {user.phone_number}
@@ -73,7 +74,7 @@ export default function UsersList({
                 <Button
                   variant='destructive'
                   size='icon'
-                  onClick={() => deleteUser(user.id)}
+                  onClick={() => deleteUser(profile.id)}
                 >
                   <Trash2 className='w-4 h-4' />
                 </Button>

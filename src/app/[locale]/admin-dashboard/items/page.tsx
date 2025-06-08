@@ -17,8 +17,8 @@ export default async function ItemsPage() {
       );
     }
 
-    const { data: usersData, error: usersError } = await supabase
-      .from("users")
+    const { data: profilesData, error: usersError } = await supabase
+      .from("profiles")
       .select("id, role")
       .eq("id", userData.user?.id)
       .single();
@@ -28,7 +28,7 @@ export default async function ItemsPage() {
     }
 
     // Check if user is authenticated admin
-    if (usersData?.role !== "admin") {
+    if (profilesData?.role !== "admin") {
       return (
         <div className='flex items-center justify-center h-screen'>
           <p className='text-gray-500'>

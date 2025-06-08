@@ -18,7 +18,7 @@ export default async function UsersPage() {
     }
 
     const { data: adminUsersData, error: adminUsersError } = await supabase
-      .from("users")
+      .from("profilesData")
       .select("id, role")
       .eq("id", userData.user?.id)
       .single();
@@ -38,22 +38,22 @@ export default async function UsersPage() {
       );
     }
 
-    // Fetch all users from the database
-    const { data: usersData, error: usersError } = await supabase
+    // Fetch all profiles from the database
+    const { data: profilesData, error: profilesError } = await supabase
       .from("users")
       .select("*");
 
-    if (usersError) {
+    if (profilesError) {
       return (
         <div className='flex items-center justify-center h-screen'>
           <p className='text-red-500'>
-            Error fetching users. Please try again later.
+            Error fetching profiles. Please try again later.
           </p>
         </div>
       );
     }
 
-    return <UsersList usersData={usersData} />;
+    return <UsersList profilesData={profilesData} />;
   } catch (error) {
     console.error(error);
     return (

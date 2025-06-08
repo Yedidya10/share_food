@@ -87,15 +87,15 @@ export default function InboxClient({ userId }: { userId: string }) {
 
       if (partnerIds.length === 0) return;
 
-      const { data: users } = await supabase
-        .from("users")
+      const { data: profilesData } = await supabase
+        .from("profilesData")
         .select("id, full_name")
         .in("id", partnerIds);
 
-      if (!users) return;
+      if (!profilesData) return;
 
       const map: Record<string, string> = {};
-      users.forEach((u) => {
+      profilesData.forEach((u) => {
         map[u.id] = u.full_name;
       });
       setPartnerNames(map);
@@ -107,14 +107,14 @@ export default function InboxClient({ userId }: { userId: string }) {
       );
 
       if (partnerIds.length === 0) return;
-      const { data: users } = await supabase
-        .from("users")
+      const { data: profilesData } = await supabase
+        .from("profilesData")
         .select("id, avatar_url")
         .in("id", partnerIds);
-      if (!users) return;
+      if (!profilesData) return;
 
       const map: Record<string, string> = {};
-      users.forEach((u) => {
+      profilesData.forEach((u) => {
         map[u.id] = u.avatar_url || "";
       });
       setPartnerAvatars(map);
@@ -168,7 +168,6 @@ export default function InboxClient({ userId }: { userId: string }) {
     };
   }, [supabase]);
 
-  // פונקציה ליצירת ראשי תיבות לתמונה (avatar)
   function getInitials(name: string) {
     const names = name.trim().split(" ");
     if (names.length === 1) return names[0][0];
@@ -224,13 +223,15 @@ export default function InboxClient({ userId }: { userId: string }) {
                           minute: "2-digit",
                         })
                       : conv.last_message &&
-                        dayjs()
-                          .subtract(1, "day")
-                          .isSame(conv.last_message.created_at, "day")
-                      ? "אתמול"
-                      : conv.last_message
-                      ? dayjs(conv.last_message.created_at).format("DD/MM/YYYY")
-                      : ""}
+                          dayjs()
+                            .subtract(1, "day")
+                            .isSame(conv.last_message.created_at, "day")
+                        ? "אתמול"
+                        : conv.last_message
+                          ? dayjs(conv.last_message.created_at).format(
+                              "DD/MM/YYYY"
+                            )
+                          : ""}
                   </p>
                 </div>
                 <p

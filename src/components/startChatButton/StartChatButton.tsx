@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
@@ -13,7 +13,9 @@ type Props = {
 export default function StartChatButton({ targetUserId }: Props) {
   const [loading, setLoading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   const supabase = createClient();
 
@@ -36,7 +38,7 @@ export default function StartChatButton({ targetUserId }: Props) {
     const members = [currentUserId, targetUserId].sort();
 
     try {
-      // 1. קח את כל השיחות שמכילות את שני המשתמשים
+      // 1. Check if a conversation already exists with these members
       const { data: conversations, error: selectError } = await supabase
         .from("conversations")
         .select("id, members")
@@ -44,7 +46,7 @@ export default function StartChatButton({ targetUserId }: Props) {
 
       if (selectError) throw selectError;
 
-      // 2. סנן ב-JS כדי למצוא את השיחה שה-members שווה בדיוק למערך שלנו
+      // 2. Check if the conversation already exists
       const existingConversation = conversations?.find((conv) => {
         if (conv.members.length !== members.length) return false;
         for (let i = 0; i < members.length; i++) {
@@ -53,12 +55,10 @@ export default function StartChatButton({ targetUserId }: Props) {
         return true;
       });
 
-      let conversationId;
-
       if (existingConversation) {
-        conversationId = existingConversation.id;
+        setConversationId(existingConversation.id);
       } else {
-        // צור שיחה חדשה
+        // 3. If no conversation exists, create a new one
         const { data: newConversation, error: insertError } = await supabase
           .from("conversations")
           .insert({ members })
@@ -67,7 +67,7 @@ export default function StartChatButton({ targetUserId }: Props) {
 
         if (insertError) throw insertError;
 
-        conversationId = newConversation.id;
+        setConversationId(newConversation.id);
       }
 
       router.push(`/chat/${conversationId}`);
@@ -79,8 +79,22 @@ export default function StartChatButton({ targetUserId }: Props) {
   };
 
   return (
-    <Button onClick={handleClick} disabled={loading || !currentUserId}>
-      {loading ? <Loader2 className='animate-spin w-4 h-4' /> : "התחל שיחה"}
-    </Button>
+    <>
+      {currentUserId ? (
+        <Button onClick={handleClick} disabled={loading}>
+          {loading ? <Loader2 className='animate-spin w-4 h-4' /> : "התחל שיחה"}
+        </Button>
+      ) : (
+        // Display a message if the user is not logged in
+        <Button
+          onClick={() =>
+            router.push(`/login?redirect=${encodeURIComponent(pathname)}`)
+          }
+          disabled={loading}
+        >
+          עליך להתחבר כדי להתחיל שיחה
+        </Button>
+      )}
+    </>
   );
 }

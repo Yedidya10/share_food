@@ -5,8 +5,7 @@ export default async function ItemsPage() {
   try {
     const supabase = await createClient();
 
-    const { data: userData, error: userError } = await supabase.auth.getUser();
-
+    const { error: userError } = await supabase.auth.getUser();
     if (userError) {
       return (
         <div className='flex items-center justify-center h-screen'>
@@ -17,22 +16,13 @@ export default async function ItemsPage() {
       );
     }
 
-    const { data: profilesData, error: usersError } = await supabase
-      .from("profiles")
-      .select("id, role")
-      .eq("id", userData.user?.id)
-      .single();
+    const adminAuthClient = supabase.auth.admin;
 
-    if (usersError) {
-      throw new Error("Error fetching user data: " + usersError.message);
-    }
-
-    // Check if user is authenticated admin
-    if (profilesData?.role !== "admin") {
+    if (!adminAuthClient) {
       return (
         <div className='flex items-center justify-center h-screen'>
           <p className='text-gray-500'>
-            You do not have permission to view this page.
+            You do not have permission to access this page.
           </p>
         </div>
       );

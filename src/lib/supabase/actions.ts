@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import type { Provider } from "@supabase/auth-js";
 import { createClient } from "@/lib/supabase/server";
 
@@ -18,11 +18,11 @@ export async function login(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword(data);
 
   if (error) {
-    redirect("/error");
+    redirect({ href: "/error", locale: "en" });
   }
 
   revalidatePath("/", "layout");
-  redirect("/");
+  redirect({ href: "/", locale: "en" });
 }
 
 export async function signup(formData: FormData) {
@@ -38,24 +38,24 @@ export async function signup(formData: FormData) {
   const { error } = await supabase.auth.signUp(data);
 
   if (error) {
-    redirect("/error");
+    redirect({ href: "/error", locale: "en" });
   }
 
   revalidatePath("/", "layout");
-  redirect("/");
+  redirect({ href: "/", locale: "en" });
 }
 
-export async function logout() {
+export async function logout({ locale }: { locale: string }) {
   const supabase = await createClient();
 
   const { error } = await supabase.auth.signOut();
 
   if (error) {
-    redirect("/error");
+    redirect({ href: "/error", locale });
   }
 
   revalidatePath("/", "layout");
-  redirect("/");
+  redirect({ href: "/", locale });
 }
 
 const getSiteUrl = () => {
@@ -73,9 +73,11 @@ const getSiteUrl = () => {
 export async function signInWithOAuth({
   provider,
   redirectTo = "/",
+  locale,
 }: {
   provider: Provider;
   redirectTo?: string;
+  locale: string;
 }) {
   const supabase = await createClient();
 
@@ -88,6 +90,6 @@ export async function signInWithOAuth({
     },
   });
 
-  if (error) redirect("/error");
-  if (data?.url) redirect(data.url);
+  if (error) redirect({ href: "/error", locale });
+  if (data?.url) redirect({ href: data.url, locale });
 }

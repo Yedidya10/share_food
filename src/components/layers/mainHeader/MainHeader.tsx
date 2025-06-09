@@ -6,11 +6,13 @@ import { ModeToggle } from "@/components/theme/ModeToggle";
 import AccountMenu from "@/components/accountMenu/AccountMenu";
 import PostItemForm from "@/components/postItemForm/PostItemForm";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { Link, usePathname } from "@/i18n/navigation";
 import ChatButton from "@/components/chatButton/ChatButton";
 import { useEffect, useState } from "react";
 
 export default function MainHeader() {
+  const pathname = usePathname();
+
   const [user, setUser] = useState<{
     user_metadata: { avatar_url?: string; full_name?: string };
   } | null>(null);
@@ -43,7 +45,7 @@ export default function MainHeader() {
   }, []);
 
   return (
-    <header className='flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 fixed top-0 left-0 right-0 z-50 h-20 bg-white dark:bg-gray-900 backdrop-blur-sm bg-opacity-50 dark:bg-opacity-50'>
+    <header className='flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 backdrop-blur-sm bg-opacity-50 dark:bg-opacity-50 h-[80px]'>
       <div></div>
       <div className='flex items-center justify-between gap-2'>
         {user && isUserConnected ? (
@@ -112,7 +114,10 @@ export default function MainHeader() {
           </>
         ) : (
           <Button variant='outline' className='h-10'>
-            <Link href='/login' className='flex items-center gap-2'>
+            <Link
+              href={`/login?redirect=${encodeURIComponent(pathname)}`}
+              className='flex items-center gap-2'
+            >
               {tLogin("login")}
             </Link>
           </Button>

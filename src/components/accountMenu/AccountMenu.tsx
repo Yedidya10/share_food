@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { createClient } from "@/lib/supabase/client";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { CiBoxList, CiLogout, CiSettings } from "react-icons/ci";
 import { RxAvatar } from "react-icons/rx";
 import { DirectionProvider } from "@radix-ui/react-direction";

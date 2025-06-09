@@ -5,7 +5,7 @@ import {
   subscribeUser,
   unsubscribeUser,
   sendNotification,
-} from "@/app/actions";
+} from "@/app/actions/webpush";
 import urlBase64ToUint8Array from "@/components/pwa/utils/urlBase64ToUint8Array";
 
 export default function PushNotificationManager() {

@@ -59,7 +59,7 @@ export default async function LocaleLayout({
         >
           <NextIntlClientProvider>
             <MainHeader />
-            <div className='pt-20' />
+            <div className='pt-[80px] m-0 ' />
             {children}
             {login}
             <FeedbackButton />

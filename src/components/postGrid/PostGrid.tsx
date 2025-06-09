@@ -17,7 +17,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import Link from "next/link";
+import {Link} from "@/i18n/navigation";
 import { FaWhatsapp } from "react-icons/fa";
 import { Button } from "../ui/button";
 import { Tooltip } from "../ui/tooltip";
@@ -74,7 +74,6 @@ export default function PostGrid({ items }: { items: Item[] }) {
                 last_name: user?.user_metadata?.full_name?.split(" ")[1] || "",
                 phone: user?.phone || "",
                 avatar_url: user?.user_metadata?.avatar_url || "",
-                // role: "new_user",
                 created_at: session?.user.created_at,
                 updated_at: session?.user.updated_at,
               },

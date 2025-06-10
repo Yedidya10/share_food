@@ -4,8 +4,9 @@
     "about": "לעבור לדף אודות"
   },
   "header": {
+    "title": "Share Food",
     "login": {
-      "welcome": "ברוך הבא, {name}!",
+      "welcome": "ברוך הבא, {name}",
       "connectWith": "התחבר עם {provider}",
       "login": "שלום אורח, התחבר",
       "logout": "התנתק",
@@ -13,8 +14,8 @@
     },
     "accountMenu": {
       "profile": "פרופיל",
-      "posts": "הפוסטים שלי",
-      "settings": "הגדרות"
+      "posts": "הפריטים שלי",
+      "settings": "הגדרות חשבון"
     }
   },
   "form": {
@@ -63,7 +64,7 @@
       "submitButton": "צור פוסט",
       "status": {
         "title": "סטטוס",
-        "pending": "בהמתנה",
+        "pending": "ממתין לאישור",
         "published": "פורסם",
         "archived": "ארכיון",
         "rejected": "נדחה"

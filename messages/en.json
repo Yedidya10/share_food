@@ -4,8 +4,9 @@
     "about": "Go to the about page"
   },
   "header": {
+    "title": "Share Food",
     "login": {
-      "welcome": "Welcome, {name}!",
+      "welcome": "Welcome, {name}",
       "connectWith": "Connect with {provider}",
       "login": "Hello there! Please log in",
       "logout": "Log out",
@@ -13,8 +14,8 @@
     },
     "accountMenu": {
       "profile": "Profile",
-      "posts": "Posts",
-      "settings": "Settings"
+      "posts": "My Items",
+      "settings": "Account Settings"
     }
   },
   "form": {
@@ -68,7 +69,7 @@
       "submitButton": "Create Post",
       "status": {
         "title": "Status",
-        "pending": "Pending",
+        "pending": "Pending Review",
         "published": "Published",
         "draft": "Draft",
         "rejected": "Rejected"

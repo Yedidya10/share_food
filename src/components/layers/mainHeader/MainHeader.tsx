@@ -2,13 +2,13 @@
 
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { ModeToggle } from "@/components/theme/ModeToggle";
 import AccountMenu from "@/components/accountMenu/AccountMenu";
 import PostItemForm from "@/components/postItemForm/PostItemForm";
 import { Button } from "@/components/ui/button";
 import { Link, usePathname } from "@/i18n/navigation";
 import ChatButton from "@/components/chatButton/ChatButton";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 export default function MainHeader() {
   const pathname = usePathname();
@@ -17,6 +17,7 @@ export default function MainHeader() {
     user_metadata: { avatar_url?: string; full_name?: string };
   } | null>(null);
   const [isUserConnected, setIsUserConnected] = useState(false);
+  const tHeader = useTranslations("header");
   const tLogin = useTranslations("header.login");
   const tAccountMenu = useTranslations("header.accountMenu");
   const tGenericForm = useTranslations("form.generic");
@@ -46,7 +47,18 @@ export default function MainHeader() {
 
   return (
     <header className='flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 backdrop-blur-sm bg-opacity-50 dark:bg-opacity-50 h-[80px]'>
-      <div></div>
+      <div className='flex items-center'>
+        <Image
+          src='/icon-192x192.png'
+          alt='Logo'
+          width={40}
+          height={40}
+          className='h-10 w-10 rounded-full'
+        />
+        <Link href='/' className='ml-2 text-lg font-semibold'>
+          {tHeader("title")}
+        </Link>
+      </div>
       <div className='flex items-center justify-between gap-2'>
         {user && isUserConnected ? (
           <>
@@ -101,9 +113,10 @@ export default function MainHeader() {
             <AccountMenu
               user={user}
               setUser={setUser}
+              userName={user.user_metadata.full_name?.split(" ")[0] || "User"}
               translation={{
                 welcome: tLogin("welcome", {
-                  name: user.user_metadata.full_name || "User",
+                  name: user.user_metadata.full_name?.split(" ")[0] || "User",
                 }),
                 logout: tLogin("logout"),
                 profile: tAccountMenu("profile"),
@@ -122,7 +135,6 @@ export default function MainHeader() {
             </Link>
           </Button>
         )}
-        <ModeToggle />
       </div>
     </header>
   );

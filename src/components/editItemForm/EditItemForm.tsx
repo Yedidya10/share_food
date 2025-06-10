@@ -23,7 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EditItemButton from "@/components/editItemButton/EditItemButton";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
@@ -41,7 +41,7 @@ export default function EditItemForm({
   initialValues: {
     title?: string;
     description?: string;
-    images?: File[];
+    images?: File[] | string[];
     streetName?: string;
     streetNumber?: string;
     city?: string;
@@ -101,6 +101,38 @@ export default function EditItemForm({
   const supabase = createClient();
   const [openModal, setOpenModal] = useState(false);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
+  useEffect(() => {
+    // Clear preview URLs when the modal opens
+    if (openModal) {
+      setPreviewUrls(
+        Array.isArray(initialValues.images)
+          ? typeof initialValues.images[0] === "string"
+            ? (initialValues.images as string[])
+            : (initialValues.images as File[]).map((file) =>
+                URL.createObjectURL(file)
+              )
+          : []
+      );
+
+      setSelectedFiles(
+        Array.isArray(initialValues.images) &&
+          initialValues.images.length > 0 &&
+          initialValues.images[0] instanceof File
+          ? (initialValues.images as File[])
+          : []
+      );
+    }
+  }, [openModal, initialValues.images]);
+
+  useEffect(() => {
+    // Clear preview URLs when the modal closes
+    if (!openModal) {
+      setPreviewUrls([]);
+      setSelectedFiles([]);
+    }
+  }, [openModal]);
 
   const formSchema = z.object({
     title: z
@@ -190,14 +222,19 @@ export default function EditItemForm({
     defaultValues: {
       title: initialValues.title || "",
       description: initialValues.description || "",
-      images: initialValues.images || [],
+      images:
+        Array.isArray(initialValues.images) &&
+        initialValues.images.length > 0 &&
+        initialValues.images[0] instanceof File
+          ? (initialValues.images as File[])
+          : [],
       streetName: initialValues.streetName || "",
       streetNumber: initialValues.streetNumber || "",
       city: initialValues.city || "",
       country: initialValues.country,
       postalCode: initialValues.postalCode || "",
-      contactByPhone: initialValues.contactByPhone || false,
-      contactByEmail: initialValues.contactByEmail || false,
+      contactByPhone: initialValues.phoneNumber ? true : false,
+      contactByEmail: initialValues.email ? true : false,
       phoneNumber: initialValues.phoneNumber || "",
       isHaveWhatsApp: initialValues.isHaveWhatsApp || false,
       email: initialValues.email || "",
@@ -220,7 +257,7 @@ export default function EditItemForm({
         .replace(/\s+/g, "_");
     }
 
-    const files: File[] = values.images || [];
+    const files: File[] = selectedFiles;
     const uploadedUrls: string[] = [];
 
     for (const file of files) {
@@ -270,6 +307,7 @@ export default function EditItemForm({
     if (insertError) {
       console.error("Insert error:", insertError.message);
     } else {
+      //TODO: Handle successful submission
       // אפשר לנקות את הטופס או להעביר דף
       // form.reset();
       // setPreviewUrls([]); // Clear preview URLs after successful submission
@@ -296,6 +334,8 @@ export default function EditItemForm({
                     <FormControl>
                       <Input
                         placeholder={translation.titlePlaceholder}
+                        type='text'
+                        autoComplete='off'
                         {...field}
                       />
                     </FormControl>
@@ -312,6 +352,8 @@ export default function EditItemForm({
                     <FormControl>
                       <Input
                         placeholder={translation.descriptionPlaceholder}
+                        type='text'
+                        autoComplete='off'
                         {...field}
                       />
                     </FormControl>
@@ -327,7 +369,21 @@ export default function EditItemForm({
                 name='images'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{translation.uploadImages}</FormLabel>
+                    <FormLabel>
+                      <Button
+                        type='button'
+                        variant='outline'
+                        className='w-full h-10'
+                        onClick={() => {
+                          const fileInput = document.querySelector(
+                            'input[type="file"]'
+                          ) as HTMLInputElement;
+                          fileInput.click();
+                        }}
+                      >
+                        {translation.uploadImages}
+                      </Button>
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type='file'
@@ -335,13 +391,21 @@ export default function EditItemForm({
                         multiple
                         onChange={(e) => {
                           const files = e.target.files;
-                          if (!files) return;
+                          if (!files || files.length === 0) return;
 
-                          const fileArray = Array.from(files);
-                          field.onChange(fileArray);
-                          setPreviewUrls(
-                            fileArray.map((file) => URL.createObjectURL(file))
-                          );
+                          const newFiles = Array.from(files);
+
+                          const updatedFiles = [...selectedFiles, ...newFiles];
+                          const updatedPreviews = [
+                            ...previewUrls,
+                            ...newFiles.map((file) =>
+                              URL.createObjectURL(file)
+                            ),
+                          ];
+
+                          setSelectedFiles(updatedFiles);
+                          setPreviewUrls(updatedPreviews);
+                          field.onChange(updatedFiles);
                         }}
                       />
                     </FormControl>
@@ -352,14 +416,31 @@ export default function EditItemForm({
                     {previewUrls.length > 0 && (
                       <div className='grid grid-cols-3 gap-2 mt-4'>
                         {previewUrls.map((url, idx) => (
-                          <Image
-                            key={idx}
-                            src={url}
-                            alt={`preview-${idx}`}
-                            width={100}
-                            height={100}
-                            className='rounded-md object-cover h-24 w-full'
-                          />
+                          <div key={idx} className='relative group'>
+                            <Image
+                              src={url}
+                              alt={`preview-${idx}`}
+                              width={100}
+                              height={100}
+                              className='rounded-md object-cover h-24 w-full'
+                            />
+                            <button
+                              type='button'
+                              onClick={() => {
+                                const newPreviews = [...previewUrls];
+                                const newFiles = [...selectedFiles];
+                                newPreviews.splice(idx, 1);
+                                newFiles.splice(idx, 1);
+
+                                setPreviewUrls(newPreviews);
+                                setSelectedFiles(newFiles);
+                                field.onChange(newFiles);
+                              }}
+                              className='absolute top-1 right-1 bg-black bg-opacity-50 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition'
+                            >
+                              ✕
+                            </button>
+                          </div>
                         ))}
                       </div>
                     )}
@@ -381,6 +462,8 @@ export default function EditItemForm({
                         <FormControl>
                           <Input
                             placeholder={translation.streetNamePlaceholder}
+                            inputMode='text'
+                            autoComplete='true'
                             {...field}
                           />
                         </FormControl>
@@ -397,6 +480,8 @@ export default function EditItemForm({
                         <FormControl>
                           <Input
                             placeholder={translation.streetNumberPlaceholder}
+                            inputMode='numeric'
+                            autoComplete='true'
                             {...field}
                           />
                         </FormControl>
@@ -415,6 +500,8 @@ export default function EditItemForm({
                         <FormControl>
                           <Input
                             placeholder={translation.cityPlaceholder}
+                            inputMode='text'
+                            autoComplete='true'
                             {...field}
                           />
                         </FormControl>
@@ -448,6 +535,8 @@ export default function EditItemForm({
                         <FormControl>
                           <Input
                             placeholder={translation.postalCodePlaceholder}
+                            inputMode='numeric'
+                            autoComplete='true'
                             {...field}
                           />
                         </FormControl>
@@ -484,14 +573,16 @@ export default function EditItemForm({
                 <FormField
                   control={form.control}
                   name='contactByPhone'
-                  render={({ field }) => (
+                  render={({ field: contactByPhoneField }) => (
                     <div className='rounded-lg border px-4 py-3 space-y-3'>
                       <div className='flex items-center gap-3'>
                         <Checkbox
                           className='h-5 w-5'
-                          checked={field.value}
+                          checked={contactByPhoneField.value}
                           id='contactByPhone'
-                          onCheckedChange={(checked) => field.onChange(checked)}
+                          onCheckedChange={(checked) =>
+                            contactByPhoneField.onChange(checked)
+                          }
                         />
                         <FormLabel
                           className='m-0 font-medium'
@@ -500,9 +591,10 @@ export default function EditItemForm({
                           {translation.phoneNumber}
                         </FormLabel>
                       </div>
-                      {field.value && (
+                      {contactByPhoneField.value && (
                         <FormField
                           control={form.control}
+                          disabled={!contactByPhoneField.value}
                           name='phoneNumber'
                           render={({ field }) => (
                             <FormItem dir='ltr' className='w-full max-w-xs'>
@@ -512,9 +604,12 @@ export default function EditItemForm({
                               <FormControl>
                                 <PhoneInput
                                   value={field.value}
+                                  required={contactByPhoneField.value}
                                   placeholder={
                                     translation.phoneNumberPlaceholder
                                   }
+                                  inputMode='tel'
+                                  autoComplete='tel'
                                   onChange={field.onChange}
                                 />
                               </FormControl>
@@ -531,14 +626,16 @@ export default function EditItemForm({
                 <FormField
                   control={form.control}
                   name='contactByEmail'
-                  render={({ field }) => (
+                  render={({ field: contactByEmailField }) => (
                     <div className='rounded-lg border px-4 py-3 space-y-3'>
                       <div className='flex items-center gap-3'>
                         <Checkbox
                           className='h-5 w-5'
-                          checked={field.value}
+                          checked={contactByEmailField.value}
                           id='contactByEmail'
-                          onCheckedChange={(checked) => field.onChange(checked)}
+                          onCheckedChange={(checked) =>
+                            contactByEmailField.onChange(checked)
+                          }
                         />
                         <FormLabel
                           className='m-0 font-medium'
@@ -547,9 +644,10 @@ export default function EditItemForm({
                           {translation.email}
                         </FormLabel>
                       </div>
-                      {field.value && (
+                      {contactByEmailField.value && (
                         <FormField
                           control={form.control}
+                          disabled={!contactByEmailField.value}
                           name='email'
                           render={({ field }) => (
                             <FormItem className='w-full max-w-xs'>
@@ -557,6 +655,10 @@ export default function EditItemForm({
                               <FormControl>
                                 <Input
                                   placeholder={translation.emailPlaceholder}
+                                  type='email'
+                                  inputMode='email'
+                                  autoComplete='email'
+                                  required={contactByEmailField.value}
                                   {...field}
                                 />
                               </FormControl>
@@ -575,7 +677,16 @@ export default function EditItemForm({
                     {translation.cancel}
                   </Button>
                 </DialogClose>
-                <Button type='submit'>{translation.submitButton}</Button>
+                <Button
+                  type='submit'
+                  disabled={
+                    !form.formState.isValid ||
+                    form.formState.isSubmitting ||
+                    form.formState.disabled
+                  }
+                >
+                  {translation.submitButton}
+                </Button>
               </DialogFooter>
             </form>
           </Form>

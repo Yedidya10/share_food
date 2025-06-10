@@ -6,7 +6,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { MessageCircle } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Button } from "../ui/button";
 
 export default function ChatButton() {

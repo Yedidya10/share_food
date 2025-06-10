@@ -2,9 +2,10 @@
 
 import { useEffect, useState, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import dayjs from "dayjs";
 import Image from "next/image";
+import getPartnerNames from "@/app/actions/db/getPartnerNames";
 
 type Message = {
   id: string;
@@ -87,18 +88,13 @@ export default function InboxClient({ userId }: { userId: string }) {
 
       if (partnerIds.length === 0) return;
 
-      const { data: profilesData } = await supabase
-        .from("profilesData")
-        .select("id, full_name")
-        .in("id", partnerIds);
-
-      if (!profilesData) return;
-
-      const map: Record<string, string> = {};
-      profilesData.forEach((u) => {
-        map[u.id] = u.full_name;
-      });
-      setPartnerNames(map);
+      const fetchPartnerNames = async (ids: string[]) => {
+        const partners = await getPartnerNames(ids);
+        if (!partners) return {};
+        return partners;
+      };
+      const partners = await fetchPartnerNames(partnerIds);
+      setPartnerNames(partners);
     };
 
     const loadPartnerAvatars = async () => {

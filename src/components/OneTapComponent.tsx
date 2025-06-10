@@ -2,7 +2,7 @@
 
 import Script from "next/script";
 import { createClient } from "@/lib/supabase/client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function OneTapComponent() {
   const supabase = createClient();
@@ -23,8 +23,11 @@ export default function OneTapComponent() {
     return [nonce, hashedNonce];
   };
 
+  const initializedRef = useRef(false);
+
   useEffect(() => {
-    if (!scriptLoaded) return;
+    if (!scriptLoaded || initializedRef.current) return;
+    initializedRef.current = true;
 
     const initializeGoogleOneTap = async () => {
       const [nonce, hashedNonce] = await generateNonce();
@@ -66,7 +69,9 @@ export default function OneTapComponent() {
           }
         },
         nonce: hashedNonce,
-        use_fedcm_for_prompt: true,
+        // use_fedcm_for_prompt: true, // Uncomment if you want to use FedCM
+        auto_select: true, // Automatically select the account if available
+        cancel_on_tap_outside: true, // Allow tapping outside to close the prompt
       });
 
       window.google.accounts.id.prompt();

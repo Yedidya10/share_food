@@ -26,7 +26,7 @@ import {
 import { useState } from "react";
 import PostItemButton from "../postItemButton/PostItemButton";
 import Image from "next/image";
-import { createClient } from "@/lib/supabase/client";
+// import { createClient } from "@/lib/supabase/client";
 import { Separator } from "../ui/separator";
 import PhoneInput from "@/components/phoneInput/PhoneInput";
 import { useLocale } from "next-intl";
@@ -80,9 +80,10 @@ export default function PostItemForm({
   };
 }) {
   const locale = useLocale();
-  const supabase = createClient();
+  // const supabase = createClient();
   const [openModal, setOpenModal] = useState(false);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   const formSchema = z.object({
     title: z
@@ -180,84 +181,87 @@ export default function PostItemForm({
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      const { data: userData, error: userError } =
-        await supabase.auth.getUser();
+    console.log("Form submitted with values:", values);
+    console.log("Images selected:", values.images);
+    console.log("Selected files:", selectedFiles);
+    // try {
+    //   const { data: userData, error: userError } =
+    //     await supabase.auth.getUser();
 
-      console.log("values data:", values);
+    //   console.log("values data:", values);
 
-      if (userError) {
-        console.error("Session error:", JSON.stringify(userError, null, 2));
-        return;
-      }
+    //   if (userError) {
+    //     console.error("Session error:", JSON.stringify(userError, null, 2));
+    //     return;
+    //   }
 
-      const userId = userData?.user?.id;
+    //   const userId = userData?.user?.id;
 
-      function sanitizeFileName(fileName: string) {
-        return fileName
-          .replace(/[\u200B-\u200F\u202A-\u202E]/g, "")
-          .replace(/\s+/g, "_");
-      }
+    //   function sanitizeFileName(fileName: string) {
+    //     return fileName
+    //       .replace(/[\u200B-\u200F\u202A-\u202E]/g, "")
+    //       .replace(/\s+/g, "_");
+    //   }
 
-      const files: File[] = values.images || [];
-      const uploadedUrls: string[] = [];
+    //   const files: File[] = selectedFiles;
+    //   const uploadedUrls: string[] = [];
 
-      for (const file of files) {
-        const cleanName = sanitizeFileName(file.name);
-        const filePath = `public/${cleanName}`;
+    //   for (const file of files) {
+    //     const cleanName = sanitizeFileName(file.name);
+    //     const filePath = `public/${cleanName}`;
 
-        const { data, error } = await supabase.storage
-          .from("share-food-images")
-          .upload(filePath, file);
+    //     const { data, error } = await supabase.storage
+    //       .from("share-food-images")
+    //       .upload(filePath, file);
 
-        if (error) {
-          console.error("Upload error:", error.message);
-        } else {
-          console.log("File uploaded successfully:", data);
-          const { data: publicUrl } = supabase.storage
-            .from("share-food-images")
-            .getPublicUrl(filePath);
+    //     if (error) {
+    //       console.error("Upload error:", error.message);
+    //     } else {
+    //       console.log("File uploaded successfully:", data);
+    //       const { data: publicUrl } = supabase.storage
+    //         .from("share-food-images")
+    //         .getPublicUrl(filePath);
 
-          console.log("Public URL:", publicUrl);
+    //       console.log("Public URL:", publicUrl);
 
-          if (publicUrl?.publicUrl) {
-            uploadedUrls.push(publicUrl.publicUrl);
-          }
-        }
-      }
+    //       if (publicUrl?.publicUrl) {
+    //         uploadedUrls.push(publicUrl.publicUrl);
+    //       }
+    //     }
+    //   }
 
-      const { error: insertError } = await supabase.from("items").insert([
-        {
-          title: values.title,
-          description: values.description,
-          images: uploadedUrls,
-          street_name: values.streetName,
-          street_number: values.streetNumber,
-          city: values.city,
-          country: values.country,
-          postal_code: values.postalCode,
-          full_name: userData?.user?.user_metadata?.full_name || null,
-          phone_number: values.phoneNumber || null,
-          is_have_whatsapp: values.isHaveWhatsApp ?? false,
-          email: values.email || null,
-          status: "pending", // Default status
-          user_id: userId,
-        },
-      ]);
+    //   const { error: insertError } = await supabase.from("items").insert([
+    //     {
+    //       title: values.title,
+    //       description: values.description,
+    //       images: uploadedUrls,
+    //       street_name: values.streetName,
+    //       street_number: values.streetNumber,
+    //       city: values.city,
+    //       country: values.country,
+    //       postal_code: values.postalCode,
+    //       full_name: userData?.user?.user_metadata?.full_name || null,
+    //       phone_number: values.phoneNumber || null,
+    //       is_have_whatsapp: values.isHaveWhatsApp ?? false,
+    //       email: values.email || null,
+    //       status: "pending", // Default status
+    //       user_id: userId,
+    //     },
+    //   ]);
 
-      if (insertError) {
-        form.setError("root", {
-          type: "manual",
-          message: "Failed to submit the form. Please try again.",
-        });
-        throw new Error(`Insert error: ${insertError.message}`);
-      } else {
-        form.reset();
-        setPreviewUrls([]); // Clear preview URLs after successful submission
-      }
-    } catch (error) {
-      console.error(error);
-    }
+    //   if (insertError) {
+    //     form.setError("root", {
+    //       type: "manual",
+    //       message: "Failed to submit the form. Please try again.",
+    //     });
+    //     throw new Error(`Insert error: ${insertError.message}`);
+    //   } else {
+    //     form.reset();
+    //     setPreviewUrls([]); // Clear preview URLs after successful submission
+    //   }
+    // } catch (error) {
+    //   console.error(error);
+    // }
   }
 
   return (
@@ -280,6 +284,8 @@ export default function PostItemForm({
                     <FormControl>
                       <Input
                         placeholder={translation.titlePlaceholder}
+                        inputMode='text'
+                        autoComplete='off'
                         {...field}
                       />
                     </FormControl>
@@ -296,6 +302,8 @@ export default function PostItemForm({
                     <FormControl>
                       <Input
                         placeholder={translation.descriptionPlaceholder}
+                        inputMode='text'
+                        autoComplete='off'
                         {...field}
                       />
                     </FormControl>
@@ -311,21 +319,44 @@ export default function PostItemForm({
                 name='images'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{translation.uploadImages}</FormLabel>
+                    <FormLabel>
+                      <Button
+                        type='button'
+                        variant='outline'
+                        className='w-full h-10'
+                        onClick={() => {
+                          const fileInput = document.querySelector(
+                            'input[type="file"]'
+                          ) as HTMLInputElement;
+                          fileInput.click();
+                        }}
+                      >
+                        {translation.uploadImages}
+                      </Button>
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type='file'
                         accept='image/*'
                         multiple
+                        className='hidden'
                         onChange={(e) => {
                           const files = e.target.files;
-                          if (!files) return;
+                          if (!files || files.length === 0) return;
 
-                          const fileArray = Array.from(files);
-                          field.onChange(fileArray);
-                          setPreviewUrls(
-                            fileArray.map((file) => URL.createObjectURL(file))
-                          );
+                          const newFiles = Array.from(files);
+
+                          const updatedFiles = [...selectedFiles, ...newFiles];
+                          const updatedPreviews = [
+                            ...previewUrls,
+                            ...newFiles.map((file) =>
+                              URL.createObjectURL(file)
+                            ),
+                          ];
+
+                          setSelectedFiles(updatedFiles);
+                          setPreviewUrls(updatedPreviews);
+                          field.onChange(updatedFiles);
                         }}
                       />
                     </FormControl>
@@ -336,14 +367,30 @@ export default function PostItemForm({
                     {previewUrls.length > 0 && (
                       <div className='grid grid-cols-3 gap-2 mt-4'>
                         {previewUrls.map((url, idx) => (
-                          <Image
-                            key={idx}
-                            src={url}
-                            alt={`preview-${idx}`}
-                            width={100}
-                            height={100}
-                            className='rounded-md object-cover h-24 w-full'
-                          />
+                          <div key={idx} className='relative group'>
+                            <Image
+                              src={url}
+                              alt={`preview-${idx}`}
+                              width={100}
+                              height={100}
+                              className='rounded-md object-cover h-24 w-full'
+                            />
+                            <button
+                              type='button'
+                              onClick={() => {
+                                const newPreviews = [...previewUrls];
+                                const newFiles = [...selectedFiles];
+                                newPreviews.splice(idx, 1);
+                                newFiles.splice(idx, 1);
+                                setPreviewUrls(newPreviews);
+                                setSelectedFiles(newFiles);
+                                field.onChange(newFiles);
+                              }}
+                              className='absolute top-1 right-1 bg-black bg-opacity-50 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition'
+                            >
+                              ✕
+                            </button>
+                          </div>
                         ))}
                       </div>
                     )}
@@ -489,6 +536,7 @@ export default function PostItemForm({
                       {contactByPhoneField.value && (
                         <FormField
                           control={form.control}
+                          disabled={!contactByPhoneField.value}
                           name='phoneNumber'
                           render={({ field: phoneNumberField }) => (
                             <FormItem dir='ltr' className='w-full max-w-xs'>
@@ -498,11 +546,18 @@ export default function PostItemForm({
                               <FormControl>
                                 <PhoneInput
                                   // if contactByPhone is true, then the phone input is required
+                                  {...phoneNumberField}
                                   required={contactByPhoneField.value}
-                                  value={phoneNumberField.value}
+                                  value={
+                                    contactByPhoneField.value
+                                      ? phoneNumberField.value
+                                      : ""
+                                  }
                                   placeholder={
                                     translation.phoneNumberPlaceholder
                                   }
+                                  inputMode='tel'
+                                  autoComplete='tel'
                                   onChange={phoneNumberField.onChange}
                                 />
                               </FormControl>
@@ -540,16 +595,25 @@ export default function PostItemForm({
                       {contactByEmailField.value && (
                         <FormField
                           control={form.control}
+                          disabled={!contactByEmailField.value}
                           name='email'
                           render={({ field: emailField }) => (
                             <FormItem className='w-full max-w-xs'>
                               <FormLabel>{translation.email}</FormLabel>
                               <FormControl>
                                 <Input
+                                  dir={locale === "he" ? "rtl" : "ltr"}
+                                  {...emailField}
                                   type='email'
                                   required={contactByEmailField.value}
+                                  value={
+                                    contactByEmailField.value
+                                      ? emailField.value
+                                      : ""
+                                  }
+                                  inputMode='email'
+                                  autoComplete='email'
                                   placeholder={translation.emailPlaceholder}
-                                  {...emailField}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -567,7 +631,9 @@ export default function PostItemForm({
                     {translation.cancel}
                   </Button>
                 </DialogClose>
-                <Button type='submit'>{translation.submitButton}</Button>
+                <Button type='submit' disabled={!form.formState.isValid || form.formState.isSubmitting || form.formState.disabled}>
+                  {translation.submitButton}
+                </Button>
               </DialogFooter>
             </form>
           </Form>

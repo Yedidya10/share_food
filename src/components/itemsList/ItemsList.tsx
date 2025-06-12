@@ -19,28 +19,11 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { dBitem } from "@/types/forms/item/item";
 import { useState } from "react";
 
-type itemsType = {
-  id: string;
-  title: string;
-  description: string;
-  images: File[];
-  street_name: string;
-  street_number: string;
-  city: string;
-  postal_code: string;
-  country: string;
-  phone_number: string;
-  is_have_whatsapp: boolean;
-  email: string;
-  status: "published" | "pending" | "draft";
-  user_id: string;
-  created_at: string;
-};
-
-export default function ItemsList({ items }: { items: itemsType[] }) {
-  const [itemsData, setItemsData] = useState<Array<itemsType>>(items);
+export default function ItemsList({ items }: { items: dBitem[] }) {
+  const [itemsData, setItemsData] = useState<Array<dBitem>>(items);
 
   const tPostItemForm = useTranslations("form.postItem");
   const tEditItemForm = useTranslations("form.editItem");
@@ -169,6 +152,8 @@ export default function ItemsList({ items }: { items: itemsType[] }) {
                 city: item.city,
                 postalCode: item.postal_code,
                 country: item.country,
+                contactByPhone: !!item.phone_number,
+                contactByEmail: !!item.email,
                 phoneNumber: item.phone_number,
                 email: item.email,
                 isHaveWhatsApp: item.is_have_whatsapp,

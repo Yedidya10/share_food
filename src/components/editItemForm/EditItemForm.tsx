@@ -4,16 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form } from "@/components/ui/form";
 import {
   Dialog,
   DialogClose,
@@ -25,12 +16,17 @@ import {
 } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 import EditItemButton from "@/components/editItemButton/EditItemButton";
-import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { Separator } from "../ui/separator";
-import PhoneInput from "@/components/phoneInput/PhoneInput";
-import { useLocale } from "next-intl";
-import { Checkbox } from "../ui/checkbox";
+import editItemSchema from "@/lib/zod/item/editItemSchema";
+import ItemBaseFormFields from "../forms/ItemBaseFormFields";
+import LocationFormFields from "../forms/LocationFormFields";
+import ContactFormFields from "../forms/ContactFormFields";
+import ImagesFormField from "../forms/ImagesFormField";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { editItemDefaultFormValues } from "../forms/utils/item/itemDefaultFormValues";
+import { InitialValues } from "@/types/forms/item/item";
+import { TranslationType } from "@/types/translation";
 
 export default function EditItemForm({
   itemId,
@@ -38,66 +34,9 @@ export default function EditItemForm({
   translation,
 }: {
   itemId: string;
-  initialValues: {
-    title?: string;
-    description?: string;
-    images?: File[] | string[];
-    streetName?: string;
-    streetNumber?: string;
-    city?: string;
-    country?: string;
-    postalCode?: string;
-    contactByPhone?: boolean;
-    contactByEmail?: boolean;
-    phoneNumber?: string;
-    isHaveWhatsApp?: boolean;
-    email?: string;
-  };
-  translation: {
-    formTitle: string;
-    formDescription: string;
-    title: string;
-    titlePlaceholder: string;
-    titleError: string;
-    description: string;
-    descriptionPlaceholder: string;
-    descriptionError: string;
-    uploadImages: string;
-    addressDetails: string;
-    streetName: string;
-    streetNamePlaceholder: string;
-    streetNameError: string;
-    streetNumber: string;
-    streetNumberPlaceholder: string;
-    streetNumberError: string;
-    city: string;
-    cityPlaceholder: string;
-    cityError: string;
-    country: string;
-    postalCode: string;
-    postalCodePlaceholder: string;
-    postalCodeError: string;
-    contactDetails: string;
-    contactViaSite: string;
-    phoneNumber: string;
-    phoneNumberPlaceholder: string;
-    phoneNumberError: string;
-    isHaveWhatsApp: string;
-    isHaveWhatsAppTip: string;
-    email: string;
-    emailPlaceholder: string;
-    emailError: string;
-    submitButton: string;
-    cancel: string;
-    required: string;
-    reset: string;
-    countries: {
-      israel: string;
-      usa: string;
-    };
-  };
+  initialValues: InitialValues;
+  translation: TranslationType;
 }) {
-  const locale = useLocale();
   const supabase = createClient();
   const [openModal, setOpenModal] = useState(false);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
@@ -106,23 +45,9 @@ export default function EditItemForm({
   useEffect(() => {
     // Clear preview URLs when the modal opens
     if (openModal) {
-      setPreviewUrls(
-        Array.isArray(initialValues.images)
-          ? typeof initialValues.images[0] === "string"
-            ? (initialValues.images as string[])
-            : (initialValues.images as File[]).map((file) =>
-                URL.createObjectURL(file)
-              )
-          : []
-      );
+      setPreviewUrls(initialValues.images as string[]);
 
-      setSelectedFiles(
-        Array.isArray(initialValues.images) &&
-          initialValues.images.length > 0 &&
-          initialValues.images[0] instanceof File
-          ? (initialValues.images as File[])
-          : []
-      );
+      setSelectedFiles([] as File[]);
     }
   }, [openModal, initialValues.images]);
 
@@ -134,111 +59,22 @@ export default function EditItemForm({
     }
   }, [openModal]);
 
-  const formSchema = z.object({
-    title: z
-      .string()
-      .min(5, {
-        message: translation.titleError,
-      })
-      .max(50, {
-        message: translation.titleError,
-      }),
-    description: z
-      .string()
-      .max(300, {
-        message: translation.descriptionError,
-      })
-      .min(20, {
-        message: translation.descriptionError,
-      }),
-    images: z.array(z.instanceof(File)).max(3, {
-      message: "You can upload a maximum of 3 images.",
-    }),
-    streetName: z
-      .string()
-      .max(50, {
-        message: translation.streetNameError,
-      })
-      .min(2, {
-        message: translation.streetNameError,
-      }),
-    streetNumber: z
-      .string()
-      .max(10, {
-        message: translation.streetNumberError,
-      })
-      .min(1, {
-        message: translation.streetNumberError,
-      }),
-    city: z
-      .string()
-      .max(10, {
-        message: translation.cityError,
-      })
-      .min(2, {
-        message: translation.cityError,
-      }),
-    country: z
-      .string()
-      .max(50, {
-        message: "Country must be at most 50 characters.",
-      })
-      .min(2, {
-        message: "Country must be at least 2 characters.",
-      }),
-    postalCode: z
-      .string()
-      .max(20, {
-        message: translation.postalCodeError,
-      })
-      .min(2, {
-        message: translation.postalCodeError,
-      }),
-    contactByPhone: z.boolean().optional(),
-    contactByEmail: z.boolean().optional(),
-    phoneNumber: z
-      .string()
-      .max(13, {
-        message: translation.phoneNumberError,
-      })
-      .min(13, {
-        message: translation.phoneNumberError,
-      })
-      .optional(),
-    isHaveWhatsApp: z.boolean().optional(),
-    email: z
-      .string()
-      .email({
-        message: translation.emailError,
-      })
-      .optional(),
+  // Define your form schema using Zod
+  const formSchema = editItemSchema({ translation, isValidPhoneNumber });
+  type EditItemFormSchema = z.infer<typeof formSchema>;
+
+  // Define default values for the form
+  const defaultValues = editItemDefaultFormValues({
+    translation,
+    initialValues,
   });
 
   // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
+  const editItemForm = useForm<EditItemFormSchema>({
     resolver: zodResolver(formSchema),
     mode: "onChange",
     reValidateMode: "onChange",
-    defaultValues: {
-      title: initialValues.title || "",
-      description: initialValues.description || "",
-      images:
-        Array.isArray(initialValues.images) &&
-        initialValues.images.length > 0 &&
-        initialValues.images[0] instanceof File
-          ? (initialValues.images as File[])
-          : [],
-      streetName: initialValues.streetName || "",
-      streetNumber: initialValues.streetNumber || "",
-      city: initialValues.city || "",
-      country: initialValues.country,
-      postalCode: initialValues.postalCode || "",
-      contactByPhone: initialValues.phoneNumber ? true : false,
-      contactByEmail: initialValues.email ? true : false,
-      phoneNumber: initialValues.phoneNumber || "",
-      isHaveWhatsApp: initialValues.isHaveWhatsApp || false,
-      email: initialValues.email || "",
-    },
+    defaultValues: defaultValues,
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -323,354 +159,35 @@ export default function EditItemForm({
             <DialogTitle>{translation.formTitle}</DialogTitle>
             <DialogDescription>{translation.formDescription}</DialogDescription>
           </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
-              <FormField
-                control={form.control}
-                name='title'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{translation.title}</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder={translation.titlePlaceholder}
-                        type='text'
-                        autoComplete='off'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+          <Form {...editItemForm}>
+            <form
+              onSubmit={editItemForm.handleSubmit(onSubmit)}
+              className='space-y-8'
+            >
+              <ItemBaseFormFields
+                form={editItemForm}
+                translation={translation}
               />
-              <FormField
-                control={form.control}
-                name='description'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{translation.description}</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder={translation.descriptionPlaceholder}
-                        type='text'
-                        autoComplete='off'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      A brief description of the item.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='images'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      <Button
-                        type='button'
-                        variant='outline'
-                        className='w-full h-10'
-                        onClick={() => {
-                          const fileInput = document.querySelector(
-                            'input[type="file"]'
-                          ) as HTMLInputElement;
-                          fileInput.click();
-                        }}
-                      >
-                        {translation.uploadImages}
-                      </Button>
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type='file'
-                        accept='image/*'
-                        multiple
-                        onChange={(e) => {
-                          const files = e.target.files;
-                          if (!files || files.length === 0) return;
-
-                          const newFiles = Array.from(files);
-
-                          const updatedFiles = [...selectedFiles, ...newFiles];
-                          const updatedPreviews = [
-                            ...previewUrls,
-                            ...newFiles.map((file) =>
-                              URL.createObjectURL(file)
-                            ),
-                          ];
-
-                          setSelectedFiles(updatedFiles);
-                          setPreviewUrls(updatedPreviews);
-                          field.onChange(updatedFiles);
-                        }}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Select one or more images to upload.
-                    </FormDescription>
-                    <FormMessage />
-                    {previewUrls.length > 0 && (
-                      <div className='grid grid-cols-3 gap-2 mt-4'>
-                        {previewUrls.map((url, idx) => (
-                          <div key={idx} className='relative group'>
-                            <Image
-                              src={url}
-                              alt={`preview-${idx}`}
-                              width={100}
-                              height={100}
-                              className='rounded-md object-cover h-24 w-full'
-                            />
-                            <button
-                              type='button'
-                              onClick={() => {
-                                const newPreviews = [...previewUrls];
-                                const newFiles = [...selectedFiles];
-                                newPreviews.splice(idx, 1);
-                                newFiles.splice(idx, 1);
-
-                                setPreviewUrls(newPreviews);
-                                setSelectedFiles(newFiles);
-                                field.onChange(newFiles);
-                              }}
-                              className='absolute top-1 right-1 bg-black bg-opacity-50 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition'
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </FormItem>
-                )}
+              <ImagesFormField
+                form={editItemForm}
+                translation={translation}
+                state={{
+                  previewUrls,
+                  setPreviewUrls,
+                  selectedFiles,
+                  setSelectedFiles,
+                }}
               />
               <Separator />
-              <div className='flex flex-col space-y-4'>
-                <h3 className='text-lg font-semibold'>
-                  {translation.addressDetails}
-                </h3>
-                <div className='flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0'>
-                  <FormField
-                    control={form.control}
-                    name='streetName'
-                    render={({ field }) => (
-                      <FormItem className='w-full'>
-                        <FormLabel>{translation.streetName}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder={translation.streetNamePlaceholder}
-                            inputMode='text'
-                            autoComplete='true'
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name='streetNumber'
-                    render={({ field }) => (
-                      <FormItem className='w-full'>
-                        <FormLabel>{translation.streetNumber}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder={translation.streetNumberPlaceholder}
-                            inputMode='numeric'
-                            autoComplete='true'
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className='flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0'>
-                  <FormField
-                    control={form.control}
-                    name='city'
-                    render={({ field }) => (
-                      <FormItem className='w-full'>
-                        <FormLabel>{translation.city}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder={translation.cityPlaceholder}
-                            inputMode='text'
-                            autoComplete='true'
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name='country'
-                    render={({ field }) => (
-                      <FormItem className='w-full'>
-                        <FormLabel>{translation.country}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder={translation.countries.israel}
-                            {...field}
-                            disabled
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name='postalCode'
-                    render={({ field }) => (
-                      <FormItem className='w-full'>
-                        <FormLabel>{translation.postalCode}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder={translation.postalCodePlaceholder}
-                            inputMode='numeric'
-                            autoComplete='true'
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
+              <LocationFormFields
+                form={editItemForm}
+                translation={translation}
+              />
               <Separator />
-              <div className='flex flex-col space-y-6'>
-                <h3 className='text-xl font-semibold'>
-                  {translation.contactDetails}
-                </h3>
-                <p className='text-sm text-muted-foreground'>
-                  בחר איך ניתן ליצור איתך קשר. אפשר לבחור יותר מאפשרות אחת.
-                </p>
-                <div className='rounded-lg border px-4 py-3 bg-muted/50 flex items-start gap-3'>
-                  <Checkbox
-                    defaultChecked
-                    disabled
-                    className='mt-1 h-5 w-5'
-                    id='contactViaSite'
-                  />
-                  <div>
-                    <FormLabel className='font-medium' htmlFor='contactViaSite'>
-                      {translation.contactViaSite}
-                    </FormLabel>
-                    <p className='text-xs text-muted-foreground'>
-                      האפשרות הזו תמיד זמינה באתר.
-                    </p>
-                  </div>
-                </div>
-                <FormField
-                  control={form.control}
-                  name='contactByPhone'
-                  render={({ field: contactByPhoneField }) => (
-                    <div className='rounded-lg border px-4 py-3 space-y-3'>
-                      <div className='flex items-center gap-3'>
-                        <Checkbox
-                          className='h-5 w-5'
-                          checked={contactByPhoneField.value}
-                          id='contactByPhone'
-                          onCheckedChange={(checked) =>
-                            contactByPhoneField.onChange(checked)
-                          }
-                        />
-                        <FormLabel
-                          className='m-0 font-medium'
-                          htmlFor='contactByPhone'
-                        >
-                          {translation.phoneNumber}
-                        </FormLabel>
-                      </div>
-                      {contactByPhoneField.value && (
-                        <FormField
-                          control={form.control}
-                          disabled={!contactByPhoneField.value}
-                          name='phoneNumber'
-                          render={({ field }) => (
-                            <FormItem dir='ltr' className='w-full max-w-xs'>
-                              <FormLabel dir={locale === "he" ? "rtl" : "ltr"}>
-                                {translation.phoneNumber}
-                              </FormLabel>
-                              <FormControl>
-                                <PhoneInput
-                                  value={field.value}
-                                  required={contactByPhoneField.value}
-                                  placeholder={
-                                    translation.phoneNumberPlaceholder
-                                  }
-                                  inputMode='tel'
-                                  autoComplete='tel'
-                                  onChange={field.onChange}
-                                />
-                              </FormControl>
-                              <FormMessage
-                                dir={locale === "he" ? "rtl" : "ltr"}
-                              />
-                            </FormItem>
-                          )}
-                        />
-                      )}
-                    </div>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name='contactByEmail'
-                  render={({ field: contactByEmailField }) => (
-                    <div className='rounded-lg border px-4 py-3 space-y-3'>
-                      <div className='flex items-center gap-3'>
-                        <Checkbox
-                          className='h-5 w-5'
-                          checked={contactByEmailField.value}
-                          id='contactByEmail'
-                          onCheckedChange={(checked) =>
-                            contactByEmailField.onChange(checked)
-                          }
-                        />
-                        <FormLabel
-                          className='m-0 font-medium'
-                          htmlFor='contactByEmail'
-                        >
-                          {translation.email}
-                        </FormLabel>
-                      </div>
-                      {contactByEmailField.value && (
-                        <FormField
-                          control={form.control}
-                          disabled={!contactByEmailField.value}
-                          name='email'
-                          render={({ field }) => (
-                            <FormItem className='w-full max-w-xs'>
-                              <FormLabel>{translation.email}</FormLabel>
-                              <FormControl>
-                                <Input
-                                  placeholder={translation.emailPlaceholder}
-                                  type='email'
-                                  inputMode='email'
-                                  autoComplete='email'
-                                  required={contactByEmailField.value}
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      )}
-                    </div>
-                  )}
-                />
-              </div>
+              <ContactFormFields
+                form={editItemForm}
+                translation={translation}
+              />
               <DialogFooter>
                 <DialogClose asChild>
                   <Button type='button' variant='outline'>
@@ -680,9 +197,9 @@ export default function EditItemForm({
                 <Button
                   type='submit'
                   disabled={
-                    !form.formState.isValid ||
-                    form.formState.isSubmitting ||
-                    form.formState.disabled
+                    !editItemForm.formState.isValid ||
+                    editItemForm.formState.isSubmitting ||
+                    editItemForm.formState.disabled
                   }
                 >
                   {translation.submitButton}

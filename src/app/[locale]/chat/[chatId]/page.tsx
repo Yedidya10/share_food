@@ -2,16 +2,16 @@ import ChatBox from "@/components/chatBox/ChatBox";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "@/i18n/navigation";
 
-export default async function ChatPage({
+export default async function ChatThread({
   params,
 }: {
   params: Promise<{
-    id: string;
+    chatId: string;
     locale: string;
   }>;
 }) {
   try {
-    const { id: conversationId, locale } = await params;
+    const { chatId: conversationId, locale } = await params;
     const supabase = await createClient();
     const { data: userData, error: userError } = await supabase.auth.getUser();
 
@@ -37,7 +37,7 @@ export default async function ChatPage({
     }
 
     return (
-      <div className='flex h-[calc(100vh-160px)]'>
+      <div className='flex h-[calc(100vh-80px)] overflow-hidden'>
         <div className='flex-1 flex flex-col bg-muted/40'>
           <div className='p-4 text-muted-foreground'>
             <ChatBox

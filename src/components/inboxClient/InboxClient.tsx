@@ -171,9 +171,7 @@ export default function InboxClient({ userId }: { userId: string }) {
   }
 
   return (
-    <div className='max-w-md mx-auto'>
-      <h2 className='text-xl font-semibold p-2'>השיחות שלי</h2>
-
+    <div className='mx-auto'>
       {conversations.length === 0 ? (
         <div className='flex flex-col items-center justify-center text-center text-muted-foreground py-24'>
           <div className='text-5xl mb-4'>💬</div>

@@ -17,10 +17,9 @@ export default async function ChatLayout({
 
   console.log("User ID:", userData.user.id);
 
-  
   return (
-    <div className='flex h-[calc(100vh-100px)]'>
-      <div className='w-[320px] border-r bg-background'>
+    <div className='flex md:flex-row flex-col h-[calc(100vh-100px)]'>
+      <div className='hidden md:block w-[25vw] min-w-[270px] border-r bg-background'>
         <InboxClient userId={userData.user.id} />
       </div>
       <div className='flex-1 bg-muted/40'>{children}</div>

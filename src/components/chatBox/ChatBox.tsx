@@ -3,10 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import dayjs from "dayjs";
-import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
+import { Checkbox } from "../ui/checkbox";
 import { Form, FormControl, FormField, FormItem } from "../ui/form";
 import { Button } from "../ui/button";
 import { useForm } from "react-hook-form";
+import { Label } from "../ui/label";
 
 type Message = {
   id: string;
@@ -26,6 +28,7 @@ export default function ChatBox({
   initialMessages: Message[];
 }) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [sendOnEnter, setSendOnEnter] = useState(true);
 
   const form = useForm({
     mode: "onChange",
@@ -131,11 +134,11 @@ export default function ChatBox({
   }
 
   return (
-    <div>
+    <div className='flex flex-col h-[calc(100vh-80px)] gap-4'>
       {messages.length > 0 && (
-        <div className='border p-4 h-[calc(100vh-200px)] overflow-y-auto'>
+        <div className='border mt-6 p-6 overflow-y-auto h-[calc(100vh-80px-60px)]'>
           {groupMessagesByDate().map((group, index) => (
-            <div key={index} className='flex flex-col items-center pl-2'>
+            <div key={index} className='flex flex-col items-center'>
               <div className='text-center text-xs text-gray-400 my-2'>
                 {group.date}
               </div>
@@ -159,28 +162,59 @@ export default function ChatBox({
           ))}
         </div>
       )}
-      <div className='flex space-x-2 pt-9'>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className='flex w-full space-x-2'
-          >
-            <FormField
-              control={form.control}
-              name='message'
-              render={({ field }) => (
-                <FormItem className='flex-1'>
-                  <FormControl>
-                    <Input {...field} placeholder='כתוב הודעה...' />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <Button type='submit' className='whitespace-nowrap'>
-              שלח
-            </Button>
-          </form>
-        </Form>
+      <div className='flex flex-col-reverse gap-2 flex-shrink-0 gap-2 min-h-[60px] max-h-[140px]'>
+        <div className='flex items-center space-x-2 h-[20px]'>
+          <Checkbox
+            id='sendOnEnter'
+            checked={sendOnEnter}
+            onCheckedChange={(checked) => setSendOnEnter(!!checked)}
+          />
+          <Label htmlFor='sendOnEnter' className='text-sm text-gray-600'>
+            שלח הודעה בלחיצת Enter
+          </Label>
+        </div>
+        <div className='flex space-x-2'>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className='flex w-full space-x-2 items-end'
+            >
+              <FormField
+                control={form.control}
+                name='message'
+                render={({ field }) => (
+                  <FormItem className='flex-1'>
+                    <FormControl>
+                      <Textarea
+                        rows={1}
+                        maxLength={1000}
+                        autoFocus
+                        autoComplete='off'
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            if (e.shiftKey) {
+                              return;
+                            }
+                            if (sendOnEnter) {
+                              e.preventDefault();
+                              form.handleSubmit(onSubmit)();
+                            }
+                          }
+                        }}
+                        className='resize-none max-h-[100px]'
+                        {...field}
+                        placeholder='כתוב הודעה...'
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <Button type='submit' className='whitespace-nowrap'>
+                שלח
+              </Button>
+            </form>
+          </Form>
+        </div>
       </div>
     </div>
   );

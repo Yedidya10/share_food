@@ -1,12 +1,11 @@
 "use client";
 
 import { useLocale, Locale } from "next-intl";
-import { usePathname, useRouter } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import {
   Moon,
   Sun,
   Shapes,
-  Globe,
   Settings,
   LogOut,
   CircleUserRound,
@@ -52,15 +51,15 @@ export default function AccountMenu({
     settings: string;
   };
 }) {
-  const pathname = usePathname();
+  // const pathname = usePathname();
   const router = useRouter();
   const [visibleWelcome, setVisibleWelcome] = useState(true);
   const { setTheme } = useTheme();
   const supabase = createClient();
 
-  function switchLang(newLocale: string) {
-    router.replace(pathname, { locale: newLocale });
-  }
+  // function switchLang(newLocale: string) {
+  //   router.replace(pathname, { locale: newLocale });
+  // }
 
   const locale = useLocale() as Locale;
   const dir = locale === "he" ? "rtl" : "ltr";
@@ -134,7 +133,7 @@ export default function AccountMenu({
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuSub>
+            {/* <DropdownMenuSub>
               <DropdownMenuSubTrigger className='flex items-center w-full gap-2'>
                 <Globe className='h-[1rem] w-[1rem] scale-100 transition-all' />
                 <span>שינוי שפה</span>
@@ -149,7 +148,7 @@ export default function AccountMenu({
                   </DropdownMenuItem>
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>
-            </DropdownMenuSub>
+            </DropdownMenuSub> */}
             <DropdownMenuSub>
               <DropdownMenuSubTrigger className='flex items-center gap-2'>
                 <Sun className='h-[1.2rem] w-[1rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0' />
@@ -159,13 +158,13 @@ export default function AccountMenu({
               <DropdownMenuPortal>
                 <DropdownMenuSubContent className='align-end'>
                   <DropdownMenuItem onClick={() => setTheme("light")}>
-                    Light
+                    בהיר
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setTheme("dark")}>
-                    Dark
+                    כהה
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setTheme("system")}>
-                    System
+                    מערכת
                   </DropdownMenuItem>
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>

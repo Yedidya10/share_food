@@ -17,7 +17,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import {Link} from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { FaWhatsapp } from "react-icons/fa";
 import { Button } from "../ui/button";
 import { Tooltip } from "../ui/tooltip";
@@ -50,6 +50,7 @@ type Item = {
 export default function PostGrid({ items }: { items: Item[] }) {
   const [userId, setUserId] = useState<string | null>(null);
   const [isLoadingUserId, setIsLoadingUserId] = useState(true);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -162,18 +163,18 @@ export default function PostGrid({ items }: { items: Item[] }) {
   }
 
   return (
-    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6 p-4'>
+    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 p-4'>
       {items.map(
         (item) =>
           item.user_id !== userId &&
           item.status === "published" && (
             <Card
               key={item.id}
-              className='rounded-2xl shadow-lg hover:shadow-xl transition-shadow p-0 overflow-hidden'
+              className='rounded-2xl shadow-lg hover:shadow-xl gap-3 transition-shadow p-0 overflow-hidden'
             >
               <div className='rounded-2xl overflow-hidden'>
                 <Carousel
-                  className='w-full max-w-xs m-auto p-0 rounded'
+                  className='w-full m-auto p-0 rounded'
                   opts={{
                     loop: true,
                   }}
@@ -209,15 +210,20 @@ export default function PostGrid({ items }: { items: Item[] }) {
                   />
                 </Carousel>
               </div>
-              <CardContent className='p-4 space-y-2'>
-                <h3 className='text-xl font-semibold'>{item.title}</h3>
+              <CardContent className='p-2 space-y-2'>
+                <h3
+                  className='text-xl font-semibold'
+                  onClick={() => setOpen(true)}
+                >
+                  {item.title}
+                </h3>
                 <p className='text-sm text-muted-foreground line-clamp-3'>
                   {item.description}
                 </p>
                 <p className='text-xs text-right text-muted-foreground'>
                   {new Date(item.created_at).toLocaleDateString()}
                 </p>
-                <Dialog>
+                <Dialog open={open} onOpenChange={setOpen}>
                   <DialogTrigger asChild>
                     <Button
                       variant='outline'

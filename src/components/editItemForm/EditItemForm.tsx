@@ -23,7 +23,6 @@ import ItemBaseFormFields from "../forms/ItemBaseFormFields";
 import LocationFormFields from "../forms/LocationFormFields";
 import ContactFormFields from "../forms/ContactFormFields";
 import ImagesFormField from "../forms/ImagesFormField";
-import { isValidPhoneNumber } from "react-phone-number-input";
 import { editItemDefaultFormValues } from "../forms/utils/item/itemDefaultFormValues";
 import { InitialValues } from "@/types/forms/item/item";
 import { TranslationType } from "@/types/translation";
@@ -60,7 +59,7 @@ export default function EditItemForm({
   }, [openModal]);
 
   // Define your form schema using Zod
-  const formSchema = editItemSchema({ translation, isValidPhoneNumber });
+  const formSchema = editItemSchema(translation);
   type EditItemFormSchema = z.infer<typeof formSchema>;
 
   // Define default values for the form

@@ -14,7 +14,7 @@
     },
     "accountMenu": {
       "profile": "Profile",
-      "posts": "My Items",
+      "myItems": "My Items",
       "settings": "Account Settings"
     }
   },

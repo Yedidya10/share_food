@@ -47,7 +47,7 @@ export default function AccountMenu({
     welcome: string;
     logout: string;
     profile: string;
-    posts: string;
+    myItems: string;
     settings: string;
   };
 }) {
@@ -119,7 +119,7 @@ export default function AccountMenu({
             >
               <div className='flex items-center w-full gap-2'>
                 <Shapes />
-                <span>{translation.posts}</span>
+                <span>{translation.myItems}</span>
               </div>
             </DropdownMenuItem>
             <DropdownMenuItem

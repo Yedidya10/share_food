@@ -124,7 +124,7 @@ export default function MainHeader() {
                 }),
                 logout: tLogin("logout"),
                 profile: tAccountMenu("profile"),
-                posts: tAccountMenu("posts"),
+                myItems: tAccountMenu("myItems"),
                 settings: tAccountMenu("settings"),
               }}
             />

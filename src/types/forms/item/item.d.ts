@@ -25,7 +25,7 @@ export type InitialValues = {
   postalCode?: string;
   contactByPhone: boolean;
   contactByEmail: boolean;
-  phoneNumber?: string
+  phoneNumber?: string;
   isHaveWhatsApp: boolean;
   email?: string;
 };

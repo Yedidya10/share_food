@@ -33,7 +33,7 @@ export default function MyItemsList({
     id: string;
     title: string;
     description: string;
-    images: File[];
+    images: string[];
     street_name: string;
     street_number: string;
     city: string;
@@ -217,18 +217,24 @@ export default function MyItemsList({
                   phoneNumber: item.phone_number,
                   email: item.email,
                   isHaveWhatsApp: item.is_have_whatsapp,
+                  contactByPhone: !!item.phone_number,
+                  contactByEmail: !!item.email,
                 }}
                 translation={{
                   formTitle: tEditItemForm("formTitle"),
                   formDescription: tEditItemForm("formDescription"),
                   title: tPostItemForm("title"),
                   titlePlaceholder: tPostItemForm("titlePlaceholder"),
-                  titleError: tPostItemForm("titleError"),
+                  titleRequired: tPostItemForm("titleRequired"),
+                  titleMaxLength: tPostItemForm("titleMaxLength"),
+                  titleMinLength: tPostItemForm("titleMinLength"),
                   description: tPostItemForm("description"),
                   descriptionPlaceholder: tPostItemForm(
                     "descriptionPlaceholder"
                   ),
-                  descriptionError: tPostItemForm("descriptionError"),
+                  descriptionRequired: tPostItemForm("descriptionRequired"),
+                  descriptionMaxLength: tPostItemForm("descriptionMaxLength"),
+                  descriptionMinLength: tPostItemForm("descriptionMinLength"),
                   uploadImages: tPostItemForm("uploadImages"),
                   addressDetails: tPostItemForm("addressDetails"),
                   streetName: tPostItemForm("streetName"),

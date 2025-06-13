@@ -1,5 +1,6 @@
 import { z } from "zod";
 import itemSchema from "./itemSchema";
+import { TranslationType } from "@/types/translation";
 
 export function editItemImagesSchema() {
   return z.object({
@@ -10,15 +11,6 @@ export function editItemImagesSchema() {
   });
 }
 
-export default function editItemSchema({
-  translation,
-  isValidPhoneNumber,
-}: {
-  translation: { phoneNumberError: string; emailError: string };
-  isValidPhoneNumber: (phone: string) => boolean;
-}) {
-  return z.intersection(
-    itemSchema({ translation, isValidPhoneNumber }),
-    editItemImagesSchema()
-  );
+export default function editItemSchema(translation: TranslationType) {
+  return z.intersection(itemSchema(translation), editItemImagesSchema());
 }

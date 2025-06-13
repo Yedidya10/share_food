@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/form";
 import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "../ui/textarea";
+import { Textarea } from "@/components/ui/textarea";
 import { TranslationType } from "@/types/translation";
 
 type ItemBaseFormFieldsProps<T extends FieldValues> = {

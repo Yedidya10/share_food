@@ -17,13 +17,13 @@ import {
 import { useEffect, useState } from "react";
 import EditItemButton from "@/components/editItemButton/EditItemButton";
 import { createClient } from "@/lib/supabase/client";
-import { Separator } from "../ui/separator";
+import { Separator } from "@/components/ui/separator";
 import editItemSchema from "@/lib/zod/item/editItemSchema";
-import ItemBaseFormFields from "../forms/ItemBaseFormFields";
-import LocationFormFields from "../forms/LocationFormFields";
-import ContactFormFields from "../forms/ContactFormFields";
-import ImagesFormField from "../forms/ImagesFormField";
-import { editItemDefaultFormValues } from "../forms/utils/item/itemDefaultFormValues";
+import ItemBaseFormFields from "@/components/forms/ItemBaseFormFields";
+import LocationFormFields from "@/components/forms/LocationFormFields";
+import ContactFormFields from "@/components/forms/ContactFormFields";
+import ImagesFormField from "@/components/forms/ImagesFormField";
+import { editItemDefaultFormValues } from "@/components/forms/utils/item/itemDefaultFormValues";
 import { InitialValues } from "@/types/forms/item/item";
 import { TranslationType } from "@/types/translation";
 

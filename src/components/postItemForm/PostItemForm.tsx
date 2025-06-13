@@ -15,15 +15,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useState } from "react";
-import PostItemButton from "../postItemButton/PostItemButton";
-import { Separator } from "../ui/separator";
+import PostItemButton from "@/components/postItemButton/PostItemButton";
+import { Separator } from "@/components/ui/separator";
 import { useLocale } from "next-intl";
 import postItemSchema from "@/lib/zod/item/postItemSchema";
 import { postItemDefaultFormValues } from "@/components/forms/utils/item/itemDefaultFormValues";
-import ContactFormFields from "../forms/ContactFormFields";
-import LocationFormFields from "../forms/LocationFormFields";
-import ImagesFormField from "../forms/ImagesFormField";
-import ItemBaseFormFields from "../forms/ItemBaseFormFields";
+import ContactFormFields from "@/components/forms/ContactFormFields";
+import LocationFormFields from "@/components/forms/LocationFormFields";
+import ImagesFormField from "@/components/forms/ImagesFormField";
+import ItemBaseFormFields from "@/components/forms/ItemBaseFormFields";
 import { TranslationType } from "@/types/translation";
 import onSubmit from "@/components/forms/utils/item/onSubmit";
 

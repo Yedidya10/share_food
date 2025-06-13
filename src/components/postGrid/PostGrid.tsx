@@ -19,12 +19,12 @@ import {
 } from "@/components/ui/carousel";
 import { Link } from "@/i18n/navigation";
 import { FaWhatsapp } from "react-icons/fa";
-import { Button } from "../ui/button";
-import { Tooltip } from "../ui/tooltip";
-import StartChatButton from "../startChatButton/StartChatButton";
+import { Button } from "@/components/ui/button";
+import { Tooltip } from "@/components/ui/tooltip";
+import StartChatButton from "@/components/startChatButton/StartChatButton";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import ItemsSkeleton from "../skeletons/itemsSkeleton/ItemsSkeleton";
+import ItemsSkeleton from "@/components/skeletons/itemsSkeleton/ItemsSkeleton";
 import { render } from "@react-email/render";
 import WelcomeEmail from "@/components/emailTemplates/welcomeEmail/WelcomeEmail";
 

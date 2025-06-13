@@ -4,7 +4,7 @@
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 

@@ -3,12 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import dayjs from "dayjs";
-import { Textarea } from "../ui/textarea";
-import { Checkbox } from "../ui/checkbox";
-import { Form, FormControl, FormField, FormItem } from "../ui/form";
-import { Button } from "../ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
-import { Label } from "../ui/label";
+import { Label } from "@/components/ui/label";
 
 type Message = {
   id: string;

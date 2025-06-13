@@ -1,4 +1,4 @@
-import ChatBox from "@/components/chatBox/ChatBox";
+import ChatBox from "@/components/chat/chatBox/ChatBox";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "@/i18n/navigation";
 

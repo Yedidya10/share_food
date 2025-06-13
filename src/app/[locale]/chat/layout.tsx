@@ -1,5 +1,5 @@
 // src/app/[locale]/chat/layout.tsx
-import InboxClient from "@/components/inboxClient/InboxClient";
+import InboxClient from "@/components/chat/inboxClient/InboxClient";
 import { createClient } from "@/lib/supabase/server";
 import { ReactNode } from "react";
 

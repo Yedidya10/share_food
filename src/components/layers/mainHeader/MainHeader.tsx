@@ -6,7 +6,7 @@ import AccountMenu from "@/components/accountMenu/AccountMenu";
 import PostItemForm from "@/components/postItemForm/PostItemForm";
 import { Button } from "@/components/ui/button";
 import { Link, usePathname } from "@/i18n/navigation";
-import ChatButton from "@/components/chatButton/ChatButton";
+import ChatButton from "@/components/chat/chatButton/ChatButton";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 

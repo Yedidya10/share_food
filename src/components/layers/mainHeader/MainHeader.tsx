@@ -115,9 +115,6 @@ export default function MainHeader() {
               }}
             />
             <AccountMenu
-              user={user}
-              setUser={setUser}
-              userName={user.user_metadata.full_name?.split(" ")[0] || "User"}
               translation={{
                 welcome: tLogin("welcome", {
                   name: user.user_metadata.full_name?.split(" ")[0] || "User",

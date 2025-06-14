@@ -32,17 +32,8 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export default function AccountMenu({
-  user,
-  userName,
   translation, // Translation function, if needed
 }: {
-  user: { user_metadata: { avatar_url?: string; full_name?: string } };
-  userName?: string;
-  setUser: React.Dispatch<
-    React.SetStateAction<{
-      user_metadata: { avatar_url?: string; full_name?: string };
-    } | null>
-  >;
   translation: {
     welcome: string;
     logout: string;
@@ -53,7 +44,10 @@ export default function AccountMenu({
 }) {
   // const pathname = usePathname();
   const router = useRouter();
-  const [visibleWelcome, setVisibleWelcome] = useState(true);
+  const [greetUser, setGreetUser] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
+  const [userAvatar, setUserAvatar] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { setTheme } = useTheme();
   const supabase = createClient();
 
@@ -65,12 +59,49 @@ export default function AccountMenu({
   const dir = locale === "he" ? "rtl" : "ltr";
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setVisibleWelcome(false);
-    }, 5000); // Hide after 5 seconds
+    const { data: authData } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN") {
+        setGreetUser(true);
+      }
+    });
 
-    return () => clearTimeout(timer);
-  }, []);
+    const timer = setTimeout(() => {
+      setGreetUser(false);
+    }, 5000);
+
+    supabase.auth.getUser().then(({ data: userData, error: userError }) => {
+      if (userError) {
+        console.error("Error fetching user data:", userError);
+        return;
+      }
+
+      if (userData?.user) {
+        setUserName(
+          userData.user.user_metadata.full_name.split(" ")[0] || null
+        );
+        setUserAvatar(userData.user.user_metadata.avatar_url || null);
+      }
+
+      supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userData?.user?.id)
+        .then(({ data: userRoles, error: errorRoles }) => {
+          if (errorRoles) {
+            throw new Error(errorRoles.message);
+          }
+
+          const isAdmin = userRoles?.some((role) => role.role === "admin");
+
+          setIsAdmin(isAdmin);
+        });
+    });
+
+    return () => {
+      authData?.subscription?.unsubscribe();
+      clearTimeout(timer);
+    };
+  }, [supabase]);
 
   return (
     <DirectionProvider dir={dir}>
@@ -83,18 +114,18 @@ export default function AccountMenu({
             <Avatar>
               <AvatarImage asChild>
                 <Image
-                  src={user.user_metadata.avatar_url!}
-                  alt={user.user_metadata.full_name!}
+                  src={userAvatar || "/default-avatar.png"}
+                  alt={userName || "User Avatar"}
                   width={32}
                   height={32}
                   className='rounded-full'
                 />
               </AvatarImage>
               <AvatarFallback>
-                {user.user_metadata.full_name?.charAt(0) || "U"}
+                {userName ? userName.charAt(0).toUpperCase() : "U"}
               </AvatarFallback>
             </Avatar>
-            {visibleWelcome ? (
+            {greetUser ? (
               <span className='transition-all duration-500 overflow-hidden whitespace-nowrap'>
                 {translation.welcome}
               </span>
@@ -106,6 +137,38 @@ export default function AccountMenu({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className='w-56' align='start'>
+          {isAdmin && (
+            <>
+              <DropdownMenuLabel>תפריט ניהול</DropdownMenuLabel>
+              <DropdownMenuGroup>
+                <DropdownMenuItem
+                  onClick={() => router.push("/admin-dashboard")}
+                >
+                  <div className='flex items-center w-full gap-2'>
+                    <Shapes />
+                    <span>לוח בקרה</span>
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => router.push("/admin-dashboard/users")}
+                >
+                  <div className='flex items-center w-full gap-2'>
+                    <CircleUserRound />
+                    <span>משתמשים</span>
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => router.push("/admin-dashboard/items")}
+                >
+                  <div className='flex items-center w-full gap-2'>
+                    <Shapes />
+                    <span>פריטים</span>
+                  </div>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+            </>
+          )}
           <DropdownMenuLabel>תפריט משתמש</DropdownMenuLabel>
           <DropdownMenuGroup>
             <DropdownMenuItem onClick={() => router.push("/dashboard/profile")}>
@@ -132,6 +195,7 @@ export default function AccountMenu({
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
+
           <DropdownMenuGroup>
             {/* <DropdownMenuSub>
               <DropdownMenuSubTrigger className='flex items-center w-full gap-2'>

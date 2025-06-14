@@ -24,6 +24,7 @@ import { useState } from "react";
 
 export default function ItemsList({ items }: { items: dBitem[] }) {
   const [itemsData, setItemsData] = useState<Array<dBitem>>(items);
+  const supabase = createClient();
 
   const tPostItemForm = useTranslations("form.postItem");
   const tEditItemForm = useTranslations("form.editItem");
@@ -31,8 +32,10 @@ export default function ItemsList({ items }: { items: dBitem[] }) {
   const tCountries = useTranslations("countries");
 
   const deleteItem = async (id: string) => {
-    const supabase = createClient();
-    const { error } = await supabase.from("items").delete().eq("id", id);
+    const { error } = await supabase
+      .from("items")
+      .update({ deleted_at: new Date().toISOString() })
+      .eq("id", id);
 
     if (error) {
       console.error("Error deleting item:", error);
@@ -42,6 +45,44 @@ export default function ItemsList({ items }: { items: dBitem[] }) {
     // Trigger a re-fetch of the items or update the state
     // This could be done by lifting the state up to a parent component
     setItemsData((prevItems) => prevItems.filter((item) => item.id !== id));
+  };
+
+  const publishItem = async (id: string) => {
+    const { error } = await supabase
+      .from("items")
+      .update({ status: "published" })
+      .eq("id", id);
+
+    if (error) {
+      console.error("Error publishing item:", error);
+      return;
+    }
+
+    // Update the state to reflect the change
+    setItemsData((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id ? { ...item, status: "published" } : item
+      )
+    );
+  };
+
+  const unPublishingItem = async (id: string) => {
+    const { error } = await supabase
+      .from("items")
+      .update({ status: "pending" })
+      .eq("id", id);
+
+    if (error) {
+      console.error("Error unPublishing item:", error);
+      return;
+    }
+
+    // Update the state to reflect the change
+    setItemsData((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id ? { ...item, status: "pending" } : item
+      )
+    );
   };
 
   return (
@@ -121,6 +162,7 @@ export default function ItemsList({ items }: { items: dBitem[] }) {
                     variant='outline'
                     size='icon'
                     className='flex items-center justify-center'
+                    onClick={() => publishItem(item.id)}
                   >
                     <BookCheck className='w-4 h-4' />
                   </Button>
@@ -134,6 +176,7 @@ export default function ItemsList({ items }: { items: dBitem[] }) {
                     variant='outline'
                     size='icon'
                     className='flex items-center justify-center'
+                    onClick={() => unPublishingItem(item.id)}
                   >
                     <BookDashed className='w-4 h-4' />
                   </Button>

@@ -50,7 +50,7 @@ type Item = {
 export default function PostGrid({ items }: { items: Item[] }) {
   const [userId, setUserId] = useState<string | null>(null);
   const [isLoadingUserId, setIsLoadingUserId] = useState(true);
-  const [open, setOpen] = useState(false);
+  const [openItemId, setOpenItemId] = useState<string | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -213,7 +213,7 @@ export default function PostGrid({ items }: { items: Item[] }) {
               <CardContent className='p-2 space-y-2'>
                 <h3
                   className='text-xl font-semibold'
-                  onClick={() => setOpen(true)}
+                  onClick={() => setOpenItemId(item.id)}
                 >
                   {item.title}
                 </h3>
@@ -223,17 +223,18 @@ export default function PostGrid({ items }: { items: Item[] }) {
                 <p className='text-xs text-right text-muted-foreground'>
                   {new Date(item.created_at).toLocaleDateString()}
                 </p>
-                <Dialog open={open} onOpenChange={setOpen}>
+                <Dialog
+                  open={openItemId === item.id}
+                  onOpenChange={(open) => {
+                    setOpenItemId(open ? item.id : null);
+                  }}
+                >
                   <DialogTrigger asChild>
                     <Button
                       variant='outline'
                       className='w-full mt-2'
-                      onClick={() => {
-                        const dialog = document.querySelector(
-                          `#dialog-${item.id}`
-                        ) as HTMLDialogElement;
-                        dialog?.showModal();
-                      }}
+                      onClick={() => setOpenItemId(item.id)}
+                      disabled={openItemId === item.id}
                     >
                       הצג פרטים
                     </Button>

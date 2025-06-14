@@ -18,7 +18,7 @@ export default async function MyItemsPage() {
 
   // Fetch user's items from the database
   const { data: items, error: itemsError } = await supabase
-    .from("items")
+    .from("active_items")
     .select("*")
     .eq("user_id", userData?.user?.id);
   if (itemsError) {

@@ -40,7 +40,7 @@ export default async function Home() {
   const supabase = await createClient();
 
   const { data: itemsData, error: itemsError } = await supabase
-    .from("items")
+    .from("active_items")
     .select("*")
     .order("created_at", { ascending: false });
 

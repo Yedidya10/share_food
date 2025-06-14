@@ -30,7 +30,7 @@ export default async function ItemsPage() {
 
     // Fetch user's items from the database
     const { data: items, error: itemsError } = await supabase
-      .from("items")
+      .from("active_items")
       .select("*");
     if (itemsError) {
       return (

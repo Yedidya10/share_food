@@ -107,7 +107,7 @@ export default function MyItemsList({
     const userId = userData.user.id;
     await supabas
       .from("items")
-      .delete()
+      .update({ deleted_at: new Date().toISOString() })
       .eq("id", id)
       .eq("user_id", userId)
       .then(({ error }) => {

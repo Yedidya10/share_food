@@ -24,7 +24,7 @@ import ImagesFormField from "@/components/forms/ImagesFormField";
 import { editItemDefaultFormValues } from "@/components/forms/utils/item/itemDefaultFormValues";
 import { InitialValues } from "@/types/forms/item/item";
 import { TranslationType } from "@/types/translation";
-import onEditItemFormSubmit from "@/components/forms/utils/item/onEditItemFormSubmit";
+import onEditItemFormSubmit from "@/components/forms/editItemForm/onEditItemFormSubmit";
 import { UnifiedImage } from "@/types/forms/item/unifiedImage";
 
 export default function EditItemForm({

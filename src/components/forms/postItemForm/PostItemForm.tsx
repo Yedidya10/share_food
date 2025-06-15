@@ -24,7 +24,7 @@ import LocationFormFields from "@/components/forms/LocationFormFields";
 import ImagesFormField from "@/components/forms/ImagesFormField";
 import ItemBaseFormFields from "@/components/forms/ItemBaseFormFields";
 import { TranslationType } from "@/types/translation";
-import onPostItemFormSubmit from "@/components/forms/utils/item/onPostItemFormSubmit";
+import onPostItemFormSubmit from "@/components/forms/postItemForm/onPostItemFormSubmit";
 import { UnifiedImage } from "@/types/forms/item/unifiedImage";
 
 export default function PostItemForm({

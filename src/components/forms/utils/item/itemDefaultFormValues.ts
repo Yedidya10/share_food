@@ -17,7 +17,7 @@ export function postItemDefaultFormValues(translation: {
     phoneNumber: "",
     isHaveWhatsApp: false,
     email: "",
-    images: [] as File[],
+    images: [],
   };
 }
 
@@ -36,12 +36,12 @@ export const editItemDefaultFormValues = ({
     streetNumber: initialValues.streetNumber,
     city: initialValues.city,
     country: initialValues.country,
-    postalCode: initialValues.postalCode,
-    contactByPhone: initialValues.contactByPhone,
-    contactByEmail: initialValues.contactByEmail,
-    phoneNumber: initialValues.phoneNumber,
-    isHaveWhatsApp: initialValues.isHaveWhatsApp,
-    email: initialValues.email,
-    images: initialValues.images,
+    postalCode: initialValues?.postalCode || "",
+    contactViaSite: true, // Default to true for contact via site
+    contactByPhone: initialValues.contactByPhone || false,
+    contactByEmail: initialValues.contactByEmail || false,
+    phoneNumber: initialValues?.phoneNumber || "",
+    isHaveWhatsApp: initialValues.isHaveWhatsApp || false,
+    email: initialValues?.email || "",
   };
 };

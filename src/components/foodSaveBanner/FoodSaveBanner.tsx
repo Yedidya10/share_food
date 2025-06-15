@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Link } from "@/i18n/navigation";
 
 export interface StatItem {
   label: string;
@@ -86,6 +87,18 @@ export function FoodStatsBanner({ stats }: FoodStatsBannerProps) {
             </div>
           </motion.div>
         ))}
+      </div>
+      <div className='w-full'>
+        <Link
+          href={
+            "https://foodwastereport.leket.org/wp-content/uploads/2025/03/Leket-Sum_Heb_2023.pdf?_gl=1*enmxa6*_up*MQ..*_ga*MjUxNjAzNDI0LjE3NDk5NjY5OTg.*_ga_CT5DM6X0DK*czE3NDk5NjY5OTUkbzEkZzAkdDE3NDk5NjY5OTUkajYwJGwwJGgw"
+          }
+          className='text-blue-600 dark:text-blue-400 hover:underline text-sm sm:text-base mt-4'
+          target='_blank'
+          rel='noopener noreferrer'
+        >
+          מקור
+        </Link>
       </div>
     </Card>
   );

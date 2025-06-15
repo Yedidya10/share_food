@@ -6,9 +6,16 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Pencil } from "lucide-react";
 
-export default function EditItemButton({ onClick }: { onClick: () => void }) {
+export default function EditItemButton({
+  onClick,
+  disabled,
+  children,
+}: {
+  children?: React.ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+}) {
   function handleClick() {
     console.log("Edit button clicked");
     if (onClick) {
@@ -18,12 +25,17 @@ export default function EditItemButton({ onClick }: { onClick: () => void }) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Button variant='outline' size='icon' onClick={handleClick}>
-          <Pencil className='w-4 h-4' />
+        <Button
+          variant='outline'
+          size='icon'
+          onClick={handleClick}
+          disabled={disabled}
+        >
+          {children}
         </Button>
       </TooltipTrigger>
       <TooltipContent>
-        <p>Edit Item</p>
+        <span>ערוך פריט</span>
       </TooltipContent>
     </Tooltip>
   );

@@ -25,13 +25,14 @@ export type InitialValues = {
   postalCode?: string;
   contactByPhone: boolean;
   contactByEmail: boolean;
-  phoneNumber?: string;
+  phoneNumber?: string | null;
   isHaveWhatsApp: boolean;
   email?: string;
 };
 
 export type dBitem = {
   id: string;
+  full_name: string | null;
   title: string;
   description: string;
   images: string[];
@@ -40,12 +41,14 @@ export type dBitem = {
   city: string;
   postal_code: string;
   country: string;
-  phone_number: string;
+  phone_number: string | null;
   is_have_whatsapp: boolean;
   email: string;
-  status: "published" | "pending" | "draft";
+  status: "published" | "pending" | "draft" | "delivered" | "edited";
   user_id: string;
   created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
 };
 
 // Extend the default form values with images
@@ -55,5 +58,4 @@ export type PostItemFormValues = ItemBaseFormValues & {
 
 export type EditItemFormValues = ItemBaseFormValues & {
   images: File[] | string[];
-  itemId: string;
 };

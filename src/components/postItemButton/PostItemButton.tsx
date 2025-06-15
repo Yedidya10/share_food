@@ -4,9 +4,16 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { GoPlus } from "react-icons/go";
 
-export default function PostItemButton({ onClick }: { onClick?: () => void }) {
+export default function PostItemButton({
+  onClick,
+  disabled,
+  children,
+}: {
+  onClick?: () => void;
+  disabled?: boolean;
+  children?: React.ReactNode;
+}) {
   function handleClick() {
     if (onClick) {
       onClick();
@@ -20,13 +27,15 @@ export default function PostItemButton({ onClick }: { onClick?: () => void }) {
           size='icon'
           className='h-10 w-10 p-0 rounded-full cursor-pointer flex items-center justify-center'
           onClick={handleClick}
-          aria-label='Post Item'
+          disabled={disabled}
+          aria-label='Create Item'
+          data-testid='post-item-button'
         >
-          <GoPlus />
+          {children}
         </Button>
       </TooltipTrigger>
       <TooltipContent>
-        <p>Post Item</p>
+        <p>צור פריט</p>
       </TooltipContent>
     </Tooltip>
   );

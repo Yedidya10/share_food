@@ -15,7 +15,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useState } from "react";
-import PostItemButton from "@/components/postItemButton/PostItemButton";
 import { Separator } from "@/components/ui/separator";
 import { useLocale } from "next-intl";
 import postItemSchema from "@/lib/zod/item/postItemSchema";
@@ -25,18 +24,22 @@ import LocationFormFields from "@/components/forms/LocationFormFields";
 import ImagesFormField from "@/components/forms/ImagesFormField";
 import ItemBaseFormFields from "@/components/forms/ItemBaseFormFields";
 import { TranslationType } from "@/types/translation";
-import onSubmit from "@/components/forms/utils/item/onSubmit";
+import onPostItemFormSubmit from "@/components/forms/utils/item/onPostItemFormSubmit";
+import { UnifiedImage } from "@/types/forms/item/unifiedImage";
 
 export default function PostItemForm({
+  openModal,
+  onClose,
   translation,
 }: {
+  openModal: boolean;
+  onClose: () => void;
   translation: TranslationType;
 }) {
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [images, setImages] = useState<UnifiedImage[]>([]); // Initialize with an empty array
+  console.log("PostItemForm:", images);
   const locale = useLocale();
   // const supabase = createClient();
-  const [openModal, setOpenModal] = useState(false);
 
   // Define your form schema using Zod
   const formSchema = postItemSchema(translation);
@@ -44,13 +47,6 @@ export default function PostItemForm({
 
   // Define default values for the form
   const defaultValues = postItemDefaultFormValues(translation);
-
-  // useEffect(() => {
-  //   const result = formSchema.safeParse(defaultValues);
-  //   if (!result.success) {
-  //     console.error("❌ defaultValues לא תואמים לסכמה:", result.error.format());
-  //   }
-  // }, [formSchema, defaultValues]);
 
   // Define your form
   const postItemForm = useForm<PostItemFormSchema>({
@@ -62,8 +58,7 @@ export default function PostItemForm({
 
   return (
     <>
-      <PostItemButton onClick={() => setOpenModal(true)} />
-      <Dialog open={openModal} onOpenChange={setOpenModal}>
+      <Dialog open={openModal} onOpenChange={onClose}>
         <DialogContent className='sm:max-w-[725px] h-[80vh] overflow-y-auto flex flex-col gap-8'>
           <DialogHeader className='m-auto'>
             <DialogTitle
@@ -78,7 +73,7 @@ export default function PostItemForm({
           </DialogHeader>
           <Form {...postItemForm}>
             <form
-              onSubmit={postItemForm.handleSubmit(onSubmit)}
+              onSubmit={postItemForm.handleSubmit(onPostItemFormSubmit)}
               className='space-y-8'
             >
               <ItemBaseFormFields
@@ -89,10 +84,8 @@ export default function PostItemForm({
                 form={postItemForm}
                 translation={translation}
                 state={{
-                  previewUrls,
-                  setPreviewUrls,
-                  selectedFiles,
-                  setSelectedFiles,
+                  images,
+                  setImages,
                 }}
               />
               <Separator />

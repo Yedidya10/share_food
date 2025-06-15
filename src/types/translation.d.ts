@@ -12,6 +12,7 @@ export type TranslationType = {
   descriptionMinLength: string;
   descriptionMaxLength: string;
   uploadImages: string;
+  uploadImagesError: string;
   addressDetails: string;
   streetName: string;
   streetNamePlaceholder: string;

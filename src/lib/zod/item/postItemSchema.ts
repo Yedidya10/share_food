@@ -2,13 +2,31 @@ import { z } from "zod";
 import itemSchema from "./itemSchema";
 import { TranslationType } from "@/types/translation";
 
-export function postItemImagesSchema() {
+export function postItemImagesSchema(translation: TranslationType) {
   return z.object({
-    images: z.array(z.instanceof(File)).min(1).max(3),
-    imageHashes: z.array(z.string()).min(1).max(3),
+    images: z
+      .array(
+        z.object({
+          id: z.string().optional(),
+          url: z.string().optional(),
+          file: z.instanceof(File).optional(),
+          hash: z.string().optional(),
+        })
+      )
+      .min(
+        1,
+        translation.uploadImagesError || "Please upload at least one image."
+      )
+      .max(
+        3,
+        translation.uploadImagesError || "You can upload up to 3 images."
+      ),
   });
 }
 
 export default function postItemSchema(translation: TranslationType) {
-  return z.intersection(itemSchema(translation), postItemImagesSchema());
+  return z.intersection(
+    itemSchema(translation),
+    postItemImagesSchema(translation)
+  );
 }

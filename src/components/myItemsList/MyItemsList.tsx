@@ -9,9 +9,10 @@ import {
   Trash2,
   LayoutGrid,
   List,
+  Loader2,
+  Pencil,
 } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import EditItemForm from "@/components/editItemForm/EditItemForm";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import Image from "next/image";
@@ -25,6 +26,8 @@ import {
 } from "@/components/ui/card";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import EditItemFormWrapper from "@/components/forms/editItemForm/EditItemFormWrapper";
+import EditItemButton from "@/components/editItemButton/EditItemButton";
 
 export default function MyItemsList({
   items,
@@ -48,6 +51,16 @@ export default function MyItemsList({
   }>;
 }) {
   const [layout, setLayout] = useState<"grid" | "list">("grid");
+  const [openItemId, setOpenItemId] = useState<string | null>(null);
+  const [loadingItemId, setLoadingItemId] = useState<string | null>(null);
+
+  const handleEditClick = async (itemId: string) => {
+    setLoadingItemId(itemId);
+    await import("@/components/forms/editItemForm/EditItemForm");
+    setOpenItemId(itemId);
+    setLoadingItemId(null);
+  };
+
   const tPostItemForm = useTranslations("form.postItem");
   const tEditItemForm = useTranslations("form.editItem");
   const tGenericForm = useTranslations("form.generic");
@@ -203,8 +216,20 @@ export default function MyItemsList({
               )}
             </CardContent>
             <CardFooter className={cardFooterWrapper}>
-              <EditItemForm
+              <EditItemButton
+                onClick={() => handleEditClick(item.id)}
+                disabled={loadingItemId === item.id}
+              >
+                {loadingItemId === item.id ? (
+                  <Loader2 className='animate-spin h-4 w-4' />
+                ) : (
+                  <Pencil className='w-4 h-4' />
+                )}
+              </EditItemButton>
+              <EditItemFormWrapper
                 itemId={item.id}
+                open={openItemId === item.id}
+                onClose={() => setOpenItemId(null)}
                 initialValues={{
                   title: item.title,
                   description: item.description,
@@ -236,6 +261,7 @@ export default function MyItemsList({
                   descriptionMaxLength: tPostItemForm("descriptionMaxLength"),
                   descriptionMinLength: tPostItemForm("descriptionMinLength"),
                   uploadImages: tPostItemForm("uploadImages"),
+                  uploadImagesError: tPostItemForm("uploadImagesError"),
                   addressDetails: tPostItemForm("addressDetails"),
                   streetName: tPostItemForm("streetName"),
                   streetNamePlaceholder: tPostItemForm("streetNamePlaceholder"),

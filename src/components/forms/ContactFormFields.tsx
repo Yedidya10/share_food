@@ -11,7 +11,7 @@ import {
 import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import PhoneInput from "@/components/phoneInput/PhoneInput";
+import PhoneInput from "@/components/forms/phoneInput/PhoneInput";
 import { useLocale } from "next-intl";
 import { TranslationType } from "@/types/translation";
 

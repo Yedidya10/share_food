@@ -42,6 +42,7 @@
       "descriptionMaxLength": "Description cannot exceed 300 characters",
       "uploadImages": "Upload Images",
       "uploadImagesPlaceholder": "Drag and drop images here or click to select",
+      "uploadImagesError": "Please upload at least one image (up to 3 images allowed)",
       "addressDetails": "Delivery Address Details",
       "streetName": "Street Name",
       "streetNamePlaceholder": "e.g. Main St",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import {
   FormControl,
   FormField,
@@ -11,126 +11,92 @@ import {
 } from "@/components/ui/form";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { UseFormReturn, FieldValues, Path } from "react-hook-form";
+import { UseFormReturn, FieldValues, Path, PathValue } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { TranslationType } from "@/types/translation";
 import imageCompression from "browser-image-compression";
+import { UnifiedImage } from "@/types/forms/item/unifiedImage";
 
-type Props<T extends FieldValues> = {
+type Props<T extends FieldValues & { images: UnifiedImage[] }> = {
   form: UseFormReturn<T>;
   translation: TranslationType;
   state: {
-    previewUrls: string[];
-    setPreviewUrls: (urls: string[]) => void;
-    selectedFiles: File[];
-    setSelectedFiles: (files: File[]) => void;
+    images: UnifiedImage[];
+    setImages: React.Dispatch<React.SetStateAction<UnifiedImage[]>>;
   };
 };
 
-// מחזיר hash של קובץ מסוג File
 async function hashFile(file: File): Promise<string> {
-  const arrayBuffer = await file.arrayBuffer();
-  const hashBuffer = await crypto.subtle.digest("SHA-256", arrayBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+  const buffer = await file.arrayBuffer();
+  const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
-export default function ImagesFormField<T extends FieldValues>({
-  form,
-  translation,
-  state: { previewUrls, setPreviewUrls, selectedFiles, setSelectedFiles },
-}: Props<T>) {
-  const [imageHashes, setImageHashes] = useState<string[]>([]); // נשמר מחוץ לטופס
+export default function ImagesFormField<
+  T extends FieldValues & { images: UnifiedImage[] },
+>({ form, translation, state: { images, setImages } }: Props<T>) {
+  useEffect(() => {
+    form.register("images" as Path<T>);
+  }, [form]);
 
   useEffect(() => {
-    form.register("imageHashes" as Path<T>);
-  }, [form]);
+    form.setValue("images" as Path<T>, images as PathValue<T, Path<T>>, {});
+  }, [images, form]);
 
   const onFileChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = e.target.files;
       if (!files) return;
+      const allowed = Array.from(files).slice(0, 3 - images.length);
+      const added: UnifiedImage[] = [];
 
-      const newFiles = Array.from(files).slice(0, 3 - selectedFiles.length);
-      const compressedFiles: File[] = [];
-      const newHashes: string[] = [];
-      const newPreviews: string[] = [];
+      for (const file of allowed) {
+        const hash = await hashFile(file);
+        // אם כבר קיים hash כזה, דלג
+        if (images.some((img) => img.hash === hash)) continue;
 
-      for (const file of newFiles) {
+        let compressedFile: File;
         try {
-          const hash = await hashFile(file); // חישוב hash לפני דחיסה
-          const compressedBlob = await imageCompression(file, {
+          const blob = await imageCompression(file, {
             maxSizeMB: 1,
             maxWidthOrHeight: 1024,
             useWebWorker: true,
-            maxIteration: 5,
-            initialQuality: 0.8,
           });
-          const compressedFile = new File([compressedBlob], file.name, {
-            type: compressedBlob.type,
-          });
-          compressedFiles.push(compressedFile);
-          newHashes.push(hash);
-          newPreviews.push(URL.createObjectURL(compressedFile));
-        } catch (err) {
-          console.warn("Compression failed, using original", err);
-          const hash = await hashFile(file);
-          compressedFiles.push(file);
-          newHashes.push(hash);
-          newPreviews.push(URL.createObjectURL(file));
+          compressedFile = new File([blob], file.name, { type: blob.type });
+        } catch {
+          compressedFile = file;
         }
+
+        const url = URL.createObjectURL(compressedFile);
+
+        added.push({
+          id: `new-${images.length + added.length}`,
+          url,
+          file: compressedFile,
+          hash,
+        });
       }
 
-      const updatedFiles = [...selectedFiles, ...compressedFiles];
-      const updatedHashes = [...imageHashes, ...newHashes];
-      const updatedPreviews = [...previewUrls, ...newPreviews];
-
-      setSelectedFiles(updatedFiles);
-      setImageHashes(updatedHashes);
-      setPreviewUrls(updatedPreviews);
-
-      form.setValue("images" as Path<T>, updatedFiles as T[Path<T>], {
-        shouldValidate: true,
-      });
-      form.setValue(
-        "imageHashes" as Path<T>,
-        updatedHashes as unknown as T[Path<T>],
-        { shouldValidate: true }
-      );
+      setImages([...images, ...added]);
+      e.target.value = ""; // נקה הקלט
     },
-    [
-      selectedFiles,
-      previewUrls,
-      imageHashes,
-      form,
-      setPreviewUrls,
-      setSelectedFiles,
-    ]
+    [images, setImages]
   );
 
-  const removeImage = (idx: number) => {
-    const pf = [...previewUrls];
-    const sf = [...selectedFiles];
-    const hashes = [...imageHashes];
-
-    URL.revokeObjectURL(pf[idx]);
-    pf.splice(idx, 1);
-    sf.splice(idx, 1);
-    hashes.splice(idx, 1);
-
-    setImageHashes(hashes);
-    form.setValue("imageHashes" as Path<T>, hashes as unknown as T[Path<T>], {
-      shouldValidate: true,
-    });
-
-    setPreviewUrls(pf);
-    setSelectedFiles(sf);
-    setImageHashes(hashes);
-
-    form.setValue("images" as Path<T>, sf as T[Path<T>], {
-      shouldValidate: true,
-    });
-  };
+  const removeImage = useCallback(
+    (idx: number) => {
+      setImages((prev: UnifiedImage[]) => {
+        const next: UnifiedImage[] = [...prev];
+        const removed: UnifiedImage = next.splice(idx, 1)[0];
+        // שחרור URL רק לתמונות חדשות
+        if (removed.file) URL.revokeObjectURL(removed.url || "");
+        return next;
+      });
+    },
+    [setImages]
+  );
 
   return (
     <FormField
@@ -147,7 +113,7 @@ export default function ImagesFormField<T extends FieldValues>({
                 (
                   document.querySelector(
                     'input[type="file"]'
-                  ) as HTMLInputElement | null
+                  ) as HTMLInputElement
                 )?.click()
               }
             >
@@ -167,12 +133,12 @@ export default function ImagesFormField<T extends FieldValues>({
             יש להעלות לפחות תמונה אחת. עד 3 תמונות.
           </FormDescription>
           <FormMessage />
-          {previewUrls.length > 0 && (
+          {images.length > 0 && (
             <div className='grid grid-cols-3 gap-2 mt-4'>
-              {previewUrls.map((url, idx) => (
+              {images.map((img, idx) => (
                 <div key={idx} className='relative group'>
                   <Image
-                    src={url}
+                    src={img.url || ""}
                     alt={`preview-${idx}`}
                     width={100}
                     height={100}

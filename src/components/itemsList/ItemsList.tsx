@@ -8,9 +8,10 @@ import {
   CircleCheck,
   Hammer,
   Loader,
+  Loader2,
+  Pencil,
   Trash2,
 } from "lucide-react";
-import EditItemForm from "@/components/editItemForm/EditItemForm";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import Image from "next/image";
@@ -21,9 +22,21 @@ import {
 } from "@/components/ui/tooltip";
 import { dBitem } from "@/types/forms/item/item";
 import { useState } from "react";
+import EditItemFormWrapper from "../forms/editItemForm/EditItemFormWrapper";
+import EditItemButton from "../editItemButton/EditItemButton";
 
 export default function ItemsList({ items }: { items: dBitem[] }) {
   const [itemsData, setItemsData] = useState<Array<dBitem>>(items);
+  const [openItemId, setOpenItemId] = useState<string | null>(null);
+  const [loadingItemId, setLoadingItemId] = useState<string | null>(null);
+
+  const handleEditClick = async (itemId: string) => {
+    setLoadingItemId(itemId);
+    await import("@/components/forms/editItemForm/EditItemForm");
+    setOpenItemId(itemId);
+    setLoadingItemId(null);
+  };
+
   const supabase = createClient();
 
   const tPostItemForm = useTranslations("form.postItem");
@@ -184,7 +197,19 @@ export default function ItemsList({ items }: { items: dBitem[] }) {
                 <TooltipContent>Unpublish this item</TooltipContent>
               </Tooltip>
             )}
-            <EditItemForm
+            <EditItemButton
+              onClick={() => handleEditClick(item.id)}
+              disabled={loadingItemId === item.id}
+            >
+              {loadingItemId === item.id ? (
+                <Loader2 className='animate-spin h-4 w-4' />
+              ) : (
+                <Pencil className='w-4 h-4' />
+              )}
+            </EditItemButton>
+            <EditItemFormWrapper
+              open={openItemId === item.id}
+              onClose={() => setOpenItemId(null)}
               itemId={item.id}
               initialValues={{
                 title: item.title,
@@ -215,6 +240,7 @@ export default function ItemsList({ items }: { items: dBitem[] }) {
                 descriptionMinLength: tPostItemForm("descriptionMinLength"),
                 descriptionPlaceholder: tPostItemForm("descriptionPlaceholder"),
                 uploadImages: tPostItemForm("uploadImages"),
+                uploadImagesError: tPostItemForm("uploadImagesError"),
                 addressDetails: tPostItemForm("addressDetails"),
                 streetName: tPostItemForm("streetName"),
                 streetNamePlaceholder: tPostItemForm("streetNamePlaceholder"),

@@ -1,6 +1,5 @@
 import MyItemsList from "@/components/myItemsList/MyItemsList";
 import { createClient } from "@/lib/supabase/server";
-
 export default async function MyItemsPage() {
   const supabase = await createClient();
 

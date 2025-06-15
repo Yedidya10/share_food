@@ -24,7 +24,6 @@ import { Tooltip } from "@/components/ui/tooltip";
 import StartChatButton from "@/components/startChatButton/StartChatButton";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import ItemsSkeleton from "@/components/skeletons/itemsSkeleton/ItemsSkeleton";
 import { render } from "@react-email/render";
 import WelcomeEmail from "@/components/emailTemplates/welcomeEmail/WelcomeEmail";
 
@@ -48,22 +47,15 @@ type Item = {
 };
 
 export default function PostGrid({ items }: { items: Item[] }) {
-  const [userId, setUserId] = useState<string | null>(null);
-  const [isLoadingUserId, setIsLoadingUserId] = useState(true);
   const [openItemId, setOpenItemId] = useState<string | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUserId(session?.user?.id || null);
-      setIsLoadingUserId(false);
-    });
 
     const { data: authData } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (event === "SIGNED_IN") {
           const user = session?.user;
-          setUserId(user?.id || null);
 
           if (user?.created_at === user?.updated_at) {
             supabase.from("profiles").upsert(
@@ -88,49 +80,17 @@ export default function PostGrid({ items }: { items: Item[] }) {
                     userName={
                       user?.user_metadata?.full_name.split(" ")[0] || ""
                     }
-                    steps={[
-                      {
-                        id: 1,
-                        Description: (
-                          <>
-                            <p>
-                              ברוך הבא ל-Share Food – יחד מצמצמים את בזבוז המזון
-                            </p>
-                            <p>
-                              אנו שמחים שהצטרפת אלינו! Share Food הוא פרויקט
-                              קהילתי שנועד לעזור לך למצוא מזון עודף ולשתף אותו
-                              עם אחרים.
-                            </p>
-                          </>
-                        ),
-                      },
-                      {
-                        id: 2,
-                        Description: (
-                          <>
-                            <p>
-                              כדי להתחיל, פשוט לחץ על כפתור &quot;פרסם
-                              פריט&quot; למעלה והתחל לשתף את המזון העודף שלך עם
-                              הקהילה.
-                            </p>
-                          </>
-                        ),
-                      },
-                    ]}
+                    steps={[]}
                     links={[
                       {
                         href: "https://sharefood.org.il",
                         title: "בקר באתר Share Food",
                       },
-                      {
-                        href: "https://sharefood.org.il/terms",
-                        title: "תנאי השימוש",
-                      },
                     ]}
                   />
                 );
 
-                fetch("/api/send-welcome-oauth", {
+                await fetch("/api/send-welcome-oauth", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({
@@ -148,7 +108,6 @@ export default function PostGrid({ items }: { items: Item[] }) {
         }
 
         if (event === "SIGNED_OUT") {
-          setUserId(null);
         }
       }
     );
@@ -158,71 +117,63 @@ export default function PostGrid({ items }: { items: Item[] }) {
     };
   }, []);
 
-  if (isLoadingUserId) {
-    return <ItemsSkeleton />;
-  }
-
   return (
     <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6'>
-      {items.map(
-        (item) =>
-          item.user_id !== userId &&
-          item.status === "published" && (
-            <Card
-              key={item.id}
-              className='rounded-2xl shadow-lg hover:shadow-xl gap-3 transition-shadow p-0 overflow-hidden'
-            >
-              <div className='rounded-2xl overflow-hidden'>
-                <Carousel
-                  className='w-full m-auto p-0 rounded'
-                  opts={{
-                    loop: true,
-                  }}
-                >
-                  <CarouselContent>
-                    {Array.from(item.images).map((image, index) => (
-                      <CarouselItem key={index}>
-                        <div className='relative h-48 overflow-hidden border-b'>
-                          <Image
-                            src={image}
-                            alt={`${item.title} blurred background`}
-                            fill
-                            className='object-cover blur-sm scale-110 opacity-70'
-                            aria-hidden='true'
-                          />
-                          <Image
-                            src={image}
-                            alt={item.title}
-                            fill
-                            className='object-contain z-10'
-                          />
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious
-                    variant='outline'
-                    className='absolute left-2'
-                  />
-                  <CarouselNext
-                    variant='outline'
-                    className='absolute right-2'
-                  />
-                </Carousel>
-              </div>
-              <CardContent className='p-2 space-y-2'>
-                <h3
-                  className='text-xl font-semibold'
-                  onClick={() => setOpenItemId(item.id)}
-                >
-                  {item.title}
-                </h3>
-                <p className='text-sm text-muted-foreground line-clamp-3'>
-                  {item.description}
-                </p>
-                <p className='text-xs text-right text-muted-foreground'>
-                  {new Date(item.created_at).toLocaleDateString()}
-                </p>
+      {items.map((item) => (
+        <Card
+          key={item.id}
+          className='rounded-2xl shadow-lg hover:shadow-xl gap-3 transition-shadow p-0 overflow-hidden'
+        >
+          <CardContent className='p-0 space-y-2 flex flex-col h-full'>
+            <div className='rounded-2xl overflow-hidden h-[191.2px] relative'>
+              <Carousel
+                className='w-full m-auto p-0 rounded h-full'
+                opts={{
+                  loop: true,
+                }}
+              >
+                <CarouselContent>
+                  {Array.from(item.images).map((image, index) => (
+                    <CarouselItem key={index}>
+                      <div className='relative h-48 overflow-hidden border-b'>
+                        <Image
+                          src={image}
+                          alt={`${item.title} blurred background`}
+                          fill
+                          className='object-cover blur-sm scale-110 opacity-70'
+                          aria-hidden='true'
+                        />
+                        <Image
+                          src={image}
+                          alt={item.title}
+                          fill
+                          className='object-contain z-10'
+                        />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious
+                  variant='outline'
+                  className='absolute left-2'
+                />
+                <CarouselNext variant='outline' className='absolute right-2' />
+              </Carousel>
+            </div>
+            <div className='flex flex-col gap-3 p-2 justify-end'>
+              <h3
+                className='text-xl font-semibold'
+                onClick={() => setOpenItemId(item.id)}
+              >
+                {item.title}
+              </h3>
+              <p className='text-sm text-muted-foreground line-clamp-2'>
+                {item.description}
+              </p>
+              <p className='text-xs text-right text-muted-foreground'>
+                {new Date(item.created_at).toLocaleDateString()}
+              </p>
+              <div className='self-end h-10 w-full items-end flex'>
                 <Dialog
                   open={openItemId === item.id}
                   onOpenChange={(open) => {
@@ -324,10 +275,11 @@ export default function PostGrid({ items }: { items: Item[] }) {
                     </div>
                   </DialogContent>
                 </Dialog>
-              </CardContent>
-            </Card>
-          )
-      )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 }

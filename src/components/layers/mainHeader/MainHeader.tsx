@@ -3,12 +3,14 @@
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import AccountMenu from "@/components/accountMenu/AccountMenu";
-import PostItemForm from "@/components/postItemForm/PostItemForm";
 import { Button } from "@/components/ui/button";
 import { Link, usePathname } from "@/i18n/navigation";
 import ChatButton from "@/components/chat/chatButton/ChatButton";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import PostItemFormWrapper from "@/components/forms/postItemForm/PostItemFormWrapper";
+import PostItemButton from "@/components/postItemButton/PostItemButton";
+import { Loader2, Plus } from "lucide-react";
 
 export default function MainHeader() {
   const pathname = usePathname();
@@ -17,6 +19,17 @@ export default function MainHeader() {
     user_metadata: { avatar_url?: string; full_name?: string };
   } | null>(null);
   const [isUserConnected, setIsUserConnected] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const handleCreateItemClick = async () => {
+    setLoading(true);
+    await import("@/components/forms/postItemForm/PostItemFormWrapper");
+    setOpenModal(true);
+    setLoading(false);
+  };
+
   const tHeader = useTranslations("header");
   const tLogin = useTranslations("header.login");
   const tAccountMenu = useTranslations("header.accountMenu");
@@ -63,7 +76,27 @@ export default function MainHeader() {
         {user && isUserConnected ? (
           <>
             <ChatButton />
-            <PostItemForm
+            <PostItemButton
+              onClick={() => handleCreateItemClick()}
+              disabled={loading}
+            >
+              {loading ? (
+                <Loader2
+                  className='animate-spin h-4 w-4'
+                  aria-label='Loading'
+                  data-testid='loading-icon'
+                />
+              ) : (
+                <Plus
+                  className='h-4 w-4'
+                  aria-label='Create Item'
+                  data-testid='post-item-icon'
+                />
+              )}
+            </PostItemButton>
+            <PostItemFormWrapper
+              openModal={openModal}
+              onClose={() => setOpenModal(false)}
               translation={{
                 formTitle: tPostItemForm("formTitle"),
                 formDescription: tPostItemForm("formDescription"),
@@ -78,6 +111,7 @@ export default function MainHeader() {
                 descriptionMaxLength: tPostItemForm("descriptionMaxLength"),
                 descriptionMinLength: tPostItemForm("descriptionMinLength"),
                 uploadImages: tPostItemForm("uploadImages"),
+                uploadImagesError: tPostItemForm("uploadImagesError"),
                 addressDetails: tPostItemForm("addressDetails"),
                 streetName: tPostItemForm("streetName"),
                 streetNamePlaceholder: tPostItemForm("streetNamePlaceholder"),

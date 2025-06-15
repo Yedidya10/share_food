@@ -1,6 +1,5 @@
 import {
   Body,
-  Button,
   Column,
   Container,
   Head,
@@ -28,9 +27,9 @@ interface ShareFoodWelcomeEmailProps {
   userName?: string;
 }
 
-const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
-  ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-  : "";
+// const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
+//   ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+//   : "";
 
 export const ShareFoodWelcomeEmail = ({
   steps,
@@ -60,7 +59,7 @@ export const ShareFoodWelcomeEmail = ({
         <Preview>ברוך הבא ל-Share Food – יחד מצמצמים את בזבוז המזון</Preview>
         <Body className='bg-offwhite font-sans text-base' dir='rtl'>
           <Img
-            src={`${baseUrl}/static/sharefood-logo.png`}
+            src={`https://sharefood-six.vercel.app/_next/image?url=%2Ficon-192x192.png&w=96&q=75`}
             width='160'
             height='auto'
             alt='Share Food'
@@ -68,18 +67,34 @@ export const ShareFoodWelcomeEmail = ({
           />
           <Container className='bg-white p-45'>
             <Heading className='my-0 text-center leading-8'>
-              שלום {userName}, ברוך הבא ל-Share Food!
+              שלום {userName},
+            </Heading>
+            <Heading className='my-0 text-center leading-8'>
+              ברוך הבא ל-Share Food!
             </Heading>
 
             <Section>
-              <Row>
-                <Text className='text-base'>
-                  אנחנו שמחים שהצטרפת לקהילה שפועלת להפחתת בזבוז המזון בישראל.
-                  יחד אנחנו יכולים ליצור שינוי אמיתי – במקום לזרוק אוכל טוב לפח,
-                  ניתן לחלוק אותו עם מי שזקוק לו.
+              <Row className='mt-4'>
+                <Text className='text-base leading-6'>
+                  כולנו מכירים את זה – נשאר אוכל טוב, ואין מה לעשות איתו. חבל
+                  לזרוק, נכון?
+                </Text>
+                <Text className='text-base leading-6'>
+                  Share Food נולד בדיוק מהמקום הזה – ליצור מרחב נעים, פשוט,
+                  וקהילתי לשיתוף מזון ומוצרים שאפשר עוד ליהנות מהם.
+                </Text>
+                <Text className='text-base leading-6'>
+                  אז ברוך הבא! תרגיש חופשי לשתף, לקבל, ולעזור לכולנו לעשות שימוש
+                  חכם ומועיל יותר במה שכבר יש.
+                </Text>
+                <Text className='text-base leading-6'>שמח שאתה פה 💚</Text>
+                <Text className='text-base leading-6 pt-4'>
+                  בחום,
+                  <br /> ידידיה אברג&apos;ל <br />
+                  מייסד Share Food
                 </Text>
 
-                <Text className='text-base mt-4'>כך תוכל להתחיל:</Text>
+                {/* <Text className='text-base mt-4'>כך תוכל להתחיל:</Text> */}
               </Row>
             </Section>
 
@@ -91,11 +106,11 @@ export const ShareFoodWelcomeEmail = ({
               ))}
             </ul>
 
-            <Section className='text-center mt-6'>
+            {/* <Section className='text-center mt-6'>
               <Button className='rounded-lg bg-brand px-[18px] py-3 text-white'>
                 התחבר למערכת
               </Button>
-            </Section>
+            </Section> */}
 
             <Section className='mt-45'>
               <Row className='text-center'>
@@ -106,7 +121,7 @@ export const ShareFoodWelcomeEmail = ({
                       href={link.href}
                     >
                       {link.title}
-                    </Link>{" "}
+                    </Link>
                     <span className='text-green-600'>→</span>
                   </Column>
                 ))}
@@ -115,7 +130,7 @@ export const ShareFoodWelcomeEmail = ({
           </Container>
 
           <Container className='mt-20'>
-            <Section>
+            {/* <Section>
               <Row>
                 <Column className='px-20 text-right'>
                   <Link href='https://your-domain.com/unsubscribe'>
@@ -128,9 +143,9 @@ export const ShareFoodWelcomeEmail = ({
                   </Link>
                 </Column>
               </Row>
-            </Section>
+            </Section> */}
             <Text className='mb-45 text-center text-gray-400'>
-              Share Food, תל אביב, ישראל
+              Share Food, ירושלים, ישראל | © {new Date().getFullYear()}
             </Text>
           </Container>
         </Body>

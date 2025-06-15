@@ -7,7 +7,10 @@ import { createClient } from "@/lib/supabase/server";
 
 type EditItemFormSchema = z.infer<ReturnType<typeof editItemSchema>>;
 
-export default async function onEditItemFormSubmit(values: EditItemFormSchema, itemId: string) {
+export default async function onEditItemFormSubmit(
+  values: EditItemFormSchema,
+  itemId: string
+) {
   try {
     const supabase = await createClient();
     const { error: userError } = await supabase.auth.getUser();
@@ -77,6 +80,7 @@ export default async function onEditItemFormSubmit(values: EditItemFormSchema, i
         phone_number: values.phoneNumber || null,
         is_have_whatsapp: !!values.isHaveWhatsApp,
         email: values.email?.trim() || null,
+        status: "edited", // Set status to 'edited'
         // ... כל שאר השדות
       })
       .eq("id", itemId);

@@ -36,7 +36,7 @@ export default function AdminDashboardMenu({
           ))}
         </ul>
       </nav>
-      <main className='flex-1 p-4'>{children}</main>
+      <main className='w-full'>{children}</main>
     </div>
   );
 }

@@ -49,7 +49,11 @@ export default async function ItemsPage() {
       );
     }
 
-    return <ItemsList items={items} />;
+    return (
+      <div className='h-[calc(100vh-80px)] overflow-hidden'>
+        <ItemsList items={items} />
+      </div>
+    );
   } catch (error) {
     console.error(error);
     return (

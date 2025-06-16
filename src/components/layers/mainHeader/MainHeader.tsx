@@ -10,7 +10,9 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import PostItemFormWrapper from "@/components/forms/postItemForm/PostItemFormWrapper";
 import PostItemButton from "@/components/postItemButton/PostItemButton";
-import { Loader2, Plus } from "lucide-react";
+import { CheckCircle, Loader2, Plus, XCircle } from "lucide-react";
+import { toast } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function MainHeader() {
   const pathname = usePathname();
@@ -20,7 +22,7 @@ export default function MainHeader() {
   } | null>(null);
   const [isUserConnected, setIsUserConnected] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-
+  const [isSubmitSuccess, setIsSubmitSuccess] = useState<boolean | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleCreateItemClick = async () => {
@@ -57,6 +59,24 @@ export default function MainHeader() {
       authData?.subscription?.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    if (isSubmitSuccess) {
+      toast.success("הפריט נוצר בהצלחה!", {
+        description: "הפריט יפורסם לאחר אישור המערכת.",
+        icon: <CheckCircle className='text-green-500' />,
+      });
+      setIsSubmitSuccess(null);
+    }
+
+    if (isSubmitSuccess === false) {
+      toast.error("שגיאה ביצירת הפריט", {
+        description: "אנא נסה שוב מאוחר יותר.",
+        icon: <XCircle className='text-red-500' />,
+      });
+      setIsSubmitSuccess(null);
+    }
+  }, [isSubmitSuccess]);
 
   return (
     <header className='flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 backdrop-blur-sm bg-opacity-50 dark:bg-opacity-50 h-[80px]'>
@@ -96,7 +116,8 @@ export default function MainHeader() {
             </PostItemButton>
             <PostItemFormWrapper
               openModal={openModal}
-              onClose={() => setOpenModal(false)}
+              setIsSubmitSuccess={setIsSubmitSuccess}
+              setOpenModal={setOpenModal}
               translation={{
                 formTitle: tPostItemForm("formTitle"),
                 formDescription: tPostItemForm("formDescription"),
@@ -146,6 +167,15 @@ export default function MainHeader() {
                   israel: tCountries("il"),
                   usa: tCountries("usa"),
                 },
+              }}
+            />
+            <Toaster
+              position='top-center'
+              duration={5000}
+              richColors
+              closeButton={false}
+              toastOptions={{
+                className: "bg-white dark:bg-gray-800 z-99",
               }}
             />
             <AccountMenu

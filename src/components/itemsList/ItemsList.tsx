@@ -99,7 +99,7 @@ export default function ItemsList({ items }: { items: dBitem[] }) {
   };
 
   return (
-    <div className='space-y-4'>
+    <div className='space-y-4 p-4 overflow-y-auto h-full'>
       {itemsData.map((item) => (
         <div
           key={item.id}

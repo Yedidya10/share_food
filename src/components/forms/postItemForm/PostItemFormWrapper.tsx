@@ -10,7 +10,8 @@ const PostItemForm = dynamic(() => import("../postItemForm/PostItemForm"), {
 export default function PostItemFormWrapper(props: {
   translation: TranslationType;
   openModal: boolean;
-  onClose: () => void;
+  setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsSubmitSuccess: React.Dispatch<React.SetStateAction<boolean | null>>;
 }) {
   if (!props.openModal) return null;
 

@@ -24,16 +24,19 @@ import LocationFormFields from "@/components/forms/LocationFormFields";
 import ImagesFormField from "@/components/forms/ImagesFormField";
 import ItemBaseFormFields from "@/components/forms/ItemBaseFormFields";
 import { TranslationType } from "@/types/translation";
-import onPostItemFormSubmit from "@/components/forms/postItemForm/onPostItemFormSubmit";
 import { UnifiedImage } from "@/types/forms/item/unifiedImage";
+import { toast } from "sonner";
+import insertItemToDatabase from "./insertItemToDatabase";
 
 export default function PostItemForm({
   openModal,
-  onClose,
+  setOpenModal,
+  setIsSubmitSuccess,
   translation,
 }: {
   openModal: boolean;
-  onClose: () => void;
+  setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsSubmitSuccess: React.Dispatch<React.SetStateAction<boolean | null>>;
   translation: TranslationType;
 }) {
   const [images, setImages] = useState<UnifiedImage[]>([]); // Initialize with an empty array
@@ -56,9 +59,33 @@ export default function PostItemForm({
     defaultValues: defaultValues,
   });
 
+  // Handle form submission
+  const onSubmit = async (values: PostItemFormSchema) => {
+    try {
+      const response = await insertItemToDatabase(values);
+      if (response?.success) {
+        setIsSubmitSuccess(true);
+        setOpenModal(false); // Close the modal after successful submission
+        // postItemForm.reset();
+        // setImages([]); // Clear images after successful submission
+      } else {
+        toast.error("שגיאה ביצירת הפריט", {
+          description: response?.message || "אנא נסה שוב מאוחר יותר.",
+          position: "top-center",
+          duration: 5000,
+          richColors: true,
+        });
+        setOpenModal(false); // Close the modal if there was an error
+        console.error("Error inserting item:", response?.message);
+      }
+    } catch (error) {
+      console.error("Error in onSubmit:", error);
+    }
+  };
+
   return (
     <>
-      <Dialog open={openModal} onOpenChange={onClose}>
+      <Dialog open={openModal} onOpenChange={setOpenModal}>
         <DialogContent className='sm:max-w-[725px] h-[80vh] overflow-y-auto flex flex-col gap-8'>
           <DialogHeader className='m-auto'>
             <DialogTitle
@@ -73,7 +100,7 @@ export default function PostItemForm({
           </DialogHeader>
           <Form {...postItemForm}>
             <form
-              onSubmit={postItemForm.handleSubmit(onPostItemFormSubmit)}
+              onSubmit={postItemForm.handleSubmit(onSubmit)}
               className='space-y-8'
             >
               <ItemBaseFormFields

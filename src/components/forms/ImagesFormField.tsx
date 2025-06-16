@@ -42,7 +42,9 @@ export default function ImagesFormField<
   }, [form]);
 
   useEffect(() => {
-    form.setValue("images" as Path<T>, images as PathValue<T, Path<T>>, {});
+    form.setValue("images" as Path<T>, images as PathValue<T, Path<T>>, {
+      shouldValidate: true,
+    });
   }, [images, form]);
 
   const onFileChange = useCallback(

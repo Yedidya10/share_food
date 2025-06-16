@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import dayjs from "dayjs";
 import Image from "next/image";
 import getPartnerNames from "@/app/actions/db/getPartnerNames";
+import { Input } from "@/components/ui/input";
 
 type Message = {
   id: string;
@@ -22,7 +23,10 @@ type Conversation = {
 };
 
 export default function InboxClient({ userId }: { userId: string }) {
+  const [searchTerm, setSearchTerm] = useState("");
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [allConversations, setAllConversations] = useState<Conversation[]>([]);
+
   const [partnerNames, setPartnerNames] = useState<Record<string, string>>({});
   const [partnerAvatars, setPartnerAvatars] = useState<Record<string, string>>(
     {}
@@ -33,6 +37,30 @@ export default function InboxClient({ userId }: { userId: string }) {
   useEffect(() => {
     conversationsRef.current = conversations;
   }, [conversations]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const term = searchTerm.toLowerCase();
+
+      if (!term) {
+        setConversations(allConversations);
+        return;
+      }
+
+      const filtered = allConversations.filter((conv) => {
+        const partnerId = conv.members.find((id) => id !== userId);
+        const partnerName = partnerNames[partnerId ?? ""] || "";
+        return (
+          partnerName.toLowerCase().includes(term) ||
+          (conv.last_message?.content || "").toLowerCase().includes(term)
+        );
+      });
+
+      setConversations(filtered);
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [searchTerm, partnerNames, userId, allConversations]);
 
   useEffect(() => {
     const fetchConversationsWithLastMessages = async () => {
@@ -74,6 +102,7 @@ export default function InboxClient({ userId }: { userId: string }) {
         );
       });
 
+      setAllConversations(convsWithLastMsg);
       setConversations(convsWithLastMsg);
     };
 
@@ -104,7 +133,7 @@ export default function InboxClient({ userId }: { userId: string }) {
 
       if (partnerIds.length === 0) return;
       const { data: profilesData } = await supabase
-        .from("profilesData")
+        .from("profiles")
         .select("id, avatar_url")
         .in("id", partnerIds);
       if (!profilesData) return;
@@ -137,6 +166,21 @@ export default function InboxClient({ userId }: { userId: string }) {
             (conv) => conv.id === newMessage.conversation_id
           );
           if (!isInConversation) return;
+
+          setAllConversations((prevConvs) => {
+            return prevConvs.map((conv) => {
+              if (conv.id === newMessage.conversation_id) {
+                if (
+                  !conv.last_message ||
+                  new Date(newMessage.created_at) >
+                    new Date(conv.last_message.created_at)
+                ) {
+                  return { ...conv, last_message: newMessage };
+                }
+              }
+              return conv;
+            });
+          });
 
           setConversations((prevConvs) => {
             return prevConvs.map((conv) => {
@@ -172,6 +216,16 @@ export default function InboxClient({ userId }: { userId: string }) {
 
   return (
     <div className='mx-auto'>
+      <div className='flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700'>
+        <h2 className='text-lg font-semibold'>שיחות</h2>
+        <Input
+          type='text'
+          placeholder='חפש שיחה...'
+          className='w-64'
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
       {conversations.length === 0 ? (
         <div className='flex flex-col items-center justify-center text-center text-muted-foreground py-24'>
           <div className='text-5xl mb-4'>💬</div>
@@ -187,14 +241,16 @@ export default function InboxClient({ userId }: { userId: string }) {
             <Link
               key={conv.id}
               href={`/chat/${conv.id}`}
-              className='flex items-center p-3 hover:bg-muted transition border-b border-gray-200 dark:border-gray-700 dark:hover:bg-gray-800'
+              className='flex items-center p-3 gap-3 hover:bg-muted transition border-b border-gray-200 dark:border-gray-700 dark:hover:bg-gray-800'
             >
               <div className='flex-shrink-0'>
                 {partnerAvatars[partnerId] ? (
                   <Image
                     src={partnerAvatars[partnerId]}
                     alt={partnerName}
-                    className='w-12 h-12 rounded-full object-cover'
+                    width={48}
+                    height={48}
+                    className='rounded-full object-cover'
                   />
                 ) : (
                   <div className='flex-shrink-0 w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-lg ml-4 dark:bg-blue-700'>

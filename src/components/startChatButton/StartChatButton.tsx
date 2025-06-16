@@ -13,7 +13,6 @@ type Props = {
 export default function StartChatButton({ targetUserId }: Props) {
   const [loading, setLoading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [conversationId, setConversationId] = useState<string | null>(null);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -38,7 +37,6 @@ export default function StartChatButton({ targetUserId }: Props) {
     const members = [currentUserId, targetUserId].sort();
 
     try {
-      // 1. Check if a conversation already exists with these members
       const { data: conversations, error: selectError } = await supabase
         .from("conversations")
         .select("id, members")
@@ -46,7 +44,8 @@ export default function StartChatButton({ targetUserId }: Props) {
 
       if (selectError) throw selectError;
 
-      // 2. Check if the conversation already exists
+      let conversationIdToNavigate: string;
+
       const existingConversation = conversations?.find((conv) => {
         if (conv.members.length !== members.length) return false;
         for (let i = 0; i < members.length; i++) {
@@ -56,9 +55,8 @@ export default function StartChatButton({ targetUserId }: Props) {
       });
 
       if (existingConversation) {
-        setConversationId(existingConversation.id);
+        conversationIdToNavigate = existingConversation.id;
       } else {
-        // 3. If no conversation exists, create a new one
         const { data: newConversation, error: insertError } = await supabase
           .from("conversations")
           .insert({ members })
@@ -67,14 +65,15 @@ export default function StartChatButton({ targetUserId }: Props) {
 
         if (insertError) throw insertError;
 
-        setConversationId(newConversation.id);
+        conversationIdToNavigate = newConversation.id;
       }
 
-      router.push(`/chat/${conversationId}`);
+      router.push(`/chat/${conversationIdToNavigate}`);
     } catch (error) {
       console.error("Error details:", JSON.stringify(error, null, 2));
-      setLoading(false);
       alert("שגיאה בהתחלת השיחה. אנא נסה שוב מאוחר יותר.");
+    } finally {
+      setLoading(false);
     }
   };
 

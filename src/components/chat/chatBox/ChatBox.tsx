@@ -134,9 +134,9 @@ export default function ChatBox({
   }
 
   return (
-    <div className='flex flex-col h-[calc(100vh-80px)] gap-4'>
+    <div className='flex flex-col h-full overflow-hidden'>
       {messages.length > 0 && (
-        <div className='border mt-6 p-6 overflow-y-auto h-[calc(100vh-80px-60px)]'>
+        <div className='flex-1 overflow-y-auto px-4 py-2'>
           {groupMessagesByDate().map((group, index) => (
             <div key={index} className='flex flex-col items-center'>
               <div className='text-center text-xs text-gray-400 my-2'>
@@ -162,7 +162,7 @@ export default function ChatBox({
           ))}
         </div>
       )}
-      <div className='flex flex-col-reverse gap-2 flex-shrink-0 gap-2 min-h-[60px] max-h-[140px]'>
+      <div className='border-t p-2 bg-white dark:bg-gray-900 relative z-1000 flex flex-col space-y-2'>
         <div className='flex items-center space-x-2 h-[20px]'>
           <Checkbox
             id='sendOnEnter'

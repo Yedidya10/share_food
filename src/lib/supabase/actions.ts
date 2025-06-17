@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "@/i18n/navigation";
-import type { Provider } from "@supabase/auth-js";
 import { createClient } from "@/lib/supabase/server";
 
 export async function login(formData: FormData) {
@@ -56,40 +55,4 @@ export async function logout({ locale }: { locale: string }) {
 
   revalidatePath("/", "layout");
   redirect({ href: "/", locale });
-}
-
-const getSiteUrl = () => {
-  let url =
-    process?.env?.NEXT_PUBLIC_SITE_URL ?? // Set this to your site URL in production env.
-    process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
-    "https://localhost:3000/";
-  // Make sure to include `https://` when not localhost.
-  url = url.startsWith("http") ? url : `https://${url}`;
-  // Make sure to include a trailing `/`.
-  url = url.endsWith("/") ? url : `${url}/`;
-  return url;
-};
-
-export async function signInWithOAuth({
-  provider,
-  redirectTo = "/",
-  locale,
-}: {
-  provider: Provider;
-  redirectTo?: string;
-  locale: string;
-}) {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider,
-    options: {
-      redirectTo: `${getSiteUrl()}/auth/callback?next=${encodeURIComponent(
-        redirectTo
-      )}`,
-    },
-  });
-
-  if (error) redirect({ href: "/error", locale });
-  if (data?.url) redirect({ href: data.url, locale });
 }

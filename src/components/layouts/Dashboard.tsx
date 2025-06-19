@@ -1,8 +1,5 @@
 "use client";
 
-import { Link, usePathname } from "@/i18n/navigation";
-import { cn } from "@/lib/utils";
-import { CircleUserRound, Settings, Shapes } from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -12,29 +9,39 @@ import {
   NavigationMenuTrigger,
   NavigationMenuViewport,
 } from "@/components/ui/navigation-menu";
+import { Link, usePathname } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
+import React from "react";
 
-const navItems = [
-  { label: "Profile", href: "/dashboard/profile", icon: <CircleUserRound /> },
-  { label: "My Items", href: "/dashboard/my-items", icon: <Shapes /> },
-  { label: "Settings", href: "/dashboard/settings", icon: <Settings /> },
-];
+export interface NavItem {
+  label: string;
+  href: string;
+  icon?: React.ReactNode;
+}
 
-export default function UserDashboardMenu() {
+export default function DashboardLayout({
+  navItems,
+  children,
+}: {
+  navItems: NavItem[];
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
 
   return (
-    <>
-      <div className='md:hidden top-0 left-0 z-50 sticky '>
+    <div className='flex flex-col md:flex-row'>
+      {/* תפריט מובייל - עם Trigger */}
+      <div className='md:hidden sticky z-50 w-full top-[80px] bg-white dark:bg-gray-900'>
         <NavigationMenu className='block max-w-full'>
           <NavigationMenuList>
             <NavigationMenuItem className='w-full'>
               <NavigationMenuTrigger className='w-full max-w-full'>
-                Menu
+                תפריט
               </NavigationMenuTrigger>
               <NavigationMenuContent className='block max-w-full w-full'>
                 <ul className='w-[calc(100vw-2rem)]'>
                   {navItems.map((item) => (
-                    <li key={item.href} className=''>
+                    <li key={item.href}>
                       <NavigationMenuLink
                         asChild
                         className={cn(
@@ -48,7 +55,7 @@ export default function UserDashboardMenu() {
                           className='flex items-center gap-2'
                         >
                           <div className='flex items-center h-8 gap-2'>
-                            <span>{item.icon}</span>
+                            {item.icon && <span>{item.icon}</span>}
                             <span>{item.label}</span>
                           </div>
                         </Link>
@@ -69,11 +76,15 @@ export default function UserDashboardMenu() {
           />
         </NavigationMenu>
       </div>
-      <nav
-        className='hidden md:block
-          w-[max(180px,18%)] sticky top-0 h-full bg-gray-100 border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700'
+
+      {/* סיידבר מקובע לדסקטופ */}
+      <aside
+        className={cn(
+          "hidden md:flex fixed top-[80px] inset-inline-start-0 w-[max(180px,18%)] h-[calc(100vh-80px)]",
+          "bg-gray-100 border-inline-end border-gray-200 dark:bg-gray-800 dark:border-gray-700"
+        )}
       >
-        <ul className='p-1 space-y-1'>
+        <ul className='p-2 space-y-1 w-full'>
           {navItems.map((item) => (
             <li key={item.href}>
               <Link
@@ -85,14 +96,25 @@ export default function UserDashboardMenu() {
                 )}
               >
                 <div className='flex items-center gap-2'>
-                  {item.icon}
-                  <span className='md:inline'>{item.label}</span>
+                  {item.icon && item.icon}
+                  <span>{item.label}</span>
                 </div>
               </Link>
             </li>
           ))}
         </ul>
-      </nav>
-    </>
+      </aside>
+
+      {/* תוכן ראשי */}
+      <main
+        className={cn(
+          "flex-1 p-4 overflow-auto w-full",
+          "mt-[80px] md:mt-0",
+          "md:ms-[max(180px,18%)] h-[calc(100vh-80px)]"
+        )}
+      >
+        {children}
+      </main>
+    </div>
   );
 }

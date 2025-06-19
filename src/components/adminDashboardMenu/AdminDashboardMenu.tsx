@@ -17,7 +17,7 @@ export default function AdminDashboardMenu({
   const pathname = usePathname();
 
   return (
-    <div className='flex flex-col md:flex-row text-gray-900 bg-white dark:bg-gray-900 dark:text-gray-100 h-[calc(100vh-80px)]'>
+    <>
       <nav className='w-full md:w-64 bg-gray-100 p-4 border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700'>
         <ul className='space-y-2'>
           {navItems.map((item) => (
@@ -37,6 +37,6 @@ export default function AdminDashboardMenu({
         </ul>
       </nav>
       <main className='w-full'>{children}</main>
-    </div>
+    </>
   );
 }

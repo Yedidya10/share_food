@@ -12,7 +12,6 @@ import PostItemFormWrapper from "@/components/forms/postItemForm/PostItemFormWra
 import PostItemButton from "@/components/postItemButton/PostItemButton";
 import { CheckCircle, Loader2, Plus, XCircle } from "lucide-react";
 import { toast } from "sonner";
-import { Toaster } from "@/components/ui/sonner";
 
 export default function MainHeader() {
   const pathname = usePathname();
@@ -169,15 +168,6 @@ export default function MainHeader() {
                 },
               }}
             />
-            <Toaster
-              position='top-center'
-              duration={5000}
-              richColors
-              closeButton={false}
-              toastOptions={{
-                className: "bg-white dark:bg-gray-800 z-99",
-              }}
-            />
             <AccountMenu
               translation={{
                 welcome: tLogin("welcome", {
@@ -193,7 +183,7 @@ export default function MainHeader() {
         ) : (
           <Button variant='outline' className='h-10'>
             <Link
-              href={`/login?redirect=${encodeURIComponent(pathname)}`}
+              href={`/auth/login?redirect=${encodeURIComponent(pathname)}`}
               className='flex items-center gap-2'
             >
               {tLogin("login")}

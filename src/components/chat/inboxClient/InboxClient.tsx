@@ -7,6 +7,8 @@ import dayjs from "dayjs";
 import Image from "next/image";
 import getPartnerNames from "@/app/actions/db/getPartnerNames";
 import { Input } from "@/components/ui/input";
+import useCurrentUser from "@/hooks/db/useCurrentUser";
+import { Loader } from "lucide-react";
 
 type Message = {
   id: string;
@@ -22,7 +24,10 @@ type Conversation = {
   last_message?: Message;
 };
 
-export default function InboxClient({ userId }: { userId: string }) {
+export default function InboxClient() {
+  const { data: currentUser, isLoading: userLoading } = useCurrentUser();
+
+  const userId = currentUser?.id;
   const [searchTerm, setSearchTerm] = useState("");
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [allConversations, setAllConversations] = useState<Conversation[]>([]);
@@ -214,87 +219,97 @@ export default function InboxClient({ userId }: { userId: string }) {
     return names[0][0] + names[1][0];
   }
 
-  return (
-    <div className='mx-auto'>
-      <div className='flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700'>
-        <h2 className='text-lg font-semibold'>שיחות</h2>
-        <Input
-          type='text'
-          placeholder='חפש שיחה...'
-          className='w-64'
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+  if (userLoading) {
+    return (
+      <div className='flex items-center justify-center h-full'>
+        <Loader className='h-8 w-8 animate-spin text-blue-500' />
       </div>
-      {conversations.length === 0 ? (
-        <div className='flex flex-col items-center justify-center text-center text-muted-foreground py-24'>
-          <div className='text-5xl mb-4'>💬</div>
-          <p className='text-lg font-medium'>אין שיחות עדיין</p>
-          <p className='text-sm'>ברגע שתשלח או תקבל הודעה – היא תופיע כאן.</p>
-        </div>
-      ) : (
-        conversations.map((conv) => {
-          const partnerId = conv.members.find((id) => id !== userId) ?? "";
-          const partnerName = partnerNames[partnerId] ?? "משתמש";
+    );
+  }
 
-          return (
-            <Link
-              key={conv.id}
-              href={`/chat/${conv.id}`}
-              className='flex items-center p-3 gap-3 hover:bg-muted transition border-b border-gray-200 dark:border-gray-700 dark:hover:bg-gray-800'
-            >
-              <div className='flex-shrink-0'>
-                {partnerAvatars[partnerId] ? (
-                  <Image
-                    src={partnerAvatars[partnerId]}
-                    alt={partnerName}
-                    width={48}
-                    height={48}
-                    className='rounded-full object-cover'
-                  />
-                ) : (
-                  <div className='flex-shrink-0 w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-lg ml-4 dark:bg-blue-700'>
-                    {getInitials(partnerName)}
+  return (
+    <div className='hidden md:block w-[25vw] min-w-[270px] border-r bg-background'>
+      <div className='mx-auto'>
+        <div className='flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700'>
+          <h2 className='text-lg font-semibold'>שיחות</h2>
+          <Input
+            type='text'
+            placeholder='חפש שיחה...'
+            className='w-64'
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        {conversations.length === 0 ? (
+          <div className='flex flex-col items-center justify-center text-center text-muted-foreground py-24'>
+            <div className='text-5xl mb-4'>💬</div>
+            <p className='text-lg font-medium'>אין שיחות עדיין</p>
+            <p className='text-sm'>ברגע שתשלח או תקבל הודעה – היא תופיע כאן.</p>
+          </div>
+        ) : (
+          conversations.map((conv) => {
+            const partnerId = conv.members.find((id) => id !== userId) ?? "";
+            const partnerName = partnerNames[partnerId] ?? "משתמש";
+
+            return (
+              <Link
+                key={conv.id}
+                href={`/chat/${conv.id}`}
+                className='flex items-center p-3 gap-3 hover:bg-muted transition border-b border-gray-200 dark:border-gray-700 dark:hover:bg-gray-800'
+              >
+                <div className='flex-shrink-0'>
+                  {partnerAvatars[partnerId] ? (
+                    <Image
+                      src={partnerAvatars[partnerId]}
+                      alt={partnerName}
+                      width={48}
+                      height={48}
+                      className='rounded-full object-cover'
+                    />
+                  ) : (
+                    <div className='flex-shrink-0 w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-lg ml-4 dark:bg-blue-700'>
+                      {getInitials(partnerName)}
+                    </div>
+                  )}
+                </div>
+                <div className='flex-1 min-w-0'>
+                  <div className='flex justify-between items-center mb-1'>
+                    <p className='text-sm font-semibold text-gray-900 truncate dark:text-gray-100'>
+                      {partnerName}
+                    </p>
+                    <p className='text-xs text-gray-400 whitespace-nowrap dark:text-gray-400'>
+                      {conv.last_message &&
+                      dayjs().isSame(conv.last_message.created_at, "day")
+                        ? new Date(
+                            conv.last_message.created_at
+                          ).toLocaleTimeString("he-IL", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        : conv.last_message &&
+                            dayjs()
+                              .subtract(1, "day")
+                              .isSame(conv.last_message.created_at, "day")
+                          ? "אתמול"
+                          : conv.last_message
+                            ? dayjs(conv.last_message.created_at).format(
+                                "DD/MM/YYYY"
+                              )
+                            : ""}
+                    </p>
                   </div>
-                )}
-              </div>
-              <div className='flex-1 min-w-0'>
-                <div className='flex justify-between items-center mb-1'>
-                  <p className='text-sm font-semibold text-gray-900 truncate dark:text-gray-100'>
-                    {partnerName}
-                  </p>
-                  <p className='text-xs text-gray-400 whitespace-nowrap dark:text-gray-400'>
-                    {conv.last_message &&
-                    dayjs().isSame(conv.last_message.created_at, "day")
-                      ? new Date(
-                          conv.last_message.created_at
-                        ).toLocaleTimeString("he-IL", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      : conv.last_message &&
-                          dayjs()
-                            .subtract(1, "day")
-                            .isSame(conv.last_message.created_at, "day")
-                        ? "אתמול"
-                        : conv.last_message
-                          ? dayjs(conv.last_message.created_at).format(
-                              "DD/MM/YYYY"
-                            )
-                          : ""}
+                  <p
+                    className='text-sm text-gray-600 truncate dark:text-gray-300'
+                    title={conv.last_message?.content ?? ""}
+                  >
+                    {conv.last_message?.content ?? "אין הודעות"}
                   </p>
                 </div>
-                <p
-                  className='text-sm text-gray-600 truncate dark:text-gray-300'
-                  title={conv.last_message?.content ?? ""}
-                >
-                  {conv.last_message?.content ?? "אין הודעות"}
-                </p>
-              </div>
-            </Link>
-          );
-        })
-      )}
+              </Link>
+            );
+          })
+        )}
+      </div>
     </div>
   );
 }

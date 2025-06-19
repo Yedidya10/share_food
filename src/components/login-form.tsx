@@ -11,6 +11,7 @@ import {
 // import { Label } from "@/components/ui/label";
 import { getLocale, getTranslations } from "next-intl/server";
 import { oauthAction } from "@/lib/supabase/actions/auth";
+import { Link } from "@/i18n/navigation";
 
 export async function LoginForm({
   className,
@@ -109,8 +110,15 @@ export async function LoginForm({
         </CardContent>
       </Card>
       <div className='text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4'>
-        By clicking continue, you agree to our <a href='#'>Terms of Service</a>{" "}
-        and <a href='#'>Privacy Policy</a>.
+        בחיבור עם חשבון גוגל, אתה מאשר את{" "}
+        <Link target='_blank' href='/terms' locale={locale}>
+          תנאי השימוש
+        </Link>{" "}
+        שלנו ואת{" "}
+        <Link target='_blank' href='/privacy' locale={locale}>
+          מדיניות הפרטיות
+        </Link>
+        .
       </div>
     </div>
   );

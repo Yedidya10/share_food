@@ -52,7 +52,10 @@ export async function updateSession(
   const isPublicPath =
     pathWithoutLocale === "/" ||
     pathWithoutLocale.startsWith("/auth") ||
-    pathWithoutLocale.startsWith("/login");
+    pathWithoutLocale.startsWith("/login") ||
+    pathWithoutLocale.startsWith("/privacy") ||
+    pathWithoutLocale.startsWith("/terms") ||
+    pathWithoutLocale.startsWith("/about");
 
   // If the user is not authenticated and the path is not public,
   // redirect them to the login page.

@@ -4,6 +4,7 @@ import {
   isPossiblePhoneNumber,
 } from "react-phone-number-input";
 import { TranslationType } from "@/types/translation";
+import { validateCity, validateStreet } from "@/lib/supabase/actions/locations";
 
 export function itemBaseSchema(translation: TranslationType) {
   return z.object({
@@ -33,7 +34,31 @@ export function locationSchema(translation: TranslationType) {
         path: ["postalCode"],
         message: translation.postalCodeError,
       }
-    );
+    )
+    .superRefine(async (data, ctx) => {
+      // ולידציה לעיר
+      const isValidCity = await validateCity(data.city);
+      if (!isValidCity) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "עיר לא קיימת, נא לבחור מתוך הרשימה",
+          path: ["city"],
+        });
+      }
+
+      // ולידציה לרחוב
+      const isValidStreet = await validateStreet({
+        street: data.streetName,
+        city: data.city,
+      });
+      if (!isValidStreet) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "רחוב לא קיים, נא לבחור מתוך הרשימה",
+          path: ["streetName"],
+        });
+      }
+    });
 }
 
 export function contactSchema(translation: TranslationType) {

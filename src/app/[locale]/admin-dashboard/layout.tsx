@@ -1,13 +1,17 @@
-import AdminDashboardMenu from "@/components/adminDashboardMenu/AdminDashboardMenu";
+// app/[locale]/admin-dashboard/layout.tsx
 
-export default async function DashboardLayout({
+import DashboardLayout from "@/components/layouts/Dashboard";
+import { Shapes, Users } from "lucide-react";
+
+const navItems = [
+  { label: "Users", href: "/admin-dashboard/users", icon: <Users /> },
+  { label: "Items", href: "/admin-dashboard/items", icon: <Shapes /> },
+];
+
+export default function AdminDashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div className='h-[calc(100vh-80px)] overflow-y-auto p-4'>
-      <AdminDashboardMenu>{children}</AdminDashboardMenu>
-    </div>
-  );
+  return <DashboardLayout navItems={navItems}>{children}</DashboardLayout>;
 }

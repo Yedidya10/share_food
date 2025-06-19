@@ -6,7 +6,7 @@ import { routing } from "@/i18n/routing";
 import ThemeProvider from "@/components/theme/ThemeProvider";
 import "./globals.css";
 import OneTapComponent from "@/components/OneTapComponent";
-import MainHeader from "@/components/layers/mainHeader/MainHeader";
+import MainHeader from "@/components/layouts/mainHeader/MainHeader";
 import FeedbackButton from "@/components/feedbackButton/FeedbackButton";
 import QueryProvider from "@/lib/reactQuery/QueryProvider";
 import { Toaster } from "@/components/ui/sonner";

@@ -1,14 +1,18 @@
-import UserDashboardMenu from "@/components/userDashboardMenu/UserDashboardMenu";
+// app/[locale]/dashboard/layout.tsx
 
-export default function DashboardLayout({
+import DashboardLayout from "@/components/layouts/Dashboard";
+import { CircleUserRound, Settings, Shapes } from "lucide-react";
+
+const navItems = [
+  { label: "Profile", href: "/dashboard/profile", icon: <CircleUserRound /> },
+  { label: "My Items", href: "/dashboard/my-items", icon: <Shapes /> },
+  { label: "Settings", href: "/dashboard/settings", icon: <Settings /> },
+];
+
+export default function DashboardUserLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div className='flex flex-col md:flex-row h-[calc(100vh-80px)] overflow-y-auto relative'>
-      <UserDashboardMenu />
-      <main className='w-full overflow-y-auto p-4'>{children}</main>
-    </div>
-  );
+  return <DashboardLayout navItems={navItems}>{children}</DashboardLayout>;
 }

@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/client";
 type Coords = { lat: number; lng: number };
 
 export type UseInfiniteItemsOptions = {
-  userCoords?: Coords; // אופציונלי כברירת מחדל
+  userCoords?: Coords;
   sortBy?: "distance" | "date";
   category?: string[];
   search?: string;
@@ -12,7 +12,7 @@ export type UseInfiniteItemsOptions = {
   fromDate?: Date;
   toDate?: Date;
   excludeUserId?: string;
-  // TODO: Add status filter and items of specific user
+  includeUserId?: string;
   status?: string[];
   pageSize?: number;
 };
@@ -27,6 +27,7 @@ export default function useItems(options: UseInfiniteItemsOptions = {}) {
     fromDate,
     toDate,
     excludeUserId,
+    includeUserId,
     status,
     pageSize = 20,
   } = options;
@@ -44,6 +45,7 @@ export default function useItems(options: UseInfiniteItemsOptions = {}) {
         fromDate: fromDate?.toISOString(),
         toDate: toDate?.toISOString(),
         excludeUserId,
+        includeUserId,
         status,
         lat: userCoords?.lat,
         lng: userCoords?.lng,
@@ -55,13 +57,16 @@ export default function useItems(options: UseInfiniteItemsOptions = {}) {
       const { data, error } = await supabase.rpc("get_items_nearby", {
         sort_by: sortBy,
         category_filter: category?.length ? category : null,
+        status_filter: status?.length ? status : null,
         search_term: search ?? null,
         max_distance_km: maxDistanceKm ?? null,
         from_date: fromDate ?? null,
         to_date: toDate ?? null,
+        include_user_id: includeUserId ?? null,
         exclude_user_id: excludeUserId ?? null,
         limit_count: pageSize,
         offset_count: pageParam,
+        // רק אם צריך לחשב מרחק:
         ...(shouldUseDistance && {
           user_lat: userCoords!.lat,
           user_lng: userCoords!.lng,

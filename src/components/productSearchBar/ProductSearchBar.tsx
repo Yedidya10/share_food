@@ -1,13 +1,40 @@
+"use client";
+
 import { Search } from "lucide-react";
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useState, useEffect } from "react";
 
 export default function ProductSearchBar() {
-  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [searchQuery, setSearchQuery] = useState(
+    () => searchParams.get("search") ?? ""
+  );
+
+  useEffect(() => {
+    setSearchQuery(searchParams.get("search") ?? "");
+  }, [searchParams]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
+    const newValue = e.target.value;
+    setSearchQuery(newValue);
+
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (newValue.trim()) {
+      params.set("search", newValue);
+    } else {
+      params.delete("search");
+    }
+
+    // אפס את הדף כדי ש-infinite scroll יתחיל מהתחלה
+    params.set("page", "0");
+
+    router.replace("?" + params.toString());
   };
 
   return (

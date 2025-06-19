@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -12,40 +14,82 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { LocateIcon } from "lucide-react";
+import { getCoordinatesFromAddress } from "@/lib/googleMaps/location";
 
-type Props = {
+export function SortForm({
+  userDefaultAddress,
+}: {
   userDefaultAddress?: string;
-  onSortChange?: (
-    sortBy: string,
-    locationData?: { latitude: number; longitude: number } | string | undefined
-  ) => void;
-};
+}) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
-export function SortForm({ userDefaultAddress, onSortChange }: Props) {
-  const [sortBy, setSortBy] = useState("date");
+  const [sortBy, setSortBy] = useState(searchParams.get("sort") ?? "date");
   const [distanceType, setDistanceType] = useState(
     userDefaultAddress ? "profile" : "manual"
   );
   const [manualAddress, setManualAddress] = useState("");
 
-  const handleLocate = () => {
-    navigator.geolocation.getCurrentPosition((pos) => {
-      alert(`המיקום שלך: (${pos.coords.latitude}, ${pos.coords.longitude})`);
-      // שלח מיקום ל־onSortChange אם צריך
+  useEffect(() => {
+    setSortBy(searchParams.get("sort") ?? "date");
+  }, [searchParams]);
+
+  const updateUrlParams = (params: Record<string, string | undefined>) => {
+    const current = new URLSearchParams(searchParams.toString());
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value) current.set(key, value);
+      else current.delete(key);
     });
+
+    current.set("page", "0"); // אפס את עמוד האינסוף
+
+    router.replace("?" + current.toString());
+  };
+
+  const handleSortChange = async () => {
+    if (sortBy === "distance") {
+      if (distanceType === "manual" && manualAddress) {
+        const coords = await getCoordinatesFromAddress(manualAddress);
+        if (coords) {
+          updateUrlParams({
+            sort: "distance",
+            lat: coords.lat.toString(),
+            lng: coords.lng.toString(),
+          });
+        }
+      } else if (distanceType === "geo") {
+        navigator.geolocation.getCurrentPosition((pos) => {
+          updateUrlParams({
+            sort: "distance",
+            lat: pos.coords.latitude.toString(),
+            lng: pos.coords.longitude.toString(),
+          });
+        });
+      } else {
+        // פרופיל - לא מוגדר פה, אבל תוכל לשלוח lat/lng דרך props
+        updateUrlParams({ sort: "distance" });
+      }
+    } else {
+      updateUrlParams({
+        sort: "date",
+        lat: undefined,
+        lng: undefined,
+      });
+    }
   };
 
   return (
-    <form className='grid gap-4'>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSortChange();
+      }}
+      className='grid gap-4'
+    >
       <div className='grid gap-2'>
         <Label>מיין לפי</Label>
-        <Select
-          value={sortBy}
-          onValueChange={(v) => {
-            setSortBy(v);
-            onSortChange?.(v);
-          }}
-        >
+        <Select value={sortBy} onValueChange={setSortBy}>
           <SelectTrigger>
             <SelectValue placeholder='בחר מיון' />
           </SelectTrigger>
@@ -76,14 +120,14 @@ export function SortForm({ userDefaultAddress, onSortChange }: Props) {
 
           {distanceType === "manual" && (
             <Input
-              placeholder='כתוב את הכתובת שלך'
+              placeholder='הזן את הכתובת שלך'
               value={manualAddress}
               onChange={(e) => setManualAddress(e.target.value)}
             />
           )}
 
           {distanceType === "geo" && (
-            <Button type='button' variant='outline' onClick={handleLocate}>
+            <Button type='button' variant='outline' onClick={handleSortChange}>
               <LocateIcon className='mr-2 h-4 w-4' /> אתר אותי
             </Button>
           )}

@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Filter, SortDesc } from "lucide-react";
 import FilterDrawerDialog from "@/components/filterDrawerDialog/FilterDrawerDialog";
-
 import ProductSearchBar from "@/components/productSearchBar/ProductSearchBar";
 import {
   Tooltip,
@@ -18,12 +17,12 @@ export default function FilterAndSearchBar() {
   const [openSort, setOpenSort] = useState(false);
 
   return (
-    <div className='flex gap-3 m-auto w-full sticky top-0 z-50'>
+    <div className='flex p-4 gap-3 m-auto w-full sticky top-20 z-50 bg-white dark:bg-[black] opacity-98'>
       <FilterDrawerDialog
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
       />
-      <SortDrawerDialog openFilter={openSort} setOpenFilter={setOpenSort} />
+      <SortDrawerDialog openSort={openSort} setOpenSort={setOpenSort} />
       <ProductSearchBar />
       <Tooltip>
         <TooltipTrigger asChild>

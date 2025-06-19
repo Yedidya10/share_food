@@ -1,0 +1,84 @@
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { createClient } from "@/lib/supabase/client";
+
+type Coords = { lat: number; lng: number };
+
+export type UseInfiniteItemsOptions = {
+  userCoords?: Coords; // אופציונלי כברירת מחדל
+  sortBy?: "distance" | "date";
+  category?: string[];
+  search?: string;
+  maxDistanceKm?: number;
+  fromDate?: Date;
+  toDate?: Date;
+  excludeUserId?: string;
+  // TODO: Add status filter and items of specific user
+  status?: string[];
+  pageSize?: number;
+};
+
+export default function useItems(options: UseInfiniteItemsOptions = {}) {
+  const {
+    userCoords,
+    sortBy = "date",
+    category,
+    search,
+    maxDistanceKm,
+    fromDate,
+    toDate,
+    excludeUserId,
+    status,
+    pageSize = 20,
+  } = options;
+
+  const shouldUseDistance = sortBy === "distance" && userCoords;
+
+  return useInfiniteQuery({
+    queryKey: [
+      "items",
+      {
+        sortBy,
+        category,
+        search,
+        maxDistanceKm,
+        fromDate: fromDate?.toISOString(),
+        toDate: toDate?.toISOString(),
+        excludeUserId,
+        status,
+        lat: userCoords?.lat,
+        lng: userCoords?.lng,
+      },
+    ],
+    queryFn: async ({ pageParam = 0 }) => {
+      const supabase = createClient();
+
+      const { data, error } = await supabase.rpc("get_items_nearby", {
+        sort_by: sortBy,
+        category_filter: category?.length ? category : null,
+        search_term: search ?? null,
+        max_distance_km: maxDistanceKm ?? null,
+        from_date: fromDate ?? null,
+        to_date: toDate ?? null,
+        exclude_user_id: excludeUserId ?? null,
+        limit_count: pageSize,
+        offset_count: pageParam,
+        ...(shouldUseDistance && {
+          user_lat: userCoords!.lat,
+          user_lng: userCoords!.lng,
+        }),
+      });
+
+      if (error) {
+        console.error("Error fetching items:", error);
+        throw new Error(error.message);
+      }
+
+      return data ?? [];
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      if (!lastPage || lastPage.length < pageSize) return undefined;
+      return allPages.flat().length;
+    },
+    initialPageParam: 0,
+  });
+}

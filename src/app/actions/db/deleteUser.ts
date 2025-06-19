@@ -3,18 +3,28 @@
 import { createClient } from "@/lib/supabase/server";
 
 export async function deleteUser(userId: string) {
-  const supabase = await createClient();
+  try {
+    if (!userId) {
+      throw new Error("User ID is required");
+    }
 
-  if (!userId) {
-    throw new Error("User ID is required.");
+    const supabase = await createClient();
+
+    const { error } = await supabase.auth.admin.deleteUser(userId, true);
+
+    if (error) {
+      console.error("Error deleting user:", error);
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+
+    return {
+      success: true,
+      message: "User deleted successfully",
+    };
+  } catch (error) {
+    console.error(error);
   }
-
-  const { data, error } = await supabase.auth.admin.deleteUser(userId, true);
-
-  if (error) {
-    console.error("Error deleting user:", error);
-    throw new Error("Failed to delete user.");
-  }
-
-  return { message: "User deleted successfully.", user: data.user };
 }

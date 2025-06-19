@@ -22,8 +22,7 @@ export default async function ChatThread({
     const supabase = await createClient();
     const { data: userData, error: userError } = await supabase.auth.getUser();
 
-    if (userError) {
-      console.error("User error:", JSON.stringify(userError, null, 2));
+    if (userError || !userData || !userData.user) {
       throw new Error("User not authenticated");
     }
 

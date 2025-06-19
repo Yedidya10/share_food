@@ -5,5 +5,9 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <UserDashboardMenu>{children}</UserDashboardMenu>;
+  return (
+    <div className='h-[calc(100vh-80px)] overflow-y-auto p-4'>
+      <UserDashboardMenu>{children}</UserDashboardMenu>
+    </div>
+  );
 }

@@ -2,13 +2,14 @@
 
 import Script from "next/script";
 import { createClient } from "@/lib/supabase/client";
-import { useEffect, useRef, useState } from "react";
+import { CredentialResponse } from "google-one-tap";
+import { useEffect } from "react";
 
-export default function OneTapComponent() {
+const OneTapComponent = () => {
   const supabase = createClient();
-  const [scriptLoaded, setScriptLoaded] = useState(false);
 
-  const generateNonce = async (): Promise<[string, string]> => {
+  // generate nonce to use for google id token sign-in
+  const generateNonce = async (): Promise<string[]> => {
     const nonce = btoa(
       String.fromCharCode(...crypto.getRandomValues(new Uint8Array(32)))
     );
@@ -23,71 +24,59 @@ export default function OneTapComponent() {
     return [nonce, hashedNonce];
   };
 
-  const initializedRef = useRef(false);
-
   useEffect(() => {
-    if (!scriptLoaded || initializedRef.current) return;
-    initializedRef.current = true;
+    const initializeGoogleOneTap = () => {
+      console.log("Initializing Google One Tap");
+      window.addEventListener("load", async () => {
+        const [nonce, hashedNonce] = await generateNonce();
+        console.log("Nonce: ", nonce, hashedNonce);
 
-    const initializeGoogleOneTap = async () => {
-      const [nonce, hashedNonce] = await generateNonce();
+        // check if there's already an existing session before initializing the one-tap UI
+        const { data, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error("Error getting session", error);
+        }
+        if (data.session) {
+          return;
+        }
 
-      const { data, error } = await supabase.auth.getSession();
-      if (error) {
-        console.error("Error getting session", error);
-        return;
-      }
-      if (data.session) {
-        return;
-      }
+        /* global google */
+        google.accounts.id.initialize({
+          client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
+          callback: async (response: CredentialResponse) => {
+            try {
+              // send id token returned in response.credential to supabase
+              const { data, error } = await supabase.auth.signInWithIdToken({
+                provider: "google",
+                token: response.credential,
+                nonce,
+              });
 
-      if (
-        typeof window === "undefined" ||
-        !window.google ||
-        !window.google.accounts ||
-        !window.google.accounts.id
-      ) {
-        console.error("Google One Tap script not loaded properly");
-        return;
-      }
-
-      window.google.accounts.id.initialize({
-        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        callback: async (response: any) => {
-          try {
-            const { error } = await supabase.auth.signInWithIdToken({
-              provider: "google",
-              token: response.credential,
-              nonce,
-            });
-
-            if (error) throw error;
-            console.log("Successfully signed in");
-          } catch (error) {
-            console.error("Login error", error);
-          }
-        },
-        nonce: hashedNonce,
-        // use_fedcm_for_prompt: true, // Uncomment if you want to use FedCM
-        auto_select: true, // Automatically select the account if available
-        cancel_on_tap_outside: true, // Allow tapping outside to close the prompt
+              if (error) throw error;
+              console.log("Session data: ", data);
+              console.log("Successfully logged in with Google One Tap");
+            } catch (error) {
+              console.error("Error logging in with Google One Tap", error);
+            }
+          },
+          nonce: hashedNonce,
+          // with chrome's removal of third-party cookies, we need to use FedCM instead (https://developers.google.com/identity/gsi/web/guides/fedcm-migration)
+          use_fedcm_for_prompt: true,
+          cancel_on_tap_outside: true,
+        });
+        google.accounts.id.prompt(); // Display the One Tap UI
       });
-
-      window.google.accounts.id.prompt();
     };
-
     initializeGoogleOneTap();
-  }, [scriptLoaded, supabase.auth]);
+    return () => window.removeEventListener("load", initializeGoogleOneTap);
+  }, [, supabase.auth]);
 
   return (
     <>
-      <Script
-        src='https://accounts.google.com/gsi/client'
-        strategy='afterInteractive'
-        onLoad={() => setScriptLoaded(true)}
-      />
+      <Script src='https://accounts.google.com/gsi/client' />
       <div id='oneTap' className='fixed top-0 right-0 z-[100]' />
     </>
   );
-}
+};
+
+export default OneTapComponent;

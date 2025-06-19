@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { usePathname, useRouter } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
@@ -14,7 +14,6 @@ export default function StartChatButton({ targetUserId }: Props) {
   const [loading, setLoading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const router = useRouter();
-  const pathname = usePathname();
 
   const supabase = createClient();
 
@@ -78,22 +77,8 @@ export default function StartChatButton({ targetUserId }: Props) {
   };
 
   return (
-    <>
-      {currentUserId ? (
-        <Button onClick={handleClick} disabled={loading}>
-          {loading ? <Loader2 className='animate-spin w-4 h-4' /> : "התחל שיחה"}
-        </Button>
-      ) : (
-        // Display a message if the user is not logged in
-        <Button
-          onClick={() =>
-            router.push(`/login?redirect=${encodeURIComponent(pathname)}`)
-          }
-          disabled={loading}
-        >
-          עליך להתחבר כדי להתחיל שיחה
-        </Button>
-      )}
-    </>
+    <Button onClick={handleClick} disabled={loading}>
+      {loading ? <Loader2 className='animate-spin w-4 h-4' /> : "התחל שיחה"}
+    </Button>
   );
 }

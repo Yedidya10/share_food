@@ -41,7 +41,7 @@
       "descriptionMinLength": "התיאור חייב להכיל לפחות 10 תווים",
       "descriptionMaxLength": "התיאור לא יכול להיות ארוך מ-300 תווים",
       "uploadImages": "העלאת תמונות",
-      "uploadImagesError": "אנא העלה לפחות תמונה אחתת (עד 3 תמונות)",
+      "uploadImagesError": "אנא העלה לפחות תמונה אחת (עד 3 תמונות)",
       "addressDetails": "כתובת נקודת מסירה",
       "streetName": "שם הרחוב",
       "streetNamePlaceholder": "למשל, ז'בוטינסקי",

@@ -27,7 +27,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Share Food",
+  title: "SpareBite - שיתוף מזון",
   keywords: [
     "food waste",
     "food rescue",
@@ -38,19 +38,19 @@ export const metadata: Metadata = {
     "food security",
   ],
   description:
-    "Share Food is a platform dedicated to reducing food waste by connecting those with surplus food to those in need. Join us in our mission to create a sustainable future by rescuing food and supporting communities.",
+    "SpareBite is a platform dedicated to reducing food waste by connecting those with surplus food to those who can use it. Join us in our mission to create a sustainable future by saving food and supporting communities.",
   openGraph: {
-    title: "Share Food",
+    title: "SpareBite - שיתוף מזון",
     description:
-      "Share Food is a platform dedicated to reducing food waste by connecting those with surplus food to those in need. Join us in our mission to create a sustainable future by rescuing food and supporting communities.",
+      "SpareBite היא פלטפורמה המוקדשת להפחתת בזבוז מזון על ידי חיבור בין אנשים עם מזון עודף לאנשים שיימצאו בו שימוש. הצטרפו אלינו במטרה שלנו ליצור עתיד בר קיימא על ידי הצלת מזון ותמיכה בקהילות.",
     url: "https://savefood.org",
-    siteName: "Save Food",
+    siteName: "SpareBite",
     images: [
       {
-        url: "https://savefood.org/og-image.png",
+        url: "https://www.sparebite.com/icon-512x512.png",
         width: 1200,
         height: 630,
-        alt: "Save Food - Reduce Food Waste",
+        alt: "SpareBite - שיתוף מזון",
       },
     ],
     locale: "he_IL",

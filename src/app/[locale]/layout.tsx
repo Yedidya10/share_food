@@ -8,6 +8,8 @@ import "./globals.css";
 import OneTapComponent from "@/components/OneTapComponent";
 import MainHeader from "@/components/layers/mainHeader/MainHeader";
 import FeedbackButton from "@/components/feedbackButton/FeedbackButton";
+import QueryProvider from "@/lib/reactQuery/QueryProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -90,11 +92,26 @@ export default async function LocaleLayout({
           disableTransitionOnChange
         >
           <NextIntlClientProvider>
-            <MainHeader />
-            <div className='pt-[80px] m-0 ' />
-            {children}
-            {login}
-            <FeedbackButton />
+            <QueryProvider>
+              <MainHeader />
+              <Toaster
+                position='top-center'
+                richColors
+                closeButton={false}
+                toastOptions={{
+                  className:
+                    "bg-white dark:bg-gray-800 text-gray-900 dark:text-white",
+                  style: {
+                    borderRadius: "8px",
+                    padding: "16px",
+                  },
+                }}
+              />
+              <div className='pt-[80px] m-0 ' />
+              {children}
+              {login}
+              <FeedbackButton />
+            </QueryProvider>
           </NextIntlClientProvider>
         </ThemeProvider>
       </body>

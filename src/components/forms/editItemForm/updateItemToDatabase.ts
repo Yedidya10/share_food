@@ -7,10 +7,15 @@ import { createClient } from "@/lib/supabase/server";
 
 type EditItemFormSchema = z.infer<ReturnType<typeof editItemSchema>>;
 
-export default async function onEditItemFormSubmit(
-  values: EditItemFormSchema,
-  itemId: string
-) {
+export default async function updateItemToDatabase({
+  values,
+  itemId,
+  itemStatus
+}: {
+  values: EditItemFormSchema;
+  itemId: string;
+  itemStatus: string;
+}) {
   try {
     const supabase = await createClient();
     const { error: userError } = await supabase.auth.getUser();
@@ -80,16 +85,22 @@ export default async function onEditItemFormSubmit(
         phone_number: values.phoneNumber || null,
         is_have_whatsapp: !!values.isHaveWhatsApp,
         email: values.email?.trim() || null,
-        status: "edited", // Set status to 'edited'
+        status: itemStatus === "pending" ? "pending" : "edited",
         // ... כל שאר השדות
       })
       .eq("id", itemId);
 
     if (updateError) {
-      throw new Error(`Insert error: ${updateError.message}`);
+      return {
+        success: false,
+        message: `Error  updating
+         item: ${updateError.message}`,
+      };
     } else {
-      //form.reset();
-      // setPreviewUrls([]); // Clear preview URLs after successful submission
+      return {
+        success: true,
+        message: "Item updated successfully",
+      };
     }
   } catch (error) {
     console.error(error);

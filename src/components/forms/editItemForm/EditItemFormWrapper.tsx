@@ -10,6 +10,8 @@ const EditItemForm = dynamic(() => import("./EditItemForm"), {
 
 export default function EditItemFormWrapper(props: {
   itemId: string;
+  itemStatus: string;
+  setIsEditItemFormSubmitSuccess: React.Dispatch<React.SetStateAction<boolean | null>>;
   initialValues: InitialValues;
   translation: TranslationType;
   open: boolean;

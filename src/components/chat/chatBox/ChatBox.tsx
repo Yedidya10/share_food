@@ -141,93 +141,102 @@ export default function ChatBox({
   }
 
   return (
-    <div className='flex flex-col h-full overflow-hidden'>
-      <div className='px-2 py-4 border-b h-[70px] sticky top-0'>
+    <div className='flex flex-col h-full relative'>
+      {/* Header */}
+      <div className='h-[70px] border-b sticky top-0 z-20 flex items-center'>
         <ChatHeader
           fullName={otherUser.full_name}
           avatarUrl={otherUser.avatar_url}
         />
       </div>
-      {messages.length > 0 && (
-        <div className='flex-1 overflow-y-auto px-4 py-2'>
-          {groupMessagesByDate().map((group, index) => (
+
+      {/* Messages area */}
+      <div className='flex-1 overflow-y-auto px-4 py-2 space-y-2'>
+        {messages.length > 0 ? (
+          groupMessagesByDate().map((group, index) => (
             <div key={index} className='flex flex-col items-center'>
-              <div className='text-center text-xs text-gray-400 my-2'>
+              <div className='text-center text-xs text-muted-foreground my-2'>
                 {group.date}
               </div>
               {group.messages.map((msg) => (
                 <div
                   key={msg.id}
-                  className={`px-2 py-1 text-sm rounded transition w-max max-w-[70%] mb-1 flex flex-col ${
+                  className={`px-3 py-2 text-sm rounded-xl shadow-sm transition w-fit max-w-[75%] mb-1 flex flex-col ${
                     msg.sender_id === userId
-                      ? "bg-blue-100 text-blue-800 self-end dark:bg-blue-200"
-                      : "bg-gray-100 text-gray-800 self-start dark:bg-gray-200"
+                      ? "bg-primary/20 text-primary self-end"
+                      : "bg-muted text-muted-foreground self-start"
                   }`}
                 >
                   <div>{msg.content}</div>
-                  <div className='text-[10px] text-gray-500 text-end mt-1'>
+                  <div className='text-[10px] text-right text-gray-500 mt-1'>
                     {dayjs(msg.created_at).format("HH:mm")}
                   </div>
                 </div>
               ))}
               <div ref={messagesEndRef} />
             </div>
-          ))}
-        </div>
-      )}
-      <div className='border-t p-2 bg-white dark:bg-gray-900 relative z-1000 flex flex-col space-y-2'>
-        <div className='flex items-center space-x-2 h-[20px]'>
+          ))
+        ) : (
+          <div className='text-center text-sm text-muted-foreground mt-10'>
+            אין עדיין הודעות
+          </div>
+        )}
+      </div>
+
+      {/* Input area */}
+      <div className='bg-white dark:bg-gray-900 border-t p-3 sticky bottom-0 z-20'>
+        <div className='flex items-center space-x-2 mb-2'>
           <Checkbox
             id='sendOnEnter'
             checked={sendOnEnter}
             onCheckedChange={(checked: boolean) => setSendOnEnter(!!checked)}
           />
-          <Label htmlFor='sendOnEnter' className='text-sm text-gray-600'>
+          <Label
+            htmlFor='sendOnEnter'
+            className='text-sm text-muted-foreground'
+          >
             שלח הודעה בלחיצת Enter
           </Label>
         </div>
-        <div className='flex space-x-2'>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className='flex w-full space-x-2 items-end'
-            >
-              <FormField
-                control={form.control}
-                name='message'
-                render={({ field }) => (
-                  <FormItem className='flex-1'>
-                    <FormControl>
-                      <Textarea
-                        rows={1}
-                        maxLength={1000}
-                        autoFocus
-                        autoComplete='off'
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            if (e.shiftKey) {
-                              return;
-                            }
-                            if (sendOnEnter) {
-                              e.preventDefault();
-                              form.handleSubmit(onSubmit)();
-                            }
+
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className='flex gap-2 items-end'
+          >
+            <FormField
+              control={form.control}
+              name='message'
+              render={({ field }) => (
+                <FormItem className='flex-1'>
+                  <FormControl>
+                    <Textarea
+                      rows={1}
+                      maxLength={1000}
+                      autoFocus
+                      autoComplete='off'
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          if (e.shiftKey) return;
+                          if (sendOnEnter) {
+                            e.preventDefault();
+                            form.handleSubmit(onSubmit)();
                           }
-                        }}
-                        className='resize-none max-h-[100px]'
-                        {...field}
-                        placeholder='כתוב הודעה...'
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <Button type='submit' className='whitespace-nowrap'>
-                שלח
-              </Button>
-            </form>
-          </Form>
-        </div>
+                        }
+                      }}
+                      className='resize-none max-h-[120px] rounded-xl bg-muted dark:bg-muted text-sm'
+                      {...field}
+                      placeholder='כתוב הודעה...'
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <Button type='submit' className='rounded-xl'>
+              שלח
+            </Button>
+          </form>
+        </Form>
       </div>
     </div>
   );

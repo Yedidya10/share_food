@@ -11,7 +11,7 @@ type Props = {
 
 export default function ChatHeader({ fullName, avatarUrl }: Props) {
   return (
-    <div className='flex items-center gap-2'>
+    <div className='flex items-center gap-2 px-2 py-4'>
       <Link href='/chat' className='text-gray-400 md:hidden'>
         <ChevronLeft className='rtl:rotate-180' />
       </Link>

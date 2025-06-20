@@ -1,7 +1,6 @@
 import ChatBox from "@/components/chat/chatBox/ChatBox";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "@/i18n/navigation";
-import ChatHeader from "@/components/chat/chatHeader/ChatHeader";
 
 export default async function ChatThread({
   params,
@@ -22,8 +21,8 @@ export default async function ChatThread({
     const supabase = await createClient();
     const { data: userData, error: userError } = await supabase.auth.getUser();
 
-    if (userError || !userData || !userData.user) {
-      throw new Error("User not authenticated");
+    if (userError) {
+      throw new Error("Failed to fetch user data");
     }
 
     const { data: conversation, error: conversationError } = await supabase
@@ -42,7 +41,6 @@ export default async function ChatThread({
 
     if (!otherUserId) throw new Error("Other user not found");
 
-    // שלב 3: הבאת פרטים של המשתמש השני
     const { data: otherUser, error: otherUserError } = await supabase
       .from("profiles")
       .select("id, full_name, avatar_url")
@@ -66,11 +64,8 @@ export default async function ChatThread({
 
     return (
       <div className='flex flex-1 flex flex-col h-[calc(100vh-80px)] overflow-hidden'>
-        <ChatHeader
-          fullName={otherUser.full_name}
-          avatarUrl={otherUser.avatar_url}
-        />
         <ChatBox
+          otherUser={otherUser}
           conversationId={conversationId}
           userId={userData.user.id}
           initialMessages={messagesData || []}

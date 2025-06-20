@@ -9,6 +9,7 @@ import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { Label } from "@/components/ui/label";
+import ChatHeader from "@/components/chat/chatHeader/ChatHeader";
 
 type Message = {
   id: string;
@@ -19,10 +20,16 @@ type Message = {
 };
 
 export default function ChatBox({
+  otherUser,
   conversationId,
   userId,
   initialMessages = [],
 }: {
+  otherUser: {
+    id: string;
+    full_name: string;
+    avatar_url: string;
+  };
   conversationId: string;
   userId?: string;
   initialMessages: Message[];
@@ -135,6 +142,12 @@ export default function ChatBox({
 
   return (
     <div className='flex flex-col h-full overflow-hidden'>
+      <div className='px-2 py-4 border-b h-[70px] sticky top-0'>
+        <ChatHeader
+          fullName={otherUser.full_name}
+          avatarUrl={otherUser.avatar_url}
+        />
+      </div>
       {messages.length > 0 && (
         <div className='flex-1 overflow-y-auto px-4 py-2'>
           {groupMessagesByDate().map((group, index) => (
@@ -167,7 +180,7 @@ export default function ChatBox({
           <Checkbox
             id='sendOnEnter'
             checked={sendOnEnter}
-            onCheckedChange={(checked) => setSendOnEnter(!!checked)}
+            onCheckedChange={(checked: boolean) => setSendOnEnter(!!checked)}
           />
           <Label htmlFor='sendOnEnter' className='text-sm text-gray-600'>
             שלח הודעה בלחיצת Enter

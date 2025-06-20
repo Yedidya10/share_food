@@ -141,7 +141,7 @@ export default function ChatBox({
   }
 
   return (
-    <div className='h-[calc(100dvh-80px)] flex flex-col relative'>
+    <div className='h-[calc(100svh-80px)] flex flex-col relative'>
       {/* HEADER - קבוע למעלה */}
       <div className='border-b sticky top-0 z-20 flex items-center'>
         <ChatHeader

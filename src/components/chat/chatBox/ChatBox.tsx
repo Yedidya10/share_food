@@ -141,9 +141,9 @@ export default function ChatBox({
   }
 
   return (
-    <div className='h-[100dvh] flex flex-col relative'>
+    <div className='h-[calc(100dvh-80px)] flex flex-col relative'>
       {/* HEADER - קבוע למעלה */}
-      <div className='h-[70px] border-b sticky top-0 z-20 flex items-center'>
+      <div className='border-b sticky top-0 z-20 flex items-center'>
         <ChatHeader
           fullName={otherUser.full_name}
           avatarUrl={otherUser.avatar_url}
@@ -178,7 +178,7 @@ export default function ChatBox({
       </div>
 
       {/* INPUT - קבוע בתחתית המסך */}
-      <div className='bg-white dark:bg-gray-900 border-t p-3 sticky bottom-0 z-20'>
+      <div className='border-t p-3 sticky bottom-0 z-20'>
         <div className='flex items-center space-x-2 mb-2'>
           <Checkbox
             id='sendOnEnter'

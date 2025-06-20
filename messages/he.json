@@ -1,10 +1,6 @@
 {
-  "HomePage": {
-    "title": "שלום עולם!",
-    "about": "לעבור לדף אודות"
-  },
   "header": {
-    "title": "Share Food",
+    "title": "SpareBite",
     "login": {
       "welcome": "ברוך הבא, {name}",
       "connectWith": "התחבר עם {provider}",

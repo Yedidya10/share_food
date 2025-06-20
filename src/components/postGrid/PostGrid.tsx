@@ -120,8 +120,8 @@ export default function PostGrid() {
                     steps={[]}
                     links={[
                       {
-                        href: "https://sharefood.org.il",
-                        title: "בקר באתר Share Food",
+                        href: "https://sparebite.com",
+                        title: "בקר באתר SpareBite",
                       },
                     ]}
                   />

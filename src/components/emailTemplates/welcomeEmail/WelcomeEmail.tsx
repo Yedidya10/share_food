@@ -56,13 +56,13 @@ export const ShareFoodWelcomeEmail = ({
           },
         }}
       >
-        <Preview>ברוך הבא ל-Share Food – יחד מצמצמים את בזבוז המזון</Preview>
+        <Preview>ברוך הבא ל-SpareBite</Preview>
         <Body className='bg-offwhite font-sans text-base' dir='rtl'>
           <Img
-            src={`https://sharefood-six.vercel.app/_next/image?url=%2Ficon-192x192.png&w=96&q=75`}
+            src={`https://sparebite.com/_next/image?url=%2Ficon-192x192.png&w=96&q=75`}
             width='160'
             height='auto'
-            alt='Share Food'
+            alt='SpareBite Logo'
             className='mx-auto my-20'
           />
           <Container className='bg-white p-45'>
@@ -70,7 +70,7 @@ export const ShareFoodWelcomeEmail = ({
               שלום {userName},
             </Heading>
             <Heading className='my-0 text-center leading-8'>
-              ברוך הבא ל-Share Food!
+              ברוך הבא ל-SpareBite!
             </Heading>
 
             <Section>
@@ -91,7 +91,7 @@ export const ShareFoodWelcomeEmail = ({
                 <Text className='text-base leading-6 pt-4'>
                   בחום,
                   <br /> ידידיה אברג&apos;ל <br />
-                  מייסד Share Food
+                  מייסד SpareBite
                 </Text>
 
                 {/* <Text className='text-base mt-4'>כך תוכל להתחיל:</Text> */}

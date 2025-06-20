@@ -141,18 +141,17 @@ export default function ChatBox({
   }
 
   return (
-    <div className='relative h-full flex flex-col'>
-      {/* Header – קבוע למעלה */}
-      <div className='absolute top-0 left-0 right-0 z-20 h-[70px] border-b'>
-        <div className='h-[70px] border-b sticky top-0 z-20 flex items-center'>
-          <ChatHeader
-            fullName={otherUser.full_name}
-            avatarUrl={otherUser.avatar_url}
-          />
-        </div>
+    <div className='h-[100dvh] flex flex-col relative'>
+      {/* HEADER - קבוע למעלה */}
+      <div className='h-[70px] border-b sticky top-0 z-20 flex items-center'>
+        <ChatHeader
+          fullName={otherUser.full_name}
+          avatarUrl={otherUser.avatar_url}
+        />
       </div>
-      {/* Messages */}
-      <div className='flex-1 overflow-y-auto mt-[70px] mb-[90px] px-4 py-2 space-y-2'>
+
+      {/* MESSAGES AREA - תופס את כל הגובה הפנוי */}
+      <div className='flex-1 overflow-y-auto px-4 py-2 space-y-2'>
         {groupMessagesByDate().map((group, index) => (
           <div key={index} className='flex flex-col items-center'>
             <div className='text-center text-xs text-muted-foreground my-2'>
@@ -177,8 +176,9 @@ export default function ChatBox({
           </div>
         ))}
       </div>
-      {/* Input – קבוע למטה */}
-      <div className='absolute bottom-0 left-0 right-0 z-20 border-t p-3'>
+
+      {/* INPUT - קבוע בתחתית המסך */}
+      <div className='bg-white dark:bg-gray-900 border-t p-3 sticky bottom-0 z-20'>
         <div className='flex items-center space-x-2 mb-2'>
           <Checkbox
             id='sendOnEnter'

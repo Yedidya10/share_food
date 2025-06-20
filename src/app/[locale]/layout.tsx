@@ -26,37 +26,69 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "SpareBite - שיתוף מזון",
-  keywords: [
-    "food waste",
-    "food rescue",
-    "food donation",
-    "sustainability",
-    "community support",
-    "save food",
-    "food security",
-  ],
-  description:
-    "SpareBite is a platform dedicated to reducing food waste by connecting those with surplus food to those who can use it. Join us in our mission to create a sustainable future by saving food and supporting communities.",
-  openGraph: {
-    title: "SpareBite - שיתוף מזון",
-    description:
-      "SpareBite היא פלטפורמה המוקדשת להפחתת בזבוז מזון על ידי חיבור בין אנשים עם מזון עודף לאנשים שיימצאו בו שימוש. הצטרפו אלינו במטרה שלנו ליצור עתיד בר קיימא על ידי הצלת מזון ותמיכה בקהילות.",
-    url: "https://savefood.org",
-    siteName: "SpareBite",
-    images: [
-      {
-        url: "https://www.sparebite.com/icon-512x512.png",
-        width: 1200,
-        height: 630,
-        alt: "SpareBite - שיתוף מזון",
-      },
+export async function generateMetadata({
+  params,
+}: {
+  params: { locale: string };
+}): Promise<Metadata> {
+  const { locale } = params;
+  // Fallback to 'he' if locale is not supported
+  const supportedLocales = ["he", "en"];
+  const currentLocale = supportedLocales.includes(locale) ? locale : "he";
+
+  // Localized metadata
+  const metaByLocale: Record<
+    string,
+    { title: string; description: string; url: string; ogLocale: string }
+  > = {
+    he: {
+      title: "SpareBite - שיתוף מזון",
+      description:
+        "SpareBite היא פלטפורמה לשיתוף מזון, שמטרתה להפחית את בזבוז המזון על ידי חיבור בין אנשים עם עודפי מזון לבין אלה שיכולים להשתמש בו.",
+      url: "https://sparebite.com/he",
+      ogLocale: "he_IL",
+    },
+    en: {
+      title: "SpareBite - Share Food",
+      description:
+        "SpareBite is a platform dedicated to reducing food waste by connecting those with surplus food to those who can use it. Join us in our mission to create a sustainable future by saving food and supporting communities.",
+      url: "https://sparebite.com/en",
+      ogLocale: "en_US",
+    },
+  };
+  const meta = metaByLocale[currentLocale];
+
+  return {
+    title: meta.title,
+    description: meta.description,
+    metadataBase: new URL("https://sparebite.com"),
+    keywords: [
+      "food waste",
+      "food rescue",
+      "food donation",
+      "sustainability",
+      "community support",
+      "save food",
+      "food security",
     ],
-    locale: "he_IL",
-    type: "website",
-  },
-};
+    openGraph: {
+      title: meta.title,
+      description: meta.description,
+      url: meta.url,
+      siteName: "SpareBite",
+      images: [
+        {
+          url: "https://sparebite.com/icon-512x512.png",
+          width: 1200,
+          height: 630,
+          alt: meta.title,
+        },
+      ],
+      locale: meta.ogLocale,
+      type: "website",
+    },
+  };
+}
 
 export default async function LocaleLayout({
   children,

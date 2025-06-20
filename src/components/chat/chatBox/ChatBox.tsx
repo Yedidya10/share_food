@@ -141,50 +141,44 @@ export default function ChatBox({
   }
 
   return (
-    <div className='flex flex-col h-full relative'>
-      {/* Header */}
-      <div className='h-[70px] border-b sticky top-0 z-20 flex items-center'>
-        <ChatHeader
-          fullName={otherUser.full_name}
-          avatarUrl={otherUser.avatar_url}
-        />
+    <div className='relative h-full flex flex-col'>
+      {/* Header – קבוע למעלה */}
+      <div className='absolute top-0 left-0 right-0 z-20 h-[70px] border-b'>
+        <div className='h-[70px] border-b sticky top-0 z-20 flex items-center'>
+          <ChatHeader
+            fullName={otherUser.full_name}
+            avatarUrl={otherUser.avatar_url}
+          />
+        </div>
       </div>
-
-      {/* Messages area */}
-      <div className='flex-1 overflow-y-auto px-4 py-2 space-y-2'>
-        {messages.length > 0 ? (
-          groupMessagesByDate().map((group, index) => (
-            <div key={index} className='flex flex-col items-center'>
-              <div className='text-center text-xs text-muted-foreground my-2'>
-                {group.date}
-              </div>
-              {group.messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`px-3 py-2 text-sm rounded-xl shadow-sm transition w-fit max-w-[75%] mb-1 flex flex-col ${
-                    msg.sender_id === userId
-                      ? "bg-primary/20 text-primary self-end"
-                      : "bg-muted text-muted-foreground self-start"
-                  }`}
-                >
-                  <div>{msg.content}</div>
-                  <div className='text-[10px] text-right text-gray-500 mt-1'>
-                    {dayjs(msg.created_at).format("HH:mm")}
-                  </div>
-                </div>
-              ))}
-              <div ref={messagesEndRef} />
+      {/* Messages */}
+      <div className='flex-1 overflow-y-auto mt-[70px] mb-[90px] px-4 py-2 space-y-2'>
+        {groupMessagesByDate().map((group, index) => (
+          <div key={index} className='flex flex-col items-center'>
+            <div className='text-center text-xs text-muted-foreground my-2'>
+              {group.date}
             </div>
-          ))
-        ) : (
-          <div className='text-center text-sm text-muted-foreground mt-10'>
-            אין עדיין הודעות
+            {group.messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={`px-3 py-2 text-sm rounded-xl shadow-sm transition w-fit max-w-[75%] mb-1 flex flex-col ${
+                  msg.sender_id === userId
+                    ? "bg-primary/20 text-primary self-end"
+                    : "bg-muted text-muted-foreground self-start"
+                }`}
+              >
+                <div>{msg.content}</div>
+                <div className='text-[10px] text-right text-gray-500 mt-1'>
+                  {dayjs(msg.created_at).format("HH:mm")}
+                </div>
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
           </div>
-        )}
+        ))}
       </div>
-
-      {/* Input area */}
-      <div className='bg-white dark:bg-gray-900 border-t p-3 sticky bottom-0 z-20'>
+      {/* Input – קבוע למטה */}
+      <div className='absolute bottom-0 left-0 right-0 z-20 border-t p-3'>
         <div className='flex items-center space-x-2 mb-2'>
           <Checkbox
             id='sendOnEnter'
@@ -198,7 +192,6 @@ export default function ChatBox({
             שלח הודעה בלחיצת Enter
           </Label>
         </div>
-
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -224,7 +217,7 @@ export default function ChatBox({
                           }
                         }
                       }}
-                      className='resize-none max-h-[120px] rounded-xl bg-muted dark:bg-muted text-sm'
+                      className='resize-none max-h-[120px] rounded-xl bg-muted text-sm'
                       {...field}
                       placeholder='כתוב הודעה...'
                     />

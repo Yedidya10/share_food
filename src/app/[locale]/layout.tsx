@@ -51,7 +51,7 @@ export async function generateMetadata({
     en: {
       title: "SpareBite - Share Food",
       description:
-        "SpareBite is a platform dedicated to reducing food waste by connecting those with surplus food to those who can use it. Join us in our mission to create a sustainable future by saving food and supporting communities.",
+        "SpareBite is a platform dedicated to reducing food waste by connecting those with surplus food to those who can use it.",
       url: "https://sparebite.com/en",
       ogLocale: "en_US",
     },

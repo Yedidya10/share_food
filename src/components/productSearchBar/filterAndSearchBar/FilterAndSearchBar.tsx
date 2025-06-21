@@ -17,7 +17,7 @@ export default function FilterAndSearchBar() {
   const [openSort, setOpenSort] = useState(false);
 
   return (
-    <div className='flex p-4 gap-3 m-auto w-full sticky top-20 z-50 bg-white dark:bg-[black] opacity-98'>
+    <div className='flex p-3 gap-3 w-full sticky top-[60px] z-50 bg-white dark:bg-[black] opacity-98'>
       <FilterDrawerDialog
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}

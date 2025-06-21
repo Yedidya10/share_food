@@ -5,25 +5,42 @@ import { createClient } from "@/lib/supabase/server";
 import { Provider } from "@supabase/supabase-js";
 
 const getSiteUrl = () => {
-  const isProduction = process.env.NEXT_PUBLIC_VERCEL_ENV === "production";
-  const isPreview = process.env.NEXT_PUBLIC_VERCEL_ENV === "preview";
-  const isDevelopment = process.env.NEXT_PUBLIC_VERCEL_ENV === "development";
+  const env = process.env.NEXT_PUBLIC_VERCEL_ENV;
+  let url: string | null = null;
 
-  let url = isProduction
-    ? `https://${process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL}`
-    : isPreview
-      ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-      : isDevelopment
-        ? "https://localhost:3000"
-        : null;
+  if (env === "production") {
+    const prodUrl = process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL;
+    if (!prodUrl) {
+      throw new Error(
+        "NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL is not set. Please set it in your environment variables."
+      );
+    }
+    url = `https://${prodUrl}`;
+  }
+
+  if (env === "preview") {
+    const previewUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
+    if (!previewUrl) {
+      throw new Error(
+        "NEXT_PUBLIC_VERCEL_URL is not set. Please set it in your environment variables."
+      );
+    }
+    url = `https://${previewUrl}`;
+  }
+
+  if (env === "development") {
+    // Allow override for dev URL, fallback to localhost:3000
+    url = process.env.NEXT_PUBLIC_DEV_URL || "http://localhost:3000";
+  }
 
   if (!url) {
     throw new Error(
-      "NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL or NEXT_PUBLIC_VERCEL_URL is not set. Please set it in your environment variables."
+      "Unable to determine site URL. Please check your environment variables."
     );
   }
 
-  if (url.startsWith("http://")) {
+  // Always use https in production/preview, but allow http in dev if needed
+  if (env !== "development" && url.startsWith("http://")) {
     url = url.replace("http://", "https://");
   }
 

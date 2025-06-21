@@ -45,7 +45,7 @@ import { useSearchFilters } from "@/hooks/useSearchFilters";
 import { useSearchParams } from "next/navigation";
 import { Item } from "@/types/db/item";
 
-export default function PostGrid() {
+export default function ItemsGrid() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

@@ -54,10 +54,14 @@ export default function AccountMenu({
   const queryClient = useQueryClient();
 
   const handleLogout = async () => {
-    await createClient().auth.signOut();
-    queryClient.removeQueries({ queryKey: ["user"] });
-    router.refresh();
-    router.push("/");
+    try {
+      await supabase.auth.signOut();
+      queryClient.removeQueries({ queryKey: ["user"] });
+      router.refresh();
+      router.push("/");
+    } catch (error) {
+      console.error(error);
+    }
   };
   // function switchLang(newLocale: string) {
   //   router.replace(pathname, { locale: newLocale });

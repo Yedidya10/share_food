@@ -31,7 +31,7 @@ export default function DashboardLayout({
   return (
     <div className='flex flex-col md:flex-row'>
       {/* תפריט מובייל - עם Trigger */}
-      <div className='md:hidden sticky z-50 w-full top-[80px] bg-white dark:bg-gray-900'>
+      <div className='md:hidden sticky z-50 w-full top-[60px] bg-white dark:bg-gray-900'>
         <NavigationMenu className='block max-w-full'>
           <NavigationMenuList>
             <NavigationMenuItem className='w-full'>
@@ -80,7 +80,7 @@ export default function DashboardLayout({
       {/* סיידבר מקובע לדסקטופ */}
       <aside
         className={cn(
-          "hidden md:flex fixed top-[80px] inset-inline-start-0 w-[max(180px,18%)] h-[calc(100vh-80px)]",
+          "hidden md:flex fixed top-[60px] inset-inline-start-0 w-[max(180px,18%)] h-[calc(100vh-60px)]",
           "bg-gray-100 border-inline-end border-gray-200 dark:bg-gray-800 dark:border-gray-700"
         )}
       >
@@ -109,8 +109,8 @@ export default function DashboardLayout({
       <main
         className={cn(
           "flex-1 p-4 overflow-auto w-full",
-          "mt-[80px] md:mt-0",
-          "md:ms-[max(180px,18%)] h-[calc(100vh-80px)]"
+          "mt-[60px] md:mt-0",
+          "md:ms-[max(180px,18%)] h-[calc(100vh-60px)]"
         )}
       >
         {children}

@@ -61,7 +61,7 @@ export default async function ChatThread({
     }
 
     return (
-      <div className='flex flex-1 flex flex-col h-[calc(100vh-80px)] overflow-hidden'>
+      <div className='flex flex-1 flex flex-col h-[calc(100vh-60px)] overflow-hidden'>
         <ChatBox
           otherUser={otherUser}
           conversationId={conversationId}

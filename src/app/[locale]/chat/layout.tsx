@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 
 export default function ChatLayout({ children }: { children: ReactNode }) {
   return (
-    <div className='h-[calc(100vh-80px)]'>
+    <div className='h-[calc(100vh-60px)]'>
       {/* Desktop view for InboxClient */}
       <div className='hidden md:flex flex-row h-full'>
         <InboxClient />

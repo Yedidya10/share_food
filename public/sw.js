@@ -18,5 +18,7 @@ self.addEventListener("push", function (event) {
 self.addEventListener("notificationclick", function (event) {
   console.log("Notification click received.");
   event.notification.close();
-  event.waitUntil(clients.openWindow("<https://www.sparebite.com>"));
+  // Always open the correct URL, fallback to homepage if not present
+  const url = event.notification.data.url || "https://www.sparebite.com";
+  event.waitUntil(clients.openWindow(url));
 });

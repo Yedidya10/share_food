@@ -26,12 +26,15 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+type Params = Promise<{ locale: string }>;
+
 export async function generateMetadata({
   params,
 }: {
-  params: { locale: string };
+  params: Params;
 }): Promise<Metadata> {
-  const { locale } = params;
+  const { locale } = await params;
+
   // Fallback to 'he' if locale is not supported
   const supportedLocales = ["he", "en"];
   const currentLocale = supportedLocales.includes(locale) ? locale : "he";

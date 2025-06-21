@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import PostItemFormWrapper from "@/components/forms/postItemForm/PostItemFormWrapper";
 import PostItemButton from "@/components/postItemButton/PostItemButton";
-import { CheckCircle, Loader2, Plus, XCircle } from "lucide-react";
+import { CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
 export default function MainHeader() {
@@ -78,8 +78,11 @@ export default function MainHeader() {
   }, [isSubmitSuccess]);
 
   return (
-    <header className='flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 backdrop-blur-sm bg-opacity-50 dark:bg-opacity-50 h-[80px]'>
-      <div className='flex items-center'>
+    <header className='h-[60px] flex items-center justify-between border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 bg-white dark:bg-gray-900 backdrop-blur-sm bg-opacity-50 dark:bg-opacity-50'>
+      <Link
+        href='/'
+        className='flex items-center gap-2 h-full p-2 text-lg font-semibold'
+      >
         <Image
           src='/icon-192x192.png'
           alt='Logo'
@@ -87,32 +90,27 @@ export default function MainHeader() {
           height={40}
           className='h-10 w-10 rounded-full'
         />
-        <Link href='/' className='ml-2 text-lg font-semibold'>
-          {tHeader("title")}
-        </Link>
-      </div>
-      <div className='flex items-center justify-between gap-2'>
+        <span className='hidden md:inline'>{tHeader("title")}</span>
+      </Link>
+      <div className='flex items-center justify-between gap-2 p-4'>
         {user && isUserConnected ? (
           <>
+            <AccountMenu
+              translation={{
+                welcome: tLogin("welcome", {
+                  name: user.user_metadata.full_name?.split(" ")[0] || "User",
+                }),
+                logout: tLogin("logout"),
+                profile: tAccountMenu("profile"),
+                myItems: tAccountMenu("myItems"),
+                settings: tAccountMenu("settings"),
+              }}
+            />
             <ChatButton />
             <PostItemButton
               onClick={() => handleCreateItemClick()}
               disabled={loading}
-            >
-              {loading ? (
-                <Loader2
-                  className='animate-spin h-4 w-4'
-                  aria-label='Loading'
-                  data-testid='loading-icon'
-                />
-              ) : (
-                <Plus
-                  className='h-4 w-4'
-                  aria-label='Create Item'
-                  data-testid='post-item-icon'
-                />
-              )}
-            </PostItemButton>
+            />
             <PostItemFormWrapper
               openModal={openModal}
               setIsSubmitSuccess={setIsSubmitSuccess}
@@ -166,17 +164,6 @@ export default function MainHeader() {
                   israel: tCountries("il"),
                   usa: tCountries("usa"),
                 },
-              }}
-            />
-            <AccountMenu
-              translation={{
-                welcome: tLogin("welcome", {
-                  name: user.user_metadata.full_name?.split(" ")[0] || "User",
-                }),
-                logout: tLogin("logout"),
-                profile: tAccountMenu("profile"),
-                myItems: tAccountMenu("myItems"),
-                settings: tAccountMenu("settings"),
               }}
             />
           </>

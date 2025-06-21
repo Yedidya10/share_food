@@ -4,39 +4,56 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Plus } from "lucide-react";
 
 export default function PostItemButton({
   onClick,
   disabled,
-  children,
 }: {
   onClick?: () => void;
   disabled?: boolean;
-  children?: React.ReactNode;
 }) {
   function handleClick() {
     if (onClick) {
       onClick();
     }
   }
+
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Button
-          variant='outline'
-          size='icon'
-          className='h-10 w-10 p-0 rounded-full cursor-pointer flex items-center justify-center'
-          onClick={handleClick}
-          disabled={disabled}
-          aria-label='Create Item'
-          data-testid='post-item-button'
-        >
-          {children}
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent>
-        <p>צור פריט</p>
-      </TooltipContent>
-    </Tooltip>
+    <>
+      {/* For Desktop */}
+      <Button
+        variant='outline'
+        onClick={handleClick}
+        disabled={disabled}
+        aria-label='Create Item'
+        data-testid='post-item-button'
+        size='lg'
+        className='hidden md:flex items-center gap-2 rounded-full'
+      >
+        <Plus className='h-5 w-5' />
+        <span>פרסם פריט</span>
+      </Button>
+
+      {/* For Mobile */}
+      <div className='md:hidden h-full flex'>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant='outline'
+              size='icon'
+              className='rounded-full'
+              onClick={handleClick}
+              disabled={disabled}
+              aria-label='Create Item'
+              data-testid='post-item-button'
+            >
+              <Plus className='h-5 w-5' />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>פרסם פריט</TooltipContent>
+        </Tooltip>
+      </div>
+    </>
   );
 }

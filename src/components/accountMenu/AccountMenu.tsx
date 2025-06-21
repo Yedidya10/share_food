@@ -121,7 +121,10 @@ export default function AccountMenu({
         <DropdownMenuTrigger asChild>
           <Button
             variant='outline'
-            className='flex items-center gap-2 px-1 pl-3 py-5 rounded-full cursor-pointer'
+            size='lg'
+            aria-label='Account Menu'
+            data-testid='account-menu-button'
+            className='flex items-center gap-2 rounded-full ps-2 pe-4'
           >
             <Avatar>
               <AvatarImage asChild>

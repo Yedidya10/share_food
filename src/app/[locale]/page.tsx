@@ -1,10 +1,14 @@
-import PostGrid from "@/components/postGrid/PostGrid";
+import { redirect } from "@/i18n/navigation";
 // import {
 //   FoodStatsBanner,
 //   StatItem,
 // } from "@/components/foodSaveBanner/FoodSaveBanner";
 
 export default function Home() {
+  redirect({
+    href: "/items",
+    locale: "he",
+  });
   // const stats: StatItem[] = [
   //   {
   //     label: "אובדן מזון בישראל",
@@ -68,7 +72,6 @@ export default function Home() {
       </div> */}
       {/* Uncomment the following line to include the FoodStatsBanner component */}
       {/* <FoodStatsBanner stats={stats} /> */}
-      <PostGrid />
     </div>
   );
 }

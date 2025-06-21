@@ -55,6 +55,7 @@ export default function PostGrid() {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useItems({
     ...filters,
     excludeUserId: currentUser?.id,
+    status: ["published"],
     pageSize: 20,
   });
   const { ref } = useInView({

@@ -30,6 +30,7 @@ import { createClient } from "@/lib/supabase/client";
 import { DirectionProvider } from "@radix-ui/react-direction";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function AccountMenu({
   translation, // Translation function, if needed
@@ -50,7 +51,14 @@ export default function AccountMenu({
   const [isAdmin, setIsAdmin] = useState(false);
   const { setTheme } = useTheme();
   const supabase = createClient();
+  const queryClient = useQueryClient();
 
+  const handleLogout = async () => {
+    await createClient().auth.signOut();
+    queryClient.removeQueries({ queryKey: ["user"] });
+    router.refresh();
+    router.push("/");
+  };
   // function switchLang(newLocale: string) {
   //   router.replace(pathname, { locale: newLocale });
   // }
@@ -235,11 +243,7 @@ export default function AccountMenu({
             </DropdownMenuSub>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={async () => {
-              await supabase.auth.signOut();
-            }}
-          >
+          <DropdownMenuItem onClick={handleLogout}>
             <LogOut />
             <span>{translation.logout}</span>
           </DropdownMenuItem>

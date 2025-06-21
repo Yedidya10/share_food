@@ -1,5 +1,4 @@
 import PostGrid from "@/components/postGrid/PostGrid";
-import Image from "next/image";
 // import {
 //   FoodStatsBanner,
 //   StatItem,
@@ -39,7 +38,7 @@ export default function Home() {
 
   return (
     <div className='flex flex-col'>
-      <div className='p-4'>
+      {/* <div className='p-4'>
         <div className='w-full flex gap-1 h-[250px] rounded-lg overflow-hidden'>
           <div className='relative h-[inherit] w-[calc(100%/3)]'>
             <Image
@@ -66,7 +65,7 @@ export default function Home() {
             />
           </div>
         </div>
-      </div>
+      </div> */}
       {/* Uncomment the following line to include the FoodStatsBanner component */}
       {/* <FoodStatsBanner stats={stats} /> */}
       <PostGrid />

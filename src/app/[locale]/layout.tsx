@@ -142,8 +142,7 @@ export default async function LocaleLayout({
                   },
                 }}
               />
-              <div className='pt-[80px] m-0 ' />
-              {children}
+              <div>{children}</div>
               {login}
               <FeedbackButton />
             </QueryProvider>

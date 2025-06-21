@@ -64,13 +64,6 @@ export function DataTable<TData, TValue>({
   // Fetch data whenever pagination, sorting, or filters change
   useEffect(() => {
     async function fetchData() {
-      console.log(
-        `Fetching data with pagination: ${JSON.stringify(
-          pagination
-        )}, sorting: ${JSON.stringify(sorting)}, filters: ${JSON.stringify(
-          columnFilters
-        )}`
-      );
       // server action expects 1-based page
       const page = pagination.pageIndex + 1;
       const perPage = pagination.pageSize;
@@ -232,7 +225,6 @@ export function DataTable<TData, TValue>({
         <Select
           onValueChange={(value) => {
             const size = Number(value);
-            console.log(`Page size set to ${size}`);
             table.setPageSize(size);
           }}
         >

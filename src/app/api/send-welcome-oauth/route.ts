@@ -10,8 +10,6 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function POST(request: NextRequest) {
-  console.log("Received request to send welcome email via OAuth");
-
   const { email, html } = await request.json();
   if (!email || !html) {
     console.error("Email or HTML content is missing in the request body.");

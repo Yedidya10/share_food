@@ -65,7 +65,6 @@ export default function PostGrid() {
     },
   });
 
-  console.log("PostGrid data:", data?.pages);
   const [openItemId, setOpenItemId] = useState<string | null>(null);
 
   const searchParamsString = searchParams.toString();

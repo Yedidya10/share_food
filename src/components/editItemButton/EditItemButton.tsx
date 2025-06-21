@@ -17,7 +17,6 @@ export default function EditItemButton({
   disabled?: boolean;
 }) {
   function handleClick() {
-    console.log("Edit button clicked");
     if (onClick) {
       onClick();
     }

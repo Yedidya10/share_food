@@ -55,10 +55,6 @@ export default function EditItemForm({
     }))
   );
 
-  useEffect(() => {
-    console.log("EditItemForm:", images);
-  }, [images]);
-
   // Define your form schema using Zod
   const formSchema = editItemSchema(translation);
   type EditItemFormSchema = z.infer<typeof formSchema>;

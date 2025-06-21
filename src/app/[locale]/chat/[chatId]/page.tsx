@@ -55,8 +55,6 @@ export default async function ChatThread({
       .eq("conversation_id", conversationId)
       .order("created_at", { ascending: true });
 
-    console.log("Messages data:", messagesData);
-
     if (messagesError) {
       console.error("Error fetching messages:", messagesError);
       throw new Error("Failed to load messages");

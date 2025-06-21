@@ -5,12 +5,28 @@ import { createClient } from "@/lib/supabase/server";
 import { Provider } from "@supabase/supabase-js";
 
 const getSiteUrl = () => {
-  let url =
-    process?.env?.NEXT_PUBLIC_SITE_URL ??
-    process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
-    "https://localhost:3000/";
-  url = url.startsWith("http") ? url : `https://${url}`;
-  url = url.endsWith("/") ? url : `${url}/`;
+  const isProduction = process.env.NEXT_PUBLIC_VERCEL_ENV === "production";
+  const isPreview = process.env.NEXT_PUBLIC_VERCEL_ENV === "preview";
+  const isDevelopment = process.env.NEXT_PUBLIC_VERCEL_ENV === "development";
+
+  let url = isProduction
+    ? `https://${process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL}`
+    : isPreview
+      ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+      : isDevelopment
+        ? "https://localhost:3000"
+        : null;
+
+  if (!url) {
+    throw new Error(
+      "NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL or NEXT_PUBLIC_VERCEL_URL is not set. Please set it in your environment variables."
+    );
+  }
+
+  if (url.startsWith("http://")) {
+    url = url.replace("http://", "https://");
+  }
+
   return url;
 };
 

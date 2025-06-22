@@ -82,11 +82,12 @@ export default async function updateItemToDatabase({
         city: values.city,
         country: values.country,
         postal_code: values.postalCode?.trim() || null,
-        phone_number: values.phoneNumber || null,
-        is_have_whatsapp: !!values.isHaveWhatsApp,
-        email: values.email?.trim() || null,
+        phone_number: values.contactByPhone ? values.phoneNumber?.trim() : null,
+        is_have_whatsapp: values.contactByPhone
+          ? !!values.isHaveWhatsApp
+          : false,
+        email: values.contactByEmail ? values.email?.trim() : null,
         status: itemStatus === "pending" ? "pending" : "edited",
-        // ... כל שאר השדות
       })
       .eq("id", itemId);
 

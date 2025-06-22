@@ -10,7 +10,7 @@ type EditItemFormSchema = z.infer<ReturnType<typeof editItemSchema>>;
 export default async function updateItemToDatabase({
   values,
   itemId,
-  itemStatus
+  itemStatus,
 }: {
   values: EditItemFormSchema;
   itemId: string;

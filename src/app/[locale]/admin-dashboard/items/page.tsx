@@ -1,5 +1,5 @@
 import ItemsList from "@/components/itemsList/ItemsList";
 
-export default async function ItemsPage() {
+export default function ItemsPage() {
   return <ItemsList />;
 }

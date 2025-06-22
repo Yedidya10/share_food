@@ -8,7 +8,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { FieldValues, Path, UseFormReturn } from "react-hook-form";
+import { FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import PhoneInput from "@/components/forms/phoneInput/PhoneInput";
@@ -73,7 +73,19 @@ export default function ContactFormFields<
                   className='h-5 w-5'
                   checked={field.value}
                   id='contactByPhone'
-                  onCheckedChange={(checked) => field.onChange(checked)}
+                  onCheckedChange={(checked) => {
+                    field.onChange(checked);
+                    if (!checked) {
+                      form.setValue(
+                        "phoneNumber" as Path<T>,
+                        "" as PathValue<T, Path<T>>
+                      );
+                      form.setValue(
+                        "isHaveWhatsApp" as Path<T>,
+                        false as PathValue<T, Path<T>>
+                      );
+                    }
+                  }}
                 />
               </FormControl>
               <FormLabel className='m-0 font-medium' htmlFor='contactByPhone'>
@@ -154,7 +166,15 @@ export default function ContactFormFields<
                   className='h-5 w-5'
                   id='contactByEmail'
                   checked={field.value}
-                  onCheckedChange={(checked) => field.onChange(checked)}
+                  onCheckedChange={(checked) => {
+                    field.onChange(checked);
+                    if (!checked) {
+                      form.setValue(
+                        "email" as Path<T>,
+                        "" as PathValue<T, Path<T>>
+                      );
+                    }
+                  }}
                 />
               </FormControl>
               <FormLabel className='m-0 font-medium' htmlFor='contactByEmail'>

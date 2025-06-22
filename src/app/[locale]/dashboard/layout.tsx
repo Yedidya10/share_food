@@ -4,9 +4,9 @@ import DashboardLayout from "@/components/layouts/Dashboard";
 import { CircleUserRound, Settings, Shapes } from "lucide-react";
 
 const navItems = [
-  { label: "Profile", href: "/dashboard/profile", icon: <CircleUserRound /> },
-  { label: "My Items", href: "/dashboard/my-items", icon: <Shapes /> },
-  { label: "Settings", href: "/dashboard/settings", icon: <Settings /> },
+  { label: "פרופיל", href: "/dashboard/profile", icon: <CircleUserRound /> },
+  { label: "הפריטים שלי", href: "/dashboard/my-items", icon: <Shapes /> },
+  { label: "הגדרות", href: "/dashboard/settings", icon: <Settings /> },
 ];
 
 export default function DashboardUserLayout({

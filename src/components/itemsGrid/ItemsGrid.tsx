@@ -17,7 +17,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import { FaWhatsapp } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { Tooltip } from "@/components/ui/tooltip";
@@ -29,13 +29,13 @@ import WelcomeEmail from "@/components/emailTemplates/welcomeEmail/WelcomeEmail"
 import { Session, User } from "@supabase/supabase-js";
 import { Badge } from "@/components/ui/badge";
 import FilterAndSearchBar from "../productSearchBar/filterAndSearchBar/FilterAndSearchBar";
-import { Clock, Loader } from "lucide-react";
-
+import { Clock, Loader, Mail, Smartphone, User2 } from "lucide-react";
 import {
   formatDistanceToNow,
   differenceInMinutes,
   differenceInHours,
   format,
+  differenceInDays,
 } from "date-fns";
 import { he } from "date-fns/locale";
 import useCurrentUser from "@/hooks/db/useCurrentUser";
@@ -45,6 +45,8 @@ import { useSearchFilters } from "@/hooks/useSearchFilters";
 import { useSearchParams } from "next/navigation";
 import { Item } from "@/types/db/item";
 import { posthog } from "posthog-js";
+import { LinkButton } from "../ui/link-button";
+import { Separator } from "../ui/separator";
 
 export default function ItemsGrid() {
   const router = useRouter();
@@ -160,6 +162,7 @@ export default function ItemsGrid() {
     const now = new Date();
     const minutes = differenceInMinutes(now, createdAt);
     const hours = differenceInHours(now, createdAt);
+    const days = differenceInDays(now, createdAt);
 
     if (minutes < 60) {
       return `פורסם לפני ${formatDistanceToNow(createdAt, {
@@ -171,8 +174,10 @@ export default function ItemsGrid() {
         locale: he,
         addSuffix: false,
       })}`;
+    } else if (days < 7) {
+      return `פורסם ב־${days === 1 ? "היום האחרון" : `${days} הימים האחרונים`}`;
     } else {
-      return `פורסם ב ${format(createdAt, "d בMMMM yyyy", {
+      return `פורסם ב־${format(createdAt, "d בMMMM yyyy", {
         locale: he,
       })}`;
     }
@@ -229,8 +234,8 @@ export default function ItemsGrid() {
                   </Carousel>
                 </div>
                 <div className='flex flex-col gap-3 p-2 justify-end'>
-                  <h3
-                    className='text-xl font-semibold'
+                  <h2
+                    className='text-lg font-semibold line-clamp-1'
                     onClick={() => {
                       setOpenItemId(item.id);
                       posthog.capture("item_dialog_viewed", {
@@ -240,7 +245,7 @@ export default function ItemsGrid() {
                     }}
                   >
                     {item.title}
-                  </h3>
+                  </h2>
                   <p className='text-sm text-muted-foreground line-clamp-2'>
                     {item.description}
                   </p>
@@ -296,9 +301,16 @@ export default function ItemsGrid() {
                                   <div className='relative h-64 rounded overflow-hidden'>
                                     <Image
                                       src={image}
+                                      alt={`${item.title} blurred background`}
+                                      fill
+                                      className='object-cover blur-sm scale-110 opacity-70'
+                                      aria-hidden='true'
+                                    />
+                                    <Image
+                                      src={image}
                                       alt={`${item.title} image ${index + 1}`}
                                       fill
-                                      className='object-cover'
+                                      className='object-contain z-10'
                                     />
                                   </div>
                                 </CarouselItem>
@@ -313,22 +325,24 @@ export default function ItemsGrid() {
                               className='absolute right-2 top-1/2 -translate-y-1/2'
                             />
                           </Carousel>
-                          <div>
-                            <h4 className='text-lg font-semibold mb-1'>
-                              תיאור:
-                            </h4>
-                            <p className='text-base text-muted-foreground'>
-                              {item.description}
-                            </p>
+                          <div className='flex flex-col gap-2'>
+                            <h2 className='text-md text-muted-foreground'>
+                              תיאור
+                            </h2>
+                            <p className='text-base'>{item.description}</p>
                           </div>
-                          <div>
-                            <h4 className='text-lg font-semibold mb-1'>
-                              כתובת איסוף:
-                            </h4>
+                          <div className='flex flex-col gap-2'>
+                            <h2 className='text-md text-muted-foreground'>
+                              כתובת איסוף
+                            </h2>
+                            <Separator />
                             {currentUser ? (
-                              <div className='grid grid-cols-1 sm:grid-cols-3 gap-2 text-base'>
-                                <p>{`${item.street_name} ${item.street_number}`}</p>
-                                <p>{item.city}</p>
+                              <div className='flex gap-2 text-base'>
+                                <p>
+                                  {item.street_name},
+                                  {/* {item.street_number} */}
+                                </p>
+                                <p>{item.city},</p>
                                 <p>{item.country}</p>
                               </div>
                             ) : (
@@ -345,43 +359,60 @@ export default function ItemsGrid() {
                               </Button>
                             )}
                           </div>
-                          <div>
-                            <h4 className='text-lg font-semibold mb-1'>
-                              פרטי קשר:
-                            </h4>
+                          <div className='flex flex-col gap-2'>
+                            <h2 className='text-md text-muted-foreground'>
+                              פרטי קשר
+                            </h2>
+                            <Separator />
                             {currentUser ? (
-                              <>
-                                <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2'>
-                                  <p className='text-base'>{item.full_name}</p>
-                                </div>
-                                <div className='grid grid-cols-1 sm:grid-cols-1 gap-2 text-base'>
-                                  <StartChatButton
-                                    targetUserId={item.user_id}
-                                  />
-                                  <p>{item.email}</p>
+                              <div className='space-y-3'>
+                                <p className='text-base py-1 flex items-center gap-2'>
+                                  <User2 className='w-5 h-5 text-muted-foreground' />
+                                  {item.full_name}
+                                </p>
+                                <div className='grid grid-cols-1 gap-2 text-base'>
+                                  <LinkButton
+                                    href={`https://mail.google.com/mail/?view=cm&to=${item.email}&su=${encodeURIComponent("פנייה מהאתר SpareBite")}&body=${encodeURIComponent(`לגבי הפריט ${item.title}`)}`}
+                                    target='_blank'
+                                    className='flex items-center gap-2 w-full'
+                                  >
+                                    <Mail />
+                                    שלח דוא&quot;ל
+                                  </LinkButton>
                                   {item.phone_number && (
-                                    <div className='flex align-center gap-2'>
-                                      <p>טלפון: </p>
-                                      <p>{item.phone_number}</p>
+                                    <div className='flex align-center gap-2 w-full'>
+                                      <LinkButton
+                                        href={`tel:${item.phone_number}`}
+                                        className='flex items-center gap-2 flex-1'
+                                        target='_blank'
+                                        rel='noopener noreferrer'
+                                      >
+                                        <Smartphone />
+                                        <span>התקשר</span>
+                                      </LinkButton>
                                       {item.is_have_whatsapp && (
                                         <Tooltip>
-                                          <Link
+                                          <LinkButton
                                             href={`https://wa.me/${item.phone_number.replace(
                                               /[^0-9]/g,
                                               ""
                                             )}`}
                                             target='_blank'
                                             rel='noopener noreferrer'
-                                            className='inline-flex items-center text-green-500 hover:text-green-700'
+                                            className='flex-1'
                                           >
                                             <FaWhatsapp size={20} />
-                                          </Link>
+                                            <span>שלח הודעת וואטסאפ</span>
+                                          </LinkButton>
                                         </Tooltip>
                                       )}
                                     </div>
                                   )}
+                                  <StartChatButton
+                                    targetUserId={item.user_id}
+                                  />
                                 </div>
-                              </>
+                              </div>
                             ) : (
                               <Button
                                 variant='outline'

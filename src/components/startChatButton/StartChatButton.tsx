@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, MessageSquarePlus } from "lucide-react";
 
 type Props = {
   targetUserId: string;
@@ -77,8 +77,19 @@ export default function StartChatButton({ targetUserId }: Props) {
   };
 
   return (
-    <Button onClick={handleClick} disabled={loading}>
-      {loading ? <Loader2 className='animate-spin w-4 h-4' /> : "התחל שיחה"}
+    <Button
+      onClick={handleClick}
+      disabled={loading}
+      className='w-full mt-2 flex items-center justify-center gap-2'
+    >
+      {loading ? (
+        <Loader2 className='animate-spin w-4 h-4' />
+      ) : (
+        <>
+          <MessageSquarePlus className='w-5 h-5' />
+          <span>התחל שיחה</span>
+        </>
+      )}
     </Button>
   );
 }

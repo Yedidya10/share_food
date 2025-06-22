@@ -124,6 +124,7 @@ export default function ContactFormFields<
                     <Checkbox
                       className='h-5 w-5'
                       id='isHaveWhatsApp'
+                      checked={field.value}
                       onCheckedChange={(checked) => field.onChange(checked)}
                     />
                   </FormControl>
@@ -152,6 +153,7 @@ export default function ContactFormFields<
                 <Checkbox
                   className='h-5 w-5'
                   id='contactByEmail'
+                  checked={field.value}
                   onCheckedChange={(checked) => field.onChange(checked)}
                 />
               </FormControl>

@@ -24,9 +24,10 @@ import ImagesFormField from "@/components/forms/ImagesFormField";
 import { editItemDefaultFormValues } from "@/components/forms/utils/item/itemDefaultFormValues";
 import { InitialValues } from "@/types/forms/item/item";
 import { TranslationType } from "@/types/translation";
-import updateItemToDatabase from "./updateItemToDatabase";
 import { UnifiedImage } from "@/types/forms/item/unifiedImage";
 import { useLocale } from "next-intl";
+import { useUpdateItem } from "@/hooks/useUpdateItem";
+import { Loader } from "lucide-react";
 
 export default function EditItemForm({
   open,
@@ -48,6 +49,7 @@ export default function EditItemForm({
   translation: TranslationType;
 }) {
   const locale = useLocale();
+  const { mutateAsync: updateItem, isPending } = useUpdateItem();
   const [images, setImages] = useState<UnifiedImage[]>(() =>
     (initialValues.images || []).map((url, i) => ({
       id: `existing-${i}`,
@@ -81,15 +83,16 @@ export default function EditItemForm({
   // Handle form submission
   const onSubmit = async (values: EditItemFormSchema) => {
     try {
-      const response = await updateItemToDatabase({
+      const response = await updateItem({
         values: { ...values, images },
         itemId,
         itemStatus,
       });
+
       if (response?.success) {
         setIsEditItemFormSubmitSuccess(true);
         onClose();
-        editItemForm.reset(defaultValues); // Reset the form to default values
+        editItemForm.reset(defaultValues);
         setImages([]);
       } else {
         setIsEditItemFormSubmitSuccess(false);
@@ -100,7 +103,6 @@ export default function EditItemForm({
       console.error("Error in onSubmit:", error);
     }
   };
-
   return (
     <>
       <Dialog
@@ -166,11 +168,15 @@ export default function EditItemForm({
                   disabled={
                     !editItemForm.formState.isValid ||
                     editItemForm.formState.isSubmitting ||
-                    editItemForm.formState.disabled ||
-                    !editItemForm.formState.isDirty // Disable if form is not dirty
+                    !editItemForm.formState.isDirty ||
+                    isPending
                   }
                 >
-                  עדכן פריט
+                  {isPending ? (
+                    <Loader className='animate-spin h-4 w-4 mr-2' />
+                  ) : (
+                    <span>עדכן פריט</span>
+                  )}
                 </Button>
               </DialogFooter>
             </form>

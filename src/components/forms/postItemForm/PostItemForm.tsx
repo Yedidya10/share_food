@@ -25,7 +25,8 @@ import ImagesFormField from "@/components/forms/ImagesFormField";
 import ItemBaseFormFields from "@/components/forms/ItemBaseFormFields";
 import { TranslationType } from "@/types/translation";
 import { UnifiedImage } from "@/types/forms/item/unifiedImage";
-import insertItemToDatabase from "./insertItemToDatabase";
+import { useInsertItem } from "@/hooks/useInsertItem";
+import { Loader } from "lucide-react";
 
 export default function PostItemForm({
   openModal,
@@ -57,15 +58,18 @@ export default function PostItemForm({
     defaultValues: defaultValues,
   });
 
+  const { mutateAsync: insertItem, isPending } = useInsertItem();
+
   // Handle form submission
   const onSubmit = async (values: PostItemFormSchema) => {
     try {
-      const response = await insertItemToDatabase(values);
+      const response = await insertItem(values);
+
       if (response?.success) {
         setIsSubmitSuccess(true);
         setOpenModal(false);
         postItemForm.reset();
-        setImages([]); // Clear images after successful submission
+        setImages([]);
       } else {
         setIsSubmitSuccess(false);
         setOpenModal(false);
@@ -119,10 +123,15 @@ export default function PostItemForm({
                 disabled={
                   !postItemForm.formState.isValid ||
                   postItemForm.formState.disabled ||
-                  postItemForm.formState.isSubmitting
+                  postItemForm.formState.isSubmitting ||
+                  isPending
                 }
               >
-                {translation.submitButton}
+                {isPending ? (
+                  <Loader className='animate-spin mr-2 h-4 w-4' />
+                ) : (
+                  translation.submitButton
+                )}
               </Button>
             </DialogFooter>
           </form>

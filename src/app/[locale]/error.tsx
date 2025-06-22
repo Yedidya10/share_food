@@ -6,12 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
 
-interface ErrorProps {
-  error: Error;
-  reset: () => void;
-}
-
-export default function Error({ error, reset }: ErrorProps) {
+export function Error({ error, reset }: { error: Error; reset: () => void }) {
   useEffect(() => {
     posthog.captureException(error);
   }, [error]);

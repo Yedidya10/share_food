@@ -1,0 +1,11 @@
+import posthog from "posthog-js";
+
+posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
+  api_host: "https://us.posthog.com",
+  ui_host: "https://us.posthog.com",
+  capture_pageview: "history_change",
+  capture_pageleave: true, // Enable pageleave capture
+  capture_exceptions: true, // This enables capturing exceptions using Error Tracking
+  autocapture: true, // Automatically capture clicks and form submissions
+  debug: process.env.NODE_ENV === "development",
+});

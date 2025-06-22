@@ -44,6 +44,7 @@ import { useInView } from "react-intersection-observer";
 import { useSearchFilters } from "@/hooks/useSearchFilters";
 import { useSearchParams } from "next/navigation";
 import { Item } from "@/types/db/item";
+import { posthog } from "posthog-js";
 
 export default function ItemsGrid() {
   const router = useRouter();
@@ -230,7 +231,13 @@ export default function ItemsGrid() {
                 <div className='flex flex-col gap-3 p-2 justify-end'>
                   <h3
                     className='text-xl font-semibold'
-                    onClick={() => setOpenItemId(item.id)}
+                    onClick={() => {
+                      setOpenItemId(item.id);
+                      posthog.capture("item_dialog_viewed", {
+                        open_from: "item_title_click",
+                        itemId: item.id,
+                      });
+                    }}
                   >
                     {item.title}
                   </h3>
@@ -259,7 +266,13 @@ export default function ItemsGrid() {
                         <Button
                           variant='outline'
                           className='w-full mt-2'
-                          onClick={() => setOpenItemId(item.id)}
+                          onClick={() => {
+                            setOpenItemId(item.id);
+                            posthog.capture("item_dialog_viewed", {
+                              open_from: "view_details_button_click",
+                              itemId: item.id,
+                            });
+                          }}
                           disabled={openItemId === item.id}
                         >
                           הצג פרטים

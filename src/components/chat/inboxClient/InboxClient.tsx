@@ -129,7 +129,7 @@ export default function InboxClient() {
         setPartnerAvatars(map);
       }
     })();
-  }, [conversations, userId]);
+  }, [conversations, supabase, userId]);
 
   // רילטיים
   useEffect(() => {

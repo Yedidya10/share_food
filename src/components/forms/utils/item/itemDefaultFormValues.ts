@@ -38,10 +38,10 @@ export const editItemDefaultFormValues = ({
     country: initialValues.country,
     postalCode: initialValues?.postalCode || "",
     contactViaSite: true, // Default to true for contact via site
-    contactByPhone: initialValues.contactByPhone || false,
-    contactByEmail: initialValues.contactByEmail || false,
+    contactByPhone: initialValues.contactByPhone,
+    contactByEmail: initialValues.contactByEmail,
     phoneNumber: initialValues?.phoneNumber || "",
-    isHaveWhatsApp: initialValues.isHaveWhatsApp || false,
+    isHaveWhatsApp: initialValues.isHaveWhatsApp,
     email: initialValues?.email || "",
   };
 };

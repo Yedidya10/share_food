@@ -1,5 +1,3 @@
-// app/[locale]/admin-dashboard/layout.tsx
-
 import DashboardLayout from "@/components/layouts/Dashboard";
 import { Shapes, Users } from "lucide-react";
 

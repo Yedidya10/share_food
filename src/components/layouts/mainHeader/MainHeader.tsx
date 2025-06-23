@@ -26,14 +26,12 @@ export default function MainHeader() {
 
   const handleCreateItemClick = async () => {
     setLoading(true);
-    await import("@/components/forms/postItemForm/PostItemFormWrapper");
     setOpenModal(true);
     setLoading(false);
   };
 
-  const tHeader = useTranslations("header");
   const tLogin = useTranslations("header.login");
-  const tAccountMenu = useTranslations("header.accountMenu");
+  const tAccountMenu = useTranslations("header.account_menu");
   const tGenericForm = useTranslations("form.generic");
   const tPostItemForm = useTranslations("form.postItem");
   const tCountries = useTranslations("countries");
@@ -90,7 +88,7 @@ export default function MainHeader() {
           height={40}
           className='h-10 w-10 rounded-full'
         />
-        <span className='hidden md:inline'>{tHeader("title")}</span>
+        <span className='hidden md:inline'>SpareBite</span>
       </Link>
       <div className='p-4'>
         {user && isUserConnected ? (
@@ -102,7 +100,7 @@ export default function MainHeader() {
                 }),
                 logout: tLogin("logout"),
                 profile: tAccountMenu("profile"),
-                myItems: tAccountMenu("myItems"),
+                myItems: tAccountMenu("my_items"),
                 settings: tAccountMenu("settings"),
               }}
             />
@@ -116,54 +114,55 @@ export default function MainHeader() {
               setIsSubmitSuccess={setIsSubmitSuccess}
               setOpenModal={setOpenModal}
               translation={{
-                formTitle: tPostItemForm("formTitle"),
-                formDescription: tPostItemForm("formDescription"),
+                formTitle: tPostItemForm("form_title"),
+                formDescription: tPostItemForm("form_description"),
                 title: tPostItemForm("title"),
-                titlePlaceholder: tPostItemForm("titlePlaceholder"),
-                titleRequired: tPostItemForm("titleRequired"),
-                titleMaxLength: tPostItemForm("titleMaxLength"),
-                titleMinLength: tPostItemForm("titleMinLength"),
+                titlePlaceholder: tPostItemForm("title_placeholder"),
+                titleRequired: tPostItemForm("title_required"),
+                titleMaxLength: tPostItemForm("title_max_length"),
+                titleMinLength: tPostItemForm("title_min_length"),
                 description: tPostItemForm("description"),
-                descriptionPlaceholder: tPostItemForm("descriptionPlaceholder"),
-                descriptionRequired: tPostItemForm("descriptionRequired"),
-                descriptionMaxLength: tPostItemForm("descriptionMaxLength"),
-                descriptionMinLength: tPostItemForm("descriptionMinLength"),
-                uploadImages: tPostItemForm("uploadImages"),
-                uploadImagesError: tPostItemForm("uploadImagesError"),
-                addressDetails: tPostItemForm("addressDetails"),
-                streetName: tPostItemForm("streetName"),
-                streetNamePlaceholder: tPostItemForm("streetNamePlaceholder"),
-                streetNameError: tPostItemForm("streetNameError"),
-                streetNumber: tPostItemForm("streetNumber"),
-                streetNumberPlaceholder: tPostItemForm(
-                  "streetNumberPlaceholder"
+                descriptionPlaceholder: tPostItemForm(
+                  "description_placeholder"
                 ),
-                streetNumberError: tPostItemForm("streetNumberError"),
+                descriptionRequired: tPostItemForm("description_required"),
+                descriptionMaxLength: tPostItemForm("description_max_length"),
+                descriptionMinLength: tPostItemForm("description_min_length"),
+                uploadImages: tPostItemForm("upload_images"),
+                uploadImagesError: tPostItemForm("upload_images_error"),
+                addressDetails: tPostItemForm("address_details"),
+                streetName: tPostItemForm("street_name"),
+                streetNamePlaceholder: tPostItemForm("street_name_placeholder"),
+                streetNameError: tPostItemForm("street_name_error"),
+                streetNumber: tPostItemForm("street_number"),
+                streetNumberPlaceholder: tPostItemForm(
+                  "street_number_placeholder"
+                ),
+                streetNumberError: tPostItemForm("street_number_error"),
                 city: tPostItemForm("city"),
-                cityPlaceholder: tPostItemForm("cityPlaceholder"),
-                cityError: tPostItemForm("cityError"),
-                postalCode: tPostItemForm("postalCode"),
-                postalCodePlaceholder: tPostItemForm("postalCodePlaceholder"),
-                postalCodeError: tPostItemForm("postalCodeError"),
+                cityPlaceholder: tPostItemForm("city_placeholder"),
+                cityError: tPostItemForm("city_error"),
+                postalCode: tPostItemForm("postal_code"),
+                postalCodePlaceholder: tPostItemForm("postal_code_placeholder"),
+                postalCodeError: tPostItemForm("postal_code_error"),
                 country: tPostItemForm("country"),
-                contactDetails: tPostItemForm("contactDetails"),
-                contactViaSite: tPostItemForm("contactViaSite"),
-                phoneNumber: tPostItemForm("phoneNumber"),
-                phoneNumberPlaceholder: tPostItemForm("phoneNumberPlaceholder"),
-                phoneNumberError: tPostItemForm("phoneNumberError"),
-                isHaveWhatsApp: tPostItemForm("isHaveWhatsApp"),
-                isHaveWhatsAppTip: tPostItemForm("isHaveWhatsAppTip"),
+                contactDetails: tPostItemForm("contact_details"),
+                contactViaSite: tPostItemForm("contact_via_site"),
+                phoneNumber: tPostItemForm("phone_number"),
+                phoneNumberPlaceholder: tPostItemForm(
+                  "phone_number_placeholder"
+                ),
+                phoneNumberError: tPostItemForm("phone_number_error"),
+                isHaveWhatsApp: tPostItemForm("is_have_whatsapp"),
+                isHaveWhatsAppTip: tPostItemForm("is_have_whatsapp_tip"),
                 email: tPostItemForm("email"),
-                emailPlaceholder: tPostItemForm("emailPlaceholder"),
-                emailError: tPostItemForm("emailError"),
-                submitButton: tPostItemForm("submitButton"),
+                emailPlaceholder: tPostItemForm("email_placeholder"),
+                emailError: tPostItemForm("email_error"),
+                submitButton: tPostItemForm("submit_button"),
                 cancel: tGenericForm("cancel"),
                 required: tGenericForm("required"),
                 reset: tGenericForm("reset"),
-                countries: {
-                  israel: tCountries("il"),
-                  usa: tCountries("usa"),
-                },
+                israel: tCountries("israel"),
               }}
             />
           </div>

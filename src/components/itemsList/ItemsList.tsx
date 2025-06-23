@@ -30,7 +30,7 @@ import useItems from "@/hooks/db/useItems";
 import { useInView } from "react-intersection-observer";
 import { useDeleteItem } from "@/hooks/db/useDeleteItem";
 import { useUpdateItemStatus } from "@/hooks/db/useUpdateItemStatus";
-import { Item } from "@/types/db/item";
+import { DbFoodItem } from "@/types/item/item";
 
 export default function ItemsList() {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useItems();
@@ -68,7 +68,6 @@ export default function ItemsList() {
 
   const handleEditClick = async (itemId: string) => {
     setLoadingItemId(itemId);
-    await import("@/components/forms/editItemForm/EditItemForm");
     setOpenItemId(itemId);
     setLoadingItemId(null);
   };
@@ -97,7 +96,7 @@ export default function ItemsList() {
       )} */}
       {// eslint-disable-next-line @typescript-eslint/no-explicit-any
       data?.pages?.flatMap((page: any) =>
-        page?.map((item: Item) => (
+        page?.map((item: DbFoodItem) => (
           <div
             key={item.id}
             className='border rounded p-4 flex flex-col md:flex-row md:items-center justify-between'
@@ -132,13 +131,13 @@ export default function ItemsList() {
                         <span>{tPostItemForm("status.published")}</span>
                       </div>
                     )}
-                    {item.status === "pending" && (
+                    {item.status === "pending_publication" && (
                       <div className='flex items-center gap-1'>
                         <Loader className='inline' size={14} color='#FFA500' />
                         <span>{tPostItemForm("status.pending")} - נוצר</span>
                       </div>
                     )}
-                    {item.status === "edited" && (
+                    {item.status === "update_pending" && (
                       <div className='flex items-center gap-1'>
                         <Loader className='inline' size={14} color='#FFA500' />
                         <span>{tPostItemForm("status.pending")} - נערך</span>
@@ -173,7 +172,8 @@ export default function ItemsList() {
               </div>
             </div>
             <div className='flex space-x-2 mt-2 md:mt-0'>
-              {item.status === "pending" || item.status === "edited" ? (
+              {item.status === "pending_publication" ||
+              item.status === "update_pending" ? (
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -219,6 +219,7 @@ export default function ItemsList() {
                 )}
               </EditItemButton>
               <EditItemFormWrapper
+                key={item.id}
                 open={openItemId === item.id}
                 itemStatus={item.status}
                 setIsEditItemFormSubmitSuccess={setIsEditItemFormSubmitSuccess}
@@ -240,58 +241,59 @@ export default function ItemsList() {
                   isHaveWhatsApp: item.is_have_whatsapp,
                 }}
                 translation={{
-                  formTitle: tEditItemForm("formTitle"),
-                  formDescription: tEditItemForm("formDescription"),
+                  formTitle: tEditItemForm("form_title"),
+                  formDescription: tEditItemForm("form_title"),
                   title: tPostItemForm("title"),
-                  titlePlaceholder: tPostItemForm("titlePlaceholder"),
-                  titleRequired: tPostItemForm("titleRequired"),
-                  titleMaxLength: tPostItemForm("titleMaxLength"),
-                  titleMinLength: tPostItemForm("titleMinLength"),
+                  titlePlaceholder: tPostItemForm("title_placeholder"),
+                  titleRequired: tPostItemForm("title_required"),
+                  titleMaxLength: tPostItemForm("title_max_length"),
+                  titleMinLength: tPostItemForm("title_min_length"),
                   description: tPostItemForm("description"),
-                  descriptionRequired: tPostItemForm("descriptionRequired"),
-                  descriptionMaxLength: tPostItemForm("descriptionMaxLength"),
-                  descriptionMinLength: tPostItemForm("descriptionMinLength"),
                   descriptionPlaceholder: tPostItemForm(
-                    "descriptionPlaceholder"
+                    "description_placeholder"
                   ),
-                  uploadImages: tPostItemForm("uploadImages"),
-                  uploadImagesError: tPostItemForm("uploadImagesError"),
-                  addressDetails: tPostItemForm("addressDetails"),
-                  streetName: tPostItemForm("streetName"),
-                  streetNamePlaceholder: tPostItemForm("streetNamePlaceholder"),
-                  streetNameError: tPostItemForm("streetNameError"),
-                  streetNumber: tPostItemForm("streetNumber"),
+                  descriptionRequired: tPostItemForm("description_required"),
+                  descriptionMaxLength: tPostItemForm("description_max_length"),
+                  descriptionMinLength: tPostItemForm("description_min_length"),
+                  uploadImages: tPostItemForm("upload_images"),
+                  uploadImagesError: tPostItemForm("upload_images_error"),
+                  addressDetails: tPostItemForm("address_details"),
+                  streetName: tPostItemForm("street_name"),
+                  streetNamePlaceholder: tPostItemForm(
+                    "street_name_placeholder"
+                  ),
+                  streetNameError: tPostItemForm("street_name_Error"),
+                  streetNumber: tPostItemForm("street_number"),
                   streetNumberPlaceholder: tPostItemForm(
-                    "streetNumberPlaceholder"
+                    "street_number_placeholder"
                   ),
-                  streetNumberError: tPostItemForm("streetNumberError"),
+                  streetNumberError: tPostItemForm("street_number_error"),
                   city: tPostItemForm("city"),
-                  cityPlaceholder: tPostItemForm("cityPlaceholder"),
-                  cityError: tPostItemForm("cityError"),
-                  postalCode: tPostItemForm("postalCode"),
-                  postalCodePlaceholder: tPostItemForm("postalCodePlaceholder"),
-                  postalCodeError: tPostItemForm("postalCodeError"),
-                  country: tPostItemForm("country"),
-                  contactDetails: tPostItemForm("contactDetails"),
-                  contactViaSite: tPostItemForm("contactViaSite"),
-                  phoneNumber: tPostItemForm("phoneNumber"),
-                  phoneNumberPlaceholder: tPostItemForm(
-                    "phoneNumberPlaceholder"
+                  cityPlaceholder: tPostItemForm("city_placeholder"),
+                  cityError: tPostItemForm("city_error"),
+                  postalCode: tPostItemForm("postal_code"),
+                  postalCodePlaceholder: tPostItemForm(
+                    "postal_code_placeholder"
                   ),
-                  phoneNumberError: tPostItemForm("phoneNumberError"),
-                  isHaveWhatsApp: tPostItemForm("isHaveWhatsApp"),
-                  isHaveWhatsAppTip: tPostItemForm("isHaveWhatsAppTip"),
+                  postalCodeError: tPostItemForm("postal_code_error"),
+                  country: tPostItemForm("country"),
+                  contactDetails: tPostItemForm("contact_details"),
+                  contactViaSite: tPostItemForm("contact_via_site"),
+                  phoneNumber: tPostItemForm("phone_number"),
+                  phoneNumberPlaceholder: tPostItemForm(
+                    "phone_number_placeholder"
+                  ),
+                  phoneNumberError: tPostItemForm("phone_number_error"),
+                  isHaveWhatsApp: tPostItemForm("is_have_whatsapp"),
+                  isHaveWhatsAppTip: tPostItemForm("is_have_whatsapp_tip"),
                   email: tPostItemForm("email"),
-                  emailPlaceholder: tPostItemForm("emailPlaceholder"),
-                  emailError: tPostItemForm("emailError"),
-                  submitButton: tPostItemForm("submitButton"),
+                  emailPlaceholder: tPostItemForm("email_placeholder"),
+                  emailError: tPostItemForm("email_error"),
+                  submitButton: tPostItemForm("submit_button"),
                   cancel: tGenericForm("cancel"),
                   required: tGenericForm("required"),
                   reset: tGenericForm("reset"),
-                  countries: {
-                    israel: tCountries("il"),
-                    usa: tCountries("usa"),
-                  },
+                  israel: tCountries("israel"),
                 }}
               />
               <Tooltip>

@@ -21,7 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Trash2, Send, ClipboardCopy } from "lucide-react";
 import { User } from "@supabase/supabase-js";
-import { deleteUser } from "@/app/actions/db/deleteUser";
+import { deleteUser } from "@/lib/supabase/actions/deleteUser";
 
 export function UserActions({ user }: { user: User }) {
   const [openDialog, setOpenDialog] = useState(false);

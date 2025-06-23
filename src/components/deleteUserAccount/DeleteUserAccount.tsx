@@ -13,7 +13,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { deleteUser } from "@/app/actions/db/deleteUser";
+import { deleteUser } from "@/lib/supabase/actions/deleteUser";
 import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 

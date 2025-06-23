@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { useMemo } from "react";
 
 type Coords = { lat: number; lng: number };
 
@@ -32,10 +33,8 @@ export default function useItems(options: UseInfiniteItemsOptions = {}) {
     pageSize = 20,
   } = options;
 
-  const shouldUseDistance = sortBy === "distance" && userCoords;
-
-  return useInfiniteQuery({
-    queryKey: [
+  const queryKey = useMemo(
+    () => [
       "items",
       {
         sortBy,
@@ -51,6 +50,25 @@ export default function useItems(options: UseInfiniteItemsOptions = {}) {
         lng: userCoords?.lng,
       },
     ],
+    [
+      sortBy,
+      category,
+      search,
+      maxDistanceKm,
+      fromDate,
+      toDate,
+      excludeUserId,
+      includeUserId,
+      status,
+      userCoords?.lat,
+      userCoords?.lng,
+    ]
+  );
+
+  const shouldUseDistance = sortBy === "distance" && userCoords;
+
+  return useInfiniteQuery({
+    queryKey,
     queryFn: async ({ pageParam = 0 }) => {
       const supabase = createClient();
 

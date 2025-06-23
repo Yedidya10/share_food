@@ -1,0 +1,14 @@
+{
+  "login": {
+    "welcome": "ברוך הבא, {name}",
+    "connect_with": "התחבר עם {provider}",
+    "login": "שלום אורח, התחבר",
+    "logout": "התנתק",
+    "email": "אימייל"
+  },
+  "account_menu": {
+    "profile": "פרופיל",
+    "my_items": "הפריטים שלי",
+    "settings": "הגדרות חשבון"
+  }
+}

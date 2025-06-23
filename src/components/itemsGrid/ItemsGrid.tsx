@@ -43,7 +43,7 @@ import useItems from "@/hooks/db/useItems";
 import { useInView } from "react-intersection-observer";
 import { useSearchFilters } from "@/hooks/useSearchFilters";
 import { useSearchParams } from "next/navigation";
-import { Item } from "@/types/db/item";
+import { DbFoodItem } from "@/types/item/item";
 import { posthog } from "posthog-js";
 import { LinkButton } from "../ui/link-button";
 import { Separator } from "../ui/separator";
@@ -157,7 +157,10 @@ export default function ItemsGrid() {
     };
   }, []);
 
-  function getPublishedText(date: string | Date) {
+  function getPublishedText(date: Date | null) {
+    if (!date) {
+      return "תאריך לא זמין";
+    }
     const createdAt = new Date(date);
     const now = new Date();
     const minutes = differenceInMinutes(now, createdAt);
@@ -174,8 +177,10 @@ export default function ItemsGrid() {
         locale: he,
         addSuffix: false,
       })}`;
+    } else if (days === 1) {
+      return "פורסם אתמול";
     } else if (days < 7) {
-      return `פורסם ב־${days === 1 ? "היום האחרון" : `${days} הימים האחרונים`}`;
+      return `פורסם ב־${days} הימים האחרונים`;
     } else {
       return `פורסם ב־${format(createdAt, "d בMMMM yyyy", {
         locale: he,
@@ -189,7 +194,7 @@ export default function ItemsGrid() {
       <div className='p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4'>
         {// eslint-disable-next-line @typescript-eslint/no-explicit-any
         data?.pages?.flatMap((page: any) =>
-          page?.map((item: Item) => (
+          page?.map((item: DbFoodItem) => (
             <Card
               key={item.id}
               className='rounded-2xl shadow-lg hover:shadow-xl gap-3 transition-shadow p-0 overflow-hidden'
@@ -210,6 +215,8 @@ export default function ItemsGrid() {
                               src={image}
                               alt={`${item.title} blurred background`}
                               fill
+                              priority={false}
+                              sizes='(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw'
                               className='object-cover blur-sm scale-110 opacity-70'
                               aria-hidden='true'
                             />
@@ -217,6 +224,7 @@ export default function ItemsGrid() {
                               src={image}
                               alt={item.title}
                               fill
+                              sizes='(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw'
                               className='object-contain z-10'
                             />
                           </div>
@@ -256,7 +264,7 @@ export default function ItemsGrid() {
                     >
                       <Clock className='w-4 h-4' />
                       <span className='sm:inline'>
-                        {getPublishedText(item.created_at)}
+                        {getPublishedText(item.published_at)}
                       </span>
                     </Badge>
                   </p>
@@ -290,7 +298,7 @@ export default function ItemsGrid() {
                           </DialogTitle>
                           <DialogDescription className='text-xs flex flex-row gap-2 items-center text-muted-foreground'>
                             <Clock className='w-3 h-3' />
-                            {getPublishedText(item.created_at)}
+                            {getPublishedText(item.published_at)}
                           </DialogDescription>
                         </DialogHeader>
                         <div className='space-y-6'>

@@ -21,7 +21,8 @@ import {
 } from "@/components/ui/popover";
 import { UseFormReturn, FieldValues, Path } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-import { TranslationType } from "@/types/translation";
+import { FormTranslationType } from "@/types/formTranslation";
+import ContactFields from "@/types/item/contact";
 import { useEffect, useRef, useState, useTransition } from "react";
 import {
   searchCitiesInHebrew,
@@ -29,20 +30,15 @@ import {
 } from "@/lib/supabase/actions/locations";
 import useCityValidation from "@/components/forms/useCityValidation";
 
-type LocationFormFieldsProps<T extends FieldValues> = {
-  form: UseFormReturn<T>;
-  translation: TranslationType;
+type ContactFormFieldsProps<T extends FieldValues> = {
+  form: UseFormReturn<ContactFields & T>;
+  translation: FormTranslationType;
 };
 
-export default function LocationFormFields<
-  T extends {
-    streetName: string;
-    streetNumber: string;
-    city: string;
-    country: string;
-    postalCode?: string;
-  } & FieldValues,
->({ form, translation }: LocationFormFieldsProps<T>) {
+export default function ContactFormFields<T extends FieldValues>({
+  form,
+  translation,
+}: ContactFormFieldsProps<T>) {
   const streetInputRef = useRef<HTMLInputElement>(null);
   const cityInputRef = useRef<HTMLInputElement>(null);
   const [streetInputWidth, setStreetInputWidth] = useState<number>();
@@ -55,7 +51,7 @@ export default function LocationFormFields<
     useTransition();
   const [isStreetsCommandPending, startStreetsCommandTransition] =
     useTransition();
-  const cityValue = form.watch("city" as Path<T>);
+  const cityValue = form.watch("city" as Path<ContactFields & T>);
   const isCityValid = useCityValidation(cityValue);
 
   function handleSearchCity(input: string) {
@@ -109,16 +105,16 @@ export default function LocationFormFields<
       <div className='hidden flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0'>
         <FormField
           control={form.control}
-          name={"country" as Path<T>}
+          name={"country" as Path<ContactFields & T>}
           render={({ field }) => (
             <FormItem className='w-full hidden'>
               <FormLabel htmlFor='country'>{translation.country}</FormLabel>
               <FormControl>
                 <Input
                   id='country'
-                  placeholder={translation.countries.israel}
+                  placeholder={translation.israel}
                   {...field}
-                  value={field.value || translation.countries.israel}
+                  value={field.value || translation.israel}
                   disabled
                 />
               </FormControl>
@@ -128,7 +124,7 @@ export default function LocationFormFields<
         />
         <FormField
           control={form.control}
-          name={"postalCode" as Path<T>}
+          name={"postalCode" as Path<ContactFields & T>}
           render={({ field }) => (
             <FormItem className='w-full hidden'>
               <FormLabel htmlFor='postalCode'>
@@ -149,7 +145,7 @@ export default function LocationFormFields<
       <div className='flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0'>
         <FormField
           control={form.control}
-          name={"city" as Path<T>}
+          name={"city" as Path<ContactFields & T>}
           render={({ field }) => (
             <FormItem className='w-full'>
               <FormLabel htmlFor='city'>
@@ -217,7 +213,7 @@ export default function LocationFormFields<
         />
         <FormField
           control={form.control}
-          name={"streetName" as Path<T>}
+          name={"streetName" as Path<ContactFields & T>}
           render={({ field }) => (
             <FormItem className='w-full'>
               <FormLabel htmlFor='streetName'>
@@ -242,7 +238,9 @@ export default function LocationFormFields<
                           field.onChange(e.target.value);
                           handleSearchStreet(
                             e.target.value,
-                            form.getValues("city" as Path<T>)
+                            form.getValues(
+                              "city" as Path<ContactFields & T>
+                            ) as Path<ContactFields & T>
                           );
                           setOpenStreetsCommand(true);
                         }}
@@ -263,7 +261,7 @@ export default function LocationFormFields<
                           field.onChange(val);
                           handleSearchStreet(
                             val,
-                            form.getValues("city" as Path<T>)
+                            form.getValues("city" as Path<ContactFields & T>)
                           );
                         }}
                         placeholder={translation.streetNamePlaceholder}
@@ -297,7 +295,7 @@ export default function LocationFormFields<
         />
         <FormField
           control={form.control}
-          name={"streetNumber" as Path<T>}
+          name={"streetNumber" as Path<ContactFields & T>}
           render={({ field }) => (
             <FormItem className='w-[60%]'>
               <FormLabel htmlFor='streetNumber'>

@@ -95,12 +95,12 @@ export async function generateMetadata({
 
 export default async function LocaleLayout({
   children,
-  login,
   params,
+  auth,
 }: Readonly<{
   children: React.ReactNode;
-  login: React.ReactNode;
   params: Promise<{ locale: string }>;
+  auth: React.ReactNode;
 }>) {
   // Ensure that the incoming `locale` is valid
   const { locale } = await params;
@@ -142,8 +142,8 @@ export default async function LocaleLayout({
                   },
                 }}
               />
+              <div>{auth}</div>
               <div>{children}</div>
-              {login}
               <FeedbackButton />
             </QueryProvider>
           </NextIntlClientProvider>

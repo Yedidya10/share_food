@@ -1,5 +1,5 @@
-import { DataTable } from "@/components/dataTable/DataTable";
-import { Columns } from "@/components/dataTable/Columns";
+import { DataTable } from "@/components/usersDataTable/DataTable";
+import { Columns } from "@/components/usersDataTable/Columns";
 
 export default function UsersPage() {
   return <DataTable columns={Columns} />;

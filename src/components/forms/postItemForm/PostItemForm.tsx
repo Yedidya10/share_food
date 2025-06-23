@@ -23,8 +23,8 @@ import ContactFormFields from "@/components/forms/ContactFormFields";
 import LocationFormFields from "@/components/forms/LocationFormFields";
 import ImagesFormField from "@/components/forms/ImagesFormField";
 import ItemBaseFormFields from "@/components/forms/ItemBaseFormFields";
-import { TranslationType } from "@/types/translation";
-import { UnifiedImage } from "@/types/forms/item/unifiedImage";
+import { FormTranslationType } from "@/types/formTranslation";
+import { UnifiedImage } from "@/types/item/unifiedImage";
 import { useInsertItem } from "@/hooks/useInsertItem";
 import { Loader } from "lucide-react";
 
@@ -37,7 +37,7 @@ export default function PostItemForm({
   openModal: boolean;
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
   setIsSubmitSuccess: React.Dispatch<React.SetStateAction<boolean | null>>;
-  translation: TranslationType;
+  translation: FormTranslationType;
 }) {
   const [images, setImages] = useState<UnifiedImage[]>([]); // Initialize with an empty array
   const locale = useLocale();

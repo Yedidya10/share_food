@@ -1,4 +1,4 @@
-export type TranslationType = {
+export type FormTranslationType = {
   formTitle: string;
   formDescription: string;
   title: string;
@@ -41,8 +41,5 @@ export type TranslationType = {
   cancel: string;
   required: string;
   reset: string;
-  countries: {
-    israel: string;
-    usa: string;
-  };
+  israel: string;
 };

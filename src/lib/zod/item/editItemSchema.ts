@@ -1,8 +1,8 @@
 import { z } from "zod";
 import itemSchema from "./itemSchema";
-import { TranslationType } from "@/types/translation";
+import { FormTranslationType } from "@/types/formTranslation";
 
-export function editItemImagesSchema(translation: TranslationType) {
+export function editItemImagesSchema(translation: FormTranslationType) {
   return z.object({
     images: z
       .array(
@@ -24,9 +24,9 @@ export function editItemImagesSchema(translation: TranslationType) {
   });
 }
 
-export default function editItemSchema(translation: TranslationType) {
+export default function editItemSchema(translation: FormTranslationType) {
   return z.intersection(
     itemSchema(translation),
-    editItemImagesSchema(translation),
+    editItemImagesSchema(translation)
   );
 }

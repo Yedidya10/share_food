@@ -3,10 +3,10 @@ import {
   isValidPhoneNumber,
   isPossiblePhoneNumber,
 } from "react-phone-number-input";
-import { TranslationType } from "@/types/translation";
+import { FormTranslationType } from "@/types/formTranslation";
 import { validateCity, validateStreet } from "@/lib/supabase/actions/locations";
 
-export function itemBaseSchema(translation: TranslationType) {
+export function itemBaseSchema(translation: FormTranslationType) {
   return z.object({
     title: z
       .string()
@@ -19,7 +19,7 @@ export function itemBaseSchema(translation: TranslationType) {
   });
 }
 
-export function locationSchema(translation: TranslationType) {
+export function locationSchema(translation: FormTranslationType) {
   return z
     .object({
       streetName: z.string().min(2).max(50),
@@ -61,7 +61,7 @@ export function locationSchema(translation: TranslationType) {
     });
 }
 
-export function contactSchema(translation: TranslationType) {
+export function contactSchema(translation: FormTranslationType) {
   return z
     .object({
       contactViaSite: z.boolean(),
@@ -94,7 +94,7 @@ export function contactSchema(translation: TranslationType) {
     );
 }
 
-export default function itemSchema(translation: TranslationType) {
+export default function itemSchema(translation: FormTranslationType) {
   return itemBaseSchema(translation)
     .and(locationSchema(translation))
     .and(contactSchema(translation));

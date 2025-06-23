@@ -1,4 +1,4 @@
-import EditItemForm from "@/contexts/EditItemForm";
+import EditItemForm from "@/components/forms/editItemForm/EditItemForm";
 import { getItemById } from "@/lib/supabase/actions/getItemById";
 import { EditItemFormValues } from "@/types/item/item";
 import { getTranslations } from "next-intl/server";

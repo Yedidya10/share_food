@@ -13,13 +13,13 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { UseFormReturn, FieldValues, Path, PathValue } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-import { TranslationType } from "@/types/translation";
+import { FormTranslationType } from "@/types/formTranslation";
 import imageCompression from "browser-image-compression";
-import { UnifiedImage } from "@/types/forms/item/unifiedImage";
+import { UnifiedImage } from "@/types/item/unifiedImage";
 
 type Props<T extends FieldValues & { images: UnifiedImage[] }> = {
   form: UseFormReturn<T>;
-  translation: TranslationType;
+  translation: FormTranslationType;
   state: {
     images: UnifiedImage[];
     setImages: React.Dispatch<React.SetStateAction<UnifiedImage[]>>;

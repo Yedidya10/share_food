@@ -13,11 +13,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import PhoneInput from "@/components/forms/phoneInput/PhoneInput";
 import { useLocale } from "next-intl";
-import { TranslationType } from "@/types/translation";
+import { FormTranslationType } from "@/types/formTranslation";
 
 type ContactFormFieldsProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
-  translation: TranslationType;
+  translation: FormTranslationType;
 };
 
 export default function ContactFormFields<

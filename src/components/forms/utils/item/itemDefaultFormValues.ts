@@ -1,15 +1,14 @@
-import { InitialValues } from "@/types/forms/item/item";
+import { FormTranslationType } from "@/types/formTranslation";
+import { EditItemFormValues } from "@/types/item/item";
 
-export function postItemDefaultFormValues(translation: {
-  countries: { [key: string]: string };
-}) {
+export function postItemDefaultFormValues(translation: FormTranslationType) {
   return {
     title: "",
     description: "",
     streetName: "",
     streetNumber: "",
     city: "",
-    country: translation.countries.israel, // Default
+    country: translation.israel, // Default
     postalCode: "",
     contactViaSite: true, // Default to true for contact via site
     contactByPhone: false,
@@ -24,10 +23,8 @@ export function postItemDefaultFormValues(translation: {
 export const editItemDefaultFormValues = ({
   initialValues,
 }: {
-  translation: {
-    countries: { [key: string]: string };
-  };
-  initialValues: InitialValues;
+  translation: FormTranslationType;
+  initialValues: EditItemFormValues;
 }) => {
   return {
     title: initialValues.title,

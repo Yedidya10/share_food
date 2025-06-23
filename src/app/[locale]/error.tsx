@@ -6,9 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
 
-export default function Error({ error, reset }: { error: Error; reset: () => void }) {
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error;
+  reset: () => void;
+}) {
   useEffect(() => {
     posthog.captureException(error);
+    console.error("An error occurred:", error);
   }, [error]);
 
   return (
@@ -18,7 +25,7 @@ export default function Error({ error, reset }: { error: Error; reset: () => voi
           <Terminal className='h-4 w-4' />
           <AlertTitle className='font-bold'>משהו השתבש</AlertTitle>
           <AlertDescription>
-            {error.message || "אירעה שגיאה לא צפויה. נסה שוב מאוחר יותר."}
+            {"אירעה שגיאה לא צפויה. נסה שוב מאוחר יותר."}
           </AlertDescription>
         </Alert>
 

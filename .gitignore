@@ -44,3 +44,5 @@ certificates
 .env*.local
 
 .env.local
+
+crowdin.yml

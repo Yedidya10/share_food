@@ -3,7 +3,6 @@
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import AccountMenu from "@/components/accountMenu/AccountMenu";
-import { Button } from "@/components/ui/button";
 import { Link, usePathname } from "@/i18n/navigation";
 import ChatButton from "@/components/chat/chatButton/ChatButton";
 import { useEffect, useState } from "react";
@@ -12,6 +11,7 @@ import PostItemFormWrapper from "@/components/forms/postItemForm/PostItemFormWra
 import PostItemButton from "@/components/postItemButton/PostItemButton";
 import { CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
+import { LinkButton } from "@/components/ui/link-button";
 
 export default function MainHeader() {
   const pathname = usePathname();
@@ -92,9 +92,9 @@ export default function MainHeader() {
         />
         <span className='hidden md:inline'>{tHeader("title")}</span>
       </Link>
-      <div className='flex items-center justify-between gap-2 p-4'>
+      <div className='p-4'>
         {user && isUserConnected ? (
-          <>
+          <div className='flex items-center justify-between gap-2'>
             <AccountMenu
               translation={{
                 welcome: tLogin("welcome", {
@@ -166,16 +166,14 @@ export default function MainHeader() {
                 },
               }}
             />
-          </>
+          </div>
         ) : (
-          <Button variant='outline' className='h-10'>
-            <Link
-              href={`/auth/login?redirect=${encodeURIComponent(pathname)}`}
-              className='flex items-center gap-2'
-            >
-              {tLogin("login")}
-            </Link>
-          </Button>
+          <LinkButton
+            href={`/auth/login?redirect=${encodeURIComponent(pathname)}`}
+            variant='outline'
+          >
+            {tLogin("login")}
+          </LinkButton>
         )}
       </div>
     </header>

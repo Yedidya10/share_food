@@ -12,7 +12,7 @@ export function useUpdateItemStatus() {
       status,
     }: {
       id: string;
-      status: "published" | "pending";
+      status: "published" | "pending_publication";
     }) => {
       const { error } = await supabase
         .from("items")

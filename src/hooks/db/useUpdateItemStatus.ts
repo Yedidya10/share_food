@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
+import { ItemStatusEnum } from "@/types/item/item";
 
 export function useUpdateItemStatus() {
   const supabase = createClient();
@@ -12,7 +13,7 @@ export function useUpdateItemStatus() {
       status,
     }: {
       id: string;
-      status: "published" | "pending_publication";
+      status: ItemStatusEnum;
     }) => {
       const { error } = await supabase
         .from("items")
@@ -26,9 +27,17 @@ export function useUpdateItemStatus() {
       return { id, status };
     },
     onSuccess: ({ status }) => {
-      toast.success(
-        status === "published" ? "הפריט פורסם בהצלחה" : "הפריט הוחזר למצב המתנה"
-      );
+      const statusMessages: Record<ItemStatusEnum, string> = {
+        published: "הפריט פורסם בהצלחה",
+        draft: "הפריט נשמר כטיוטה",
+        pending_publication: "הפריט ממתין לפרסום",
+        given_away: "הפריט סומן כנמסר",
+        update_pending: "הפריט ממתין לעדכון",
+        rejected: "הפריט נדחה",
+        expired: "הפריט פג תוקף",
+      };
+
+      toast.success(statusMessages[status as ItemStatusEnum] ?? "");
       queryClient.invalidateQueries({ queryKey: ["items"] });
     },
     onError: (error) => {

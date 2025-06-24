@@ -251,6 +251,9 @@ export default function ItemsGrid() {
                         itemId: item.id,
                       });
                     }}
+                    role='button'
+                    tabIndex={0}
+                    aria-pressed={openItemId === item.id}
                   >
                     {item.title}
                   </h2>

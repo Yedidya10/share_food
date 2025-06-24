@@ -38,11 +38,13 @@
   "email_placeholder": "name@mail.com",
   "email_error": "אנא הכנס דוא\"ל תקין",
   "submit_button": "פרסם פריט",
+  "submit_button_processing": "יוצר פריט...",
   "status": {
     "title": "סטטוס",
     "pending": "ממתין לאישור",
     "published": "פורסם",
     "archived": "ארכיון",
-    "rejected": "נדחה"
+    "rejected": "נדחה",
+    "expired": "פג תוקף"
   }
 }

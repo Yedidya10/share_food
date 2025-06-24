@@ -1,5 +1,6 @@
 {
   "form_title": "עריכת פריט",
   "form_description": "עדכן את הפרטים למטה כדי לערוך את הפריט.",
-  "submit_button": "עדכן פריט"
+  "submit_button": "עדכן פריט",
+  "submit_button_processing": "מעדכן..."
 }

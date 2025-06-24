@@ -9,6 +9,9 @@ import {
   Trash2,
   Pencil,
   MoreHorizontal,
+  PackageCheck,
+  X,
+  ClipboardCopy,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -31,8 +34,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import EditItemButton from "@/components/editItemButton/EditItemButton";
-import { DbFoodItem } from "@/types/item/item";
+import { DbFoodItem, ItemStatusEnum } from "@/types/item/item";
 import { useLocale, useTranslations } from "next-intl";
 import { useDeleteItem } from "@/hooks/db/useDeleteItem";
 import { DirectionProvider } from "@radix-ui/react-direction";
@@ -42,6 +44,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useRouter } from "@/i18n/navigation";
+import { useUpdateItemStatus } from "@/hooks/db/useUpdateItemStatus";
 
 export default function Item({
   item,
@@ -52,17 +55,13 @@ export default function Item({
 }) {
   // Hooks
   const locale = useLocale();
-  const route = useRouter();
+  const router = useRouter();
   const handleDeleteItemClick = useDeleteItem();
+  const { mutate: updateItemStatus, isPending: isUpdatingStatus } =
+    useUpdateItemStatus();
 
   // Translations
   const tPostItemForm = useTranslations("form.postItem");
-
-  // Event Handlers
-  const handleEditItemClick = (itemId: string) => {
-    // Navigate to edit item page
-    route.push(`/edit-item/${itemId}`);
-  };
 
   // Layout Toggle Handlers
   const itemWrapper = cn(
@@ -138,6 +137,18 @@ export default function Item({
                     <span>{tPostItemForm("status.draft")}</span>
                   </div>
                 )}
+                {item.status === "expired" && (
+                  <div className='flex items-center gap-1'>
+                    <X className='inline text-red-500' size={14} />
+                    <span>{tPostItemForm("status.expired")}</span>
+                  </div>
+                )}
+                {item.status === "given_away" && (
+                  <div className='flex items-center gap-1'>
+                    <PackageCheck className='inline text-blue-500' size={14} />
+                    <span>{tPostItemForm("status.givenAway")}</span>
+                  </div>
+                )}
               </Badge>
             </div>
           </div>
@@ -149,22 +160,42 @@ export default function Item({
         </CardContent>
         <CardFooter className={cardFooterWrapper}>
           {/* Generic Item Actions */}
-          <EditItemButton onClick={() => handleEditItemClick(item.id)}>
+          {/* <EditItemButton onClick={() => handleEditItemClick(item.id)}>
             <Pencil className='w-4 h-4' />
-          </EditItemButton>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant='destructive'
-                size='icon'
-                onClick={() => handleDeleteItemClick.mutate(item.id)}
-              >
-                <Trash2 className='w-4 h-4' />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>מחק פריט</TooltipContent>
-          </Tooltip>
-          <DropdownMenu>
+          </EditItemButton> */}
+          {item.status === ItemStatusEnum.Published && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant='default'
+                  onClick={() =>
+                    updateItemStatus({
+                      id: item.id,
+                      status: ItemStatusEnum.GivenAway,
+                    })
+                  }
+                  disabled={isUpdatingStatus}
+                >
+                  {isUpdatingStatus ? (
+                    <Loader className='animate-spin ml-2' size={16} />
+                  ) : (
+                    <>
+                      <PackageCheck />
+                      <span className='sr-only'>סמן כנמסר</span>
+                    </>
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>סמן כנמסר</TooltipContent>
+            </Tooltip>
+          )}
+          <DropdownMenu
+            onOpenChange={(open) => {
+              if (open) {
+                router.prefetch(`/edit-item/${item.id}`);
+              }
+            }}
+          >
             <Tooltip>
               <TooltipTrigger asChild>
                 <DropdownMenuTrigger asChild>
@@ -181,21 +212,79 @@ export default function Item({
               <DropdownMenuItem
                 onClick={() => navigator.clipboard.writeText(item.title)}
               >
+                <ClipboardCopy />
                 העתק כותרת פריט
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => navigator.clipboard.writeText(item.description)}
               >
+                <ClipboardCopy />
                 העתק תיאור פריט
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>עדכון סטטוס</DropdownMenuSubTrigger>
-                <DropdownMenuSubContent>
-                  <DropdownMenuItem>הפוך לטיוטה</DropdownMenuItem>
-                  <DropdownMenuItem>סמן כנמסר</DropdownMenuItem>
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
+              {(item.status === ItemStatusEnum.Published ||
+                item.status === ItemStatusEnum.UpdatePending ||
+                item.status === ItemStatusEnum.PendingPublication ||
+                item.status === ItemStatusEnum.Draft) && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => router.push(`/edit-item/${item.id}`)}
+                    className='flex gap-2 items-center'
+                  >
+                    <Pencil />
+                    <span>ערוך פריט</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    variant='destructive'
+                    onClick={() => handleDeleteItemClick.mutate(item.id)}
+                    className='flex gap-2'
+                  >
+                    <Trash2 />
+                    <span>מחק פריט</span>
+                  </DropdownMenuItem>
+                </>
+              )}
+              {item.status !== ItemStatusEnum.GivenAway && (
+                <DropdownMenuSub>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuSubTrigger>עדכון סטטוס</DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent>
+                    {(item.status === ItemStatusEnum.Published ||
+                      item.status === ItemStatusEnum.UpdatePending ||
+                      item.status === ItemStatusEnum.PendingPublication) && (
+                      <DropdownMenuItem
+                        onClick={() =>
+                          updateItemStatus({
+                            id: item.id,
+                            status: ItemStatusEnum.Draft,
+                          })
+                        }
+                        className='flex gap-2 items-center'
+                      >
+                        <Hammer />
+                        <span>שמור כטיוטה</span>
+                      </DropdownMenuItem>
+                    )}
+                    {(item.status === ItemStatusEnum.Draft ||
+                      item.status === ItemStatusEnum.PendingPublication ||
+                      item.status === ItemStatusEnum.UpdatePending ||
+                      item.status === ItemStatusEnum.Published) && (
+                      <DropdownMenuItem
+                        onClick={() =>
+                          updateItemStatus({
+                            id: item.id,
+                            status: ItemStatusEnum.Expired,
+                          })
+                        }
+                        className='flex gap-2 items-center'
+                      >
+                        <X />
+                        סמן כפג תוקף
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </CardFooter>

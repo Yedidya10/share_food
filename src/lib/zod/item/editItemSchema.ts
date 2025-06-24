@@ -30,3 +30,5 @@ export default function editItemSchema(translation: FormTranslationType) {
     editItemImagesSchema(translation)
   );
 }
+
+export type EditItemFormSchema = z.infer<ReturnType<typeof editItemSchema>>;

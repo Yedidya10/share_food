@@ -59,7 +59,7 @@ const WelcomeEmail = ({
         <Preview>ברוך הבא ל-SpareBite</Preview>
         <Body className='bg-offwhite font-sans text-base' dir='rtl'>
           <Img
-            src={`https://sparebite.com/_next/image?url=%2Ficon-192x192.png&w=96&q=75`}
+            src={`https://sparebite.com/_next/image?url=%2Ficon-512x512.png&w=96&q=75`}
             width='160'
             height='auto'
             alt='SpareBite Logo'
@@ -80,14 +80,14 @@ const WelcomeEmail = ({
                   לזרוק, נכון?
                 </Text>
                 <Text className='text-base leading-6'>
-                  Share Food נולד בדיוק מהמקום הזה – ליצור מרחב נעים, פשוט,
+                  SpareBite נולד בדיוק מהמקום הזה – ליצור מרחב נעים, פשוט,
                   וקהילתי לשיתוף מזון ומוצרים שאפשר עוד ליהנות מהם.
                 </Text>
                 <Text className='text-base leading-6'>
-                  אז ברוך הבא! תרגיש חופשי לשתף, לקבל, ולעזור לכולנו לעשות שימוש
-                  חכם ומועיל יותר במה שכבר יש.
+                  אז ברוך/ה הבא/ה! תרגיש/י חופשי לשתף, לקבל, ולעזור לכולנו לעשות
+                  שימוש חכם ומועיל יותר במה שכבר יש.
                 </Text>
-                <Text className='text-base leading-6'>שמח שאתה פה 💚</Text>
+                <Text className='text-base leading-6'>שמח שאת/ה פה 💚</Text>
                 <Text className='text-base leading-6 pt-4'>
                   בחום,
                   <br /> ידידיה אברג&apos;ל <br />

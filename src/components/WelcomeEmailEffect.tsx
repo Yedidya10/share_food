@@ -19,11 +19,12 @@ export default function WelcomeEmailEffect() {
   useEffect(() => {
     const supabase = createClient();
 
-    async function sendWelcomeEmail(user: User) {
+    async function sendWelcomeEmail(user: User): Promise<boolean> {
       try {
         const { firstName } = parseName(user.user_metadata?.full_name);
         const userName = firstName || "משתמש יקר";
-        const html = render(
+
+        const html = await render(
           <WelcomeEmail
             userName={userName}
             steps={[]}
@@ -32,13 +33,31 @@ export default function WelcomeEmailEffect() {
             ]}
           />
         );
-        await fetch("/api/send-welcome-oauth", {
+
+        console.log("html type:", typeof html); // חייב להיות "string"
+
+        const res = await fetch("/api/send-welcome-oauth", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: user.email, html }),
         });
+
+        if (!res.ok) {
+          console.error("Failed to send welcome email:", res.statusText);
+          return false;
+        }
+
+        const data = await res.json();
+        if (!data.success) {
+          console.error("Failed to send welcome email:", data.message);
+          return false;
+        }
+
+        console.log("Welcome email sent successfully.");
+        return true;
       } catch (err) {
         console.error("Failed to send welcome email:", err);
+        return false;
       }
     }
 
@@ -86,7 +105,12 @@ export default function WelcomeEmailEffect() {
       }
 
       if (!profile || !profile.welcome_email_sent) {
-        await sendWelcomeEmail(user);
+        const isSent = await sendWelcomeEmail(user);
+
+        if (!isSent) {
+          console.error("Failed to send welcome email.");
+          return;
+        }
 
         const { error: updateError } = await supabase
           .from("profiles")

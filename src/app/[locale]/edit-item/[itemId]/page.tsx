@@ -1,4 +1,4 @@
-import { EditItemFormWrapper } from "@/components/editItemDialog/EditItemFormWrapper";
+import { EditItemFormWrapper } from "@/components/forms/editItemForm/EditItemFormWrapper";
 
 export default async function EditItemPage({
   params,

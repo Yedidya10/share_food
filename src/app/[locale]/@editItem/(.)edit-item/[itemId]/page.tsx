@@ -1,5 +1,5 @@
-import EditItemDialog from "@/components/editItemDialog/EditItemDialog";
-import { EditItemFormWrapper } from "@/components/editItemDialog/EditItemFormWrapper";
+import { EditItemFormWrapper } from "@/components/forms/editItemForm/EditItemFormWrapper";
+import EditItemFormDialog from "@/components/forms/editItemForm/EditItemFormDialog";
 
 export default async function EditItemModal({
   params,
@@ -8,8 +8,8 @@ export default async function EditItemModal({
 }) {
   const { itemId } = await params;
   return (
-    <EditItemDialog>
+    <EditItemFormDialog>
       <EditItemFormWrapper itemId={itemId} />
-    </EditItemDialog>
+    </EditItemFormDialog>
   );
 }

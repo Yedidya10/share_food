@@ -43,7 +43,7 @@
     "title": "סטטוס",
     "pending": "ממתין לאישור",
     "published": "פורסם",
-    "archived": "ארכיון",
+    "givenAway": "נמסר",
     "rejected": "נדחה",
     "expired": "פג תוקף"
   }

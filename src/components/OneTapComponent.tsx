@@ -4,6 +4,7 @@ import Script from "next/script";
 import { createClient } from "@/lib/supabase/client";
 import { CredentialResponse } from "google-one-tap";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 const OneTapComponent = () => {
   const supabase = createClient();
@@ -55,9 +56,11 @@ const OneTapComponent = () => {
                   message: error.message,
                   code: error.code,
                 });
+                toast.error("Google One Tap sign-in failed: " + error.message);
               }
             } catch (error) {
               console.error("Error logging in with Google One Tap", error);
+              toast.error("Google One Tap sign-in failed. Please try again.");
             }
           },
           nonce: hashedNonce,

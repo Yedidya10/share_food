@@ -26,7 +26,7 @@ import {
   EyeOff,
   Eye,
 } from "lucide-react";
-import { DbFoodItem } from "@/types/item/item";
+import { DbFoodItem, ItemStatusEnum } from "@/types/item/item";
 import { useRouter } from "@/i18n/navigation";
 import { useUpdateItemStatus } from "@/hooks/db/useUpdateItemStatus";
 import { useDeleteItem } from "@/hooks/db/useDeleteItem";
@@ -70,7 +70,9 @@ export default function ItemActions({ item }: { item: DbFoodItem }) {
             <DropdownMenuItem
               className='flex items-center'
               disabled={isPendingUpdate}
-              onClick={() => updateStatus({ id: item.id, status: "published" })}
+              onClick={() =>
+                updateStatus({ id: item.id, status: ItemStatusEnum.Published })
+              }
               aria-label='פרסום פריט'
             >
               <Eye className='w-4 h-4' />
@@ -83,7 +85,7 @@ export default function ItemActions({ item }: { item: DbFoodItem }) {
               onClick={() =>
                 updateStatus({
                   id: item.id,
-                  status: "pending_publication",
+                  status: ItemStatusEnum.PendingPublication,
                 })
               }
               aria-label='החזרה להמתנה לפרסום'

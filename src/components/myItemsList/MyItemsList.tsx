@@ -21,7 +21,7 @@ export default function MyItemsList({
     includeUserId: includeUserId ?? undefined,
     pageSize: 20,
   });
-  const [layout, setLayout] = useState<"grid-md" | "list">("grid-md");
+  const [layout, setLayout] = useState<"grid-md" | "list">("list");
   const [isEditItemFormSubmitSuccess, setIsEditItemFormSubmitSuccess] =
     useState<boolean | null>(null);
 
@@ -71,7 +71,7 @@ export default function MyItemsList({
           }
           className='lg:flex'
         >
-          <ToggleGroupItem value='grid' aria-label='Grid view'>
+          <ToggleGroupItem value='grid-md' aria-label='Grid view'>
             <LayoutGrid className='h-4 w-4' />
           </ToggleGroupItem>
           <ToggleGroupItem value='list' aria-label='List view'>

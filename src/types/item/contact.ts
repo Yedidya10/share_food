@@ -3,7 +3,7 @@ type ContactFields = {
   contactByPhone: boolean;
   isHaveWhatsApp: boolean;
   contactByEmail: boolean;
-  phoneNumber?: string | null;
+  phoneNumber?: string;
   email?: string;
 };
 

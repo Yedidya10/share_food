@@ -51,6 +51,8 @@ const OneTapComponent = () => {
                 nonce,
               });
 
+              console.log("Supabase sign-in response", { response });
+
               if (error) {
                 console.error("Supabase sign-in error", {
                   message: error.message,

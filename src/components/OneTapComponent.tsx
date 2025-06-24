@@ -51,14 +51,10 @@ const OneTapComponent = () => {
                 nonce,
               });
 
-              console.log("Supabase sign-in response", { response });
-
               if (error) {
-                console.error("Supabase sign-in error", {
-                  message: error.message,
-                  code: error.code,
+                toast.error("Google One Tap sign-in failed:", {
+                  description: error.message,
                 });
-                toast.error("Google One Tap sign-in failed: " + error.message);
               }
             } catch (error) {
               console.error("Error logging in with Google One Tap", error);

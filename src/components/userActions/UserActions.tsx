@@ -23,7 +23,7 @@ import { MoreHorizontal, Trash2, Send, ClipboardCopy } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 import { deleteUser } from "@/lib/supabase/actions/deleteUser";
 
-export function UserActions({ user }: { user: User }) {
+export default function UserActions({ user }: { user: User }) {
   const [openDialog, setOpenDialog] = useState(false);
   const [isPending, startTransition] = useTransition();
 

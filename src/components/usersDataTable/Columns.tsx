@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import Image from "next/image";
 import { User } from "@supabase/supabase-js";
-import { UserActions } from "@/components/userActions/UserActions";
+import  UserActions  from "@/components/userActions/UserActions";
 
 export const Columns: ColumnDef<User>[] = [
   {

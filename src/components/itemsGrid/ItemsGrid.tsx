@@ -43,7 +43,6 @@ import { DbFoodItem } from "@/types/item/item";
 import { posthog } from "posthog-js";
 import { LinkButton } from "../ui/link-button";
 import { Separator } from "../ui/separator";
-import { useWelcomeEmailOnFirstLogin } from "@/hooks/useWelcomeEmailOnFirstLogin";
 
 export default function ItemsGrid() {
   const router = useRouter();
@@ -69,7 +68,6 @@ export default function ItemsGrid() {
 
   const searchParamsString = searchParams.toString();
 
-  useWelcomeEmailOnFirstLogin();
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [searchParamsString]);

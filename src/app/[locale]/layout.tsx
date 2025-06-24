@@ -10,6 +10,7 @@ import MainHeader from "@/components/layouts/mainHeader/MainHeader";
 import FeedbackButton from "@/components/feedbackButton/FeedbackButton";
 import QueryProvider from "@/lib/reactQuery/QueryProvider";
 import { Toaster } from "@/components/ui/sonner";
+import WelcomeEmailEffect from "@/components/WelcomeEmailEffect";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -130,6 +131,7 @@ export default async function LocaleLayout({
         >
           <NextIntlClientProvider>
             <QueryProvider>
+              <WelcomeEmailEffect />
               <MainHeader />
               <Toaster
                 position='top-center'

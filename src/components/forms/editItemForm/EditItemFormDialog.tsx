@@ -21,7 +21,7 @@ export default function EditItemDialog({
         <VisuallyHidden>
           <DialogTitle>עריכת פריט</DialogTitle>
         </VisuallyHidden>
-        <DialogContent className='h-full max-h-[90vh] overflow-y-auto'>
+        <DialogContent className='max-h-[80vh] md:min-w-[700px] overflow-y-auto rounded-lg'>
           {children}
         </DialogContent>
       </Dialog>

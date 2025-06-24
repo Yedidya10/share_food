@@ -1,11 +1,12 @@
 "use client";
 
+import { Dialog, DialogTitle, DialogContent } from "@/components/ui/dialog";
 import { useRouter } from "@/i18n/navigation";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { DirectionProvider } from "@radix-ui/react-direction";
 import { useLocale } from "next-intl";
 
-export default function EditItemFormDialog({
+export default function EditItemDialog({
   children,
 }: {
   children: React.ReactNode;
@@ -16,9 +17,11 @@ export default function EditItemFormDialog({
   return (
     <DirectionProvider dir={locale === "he" ? "rtl" : "ltr"}>
       <Dialog open={true} onOpenChange={(open) => !open && router.back()}>
-        <DialogContent
-        // className='sm:max-w-[725px] overflow-y-auto flex flex-col gap-8'
-        >
+        {/* Visually hidden title for screen readers */}
+        <VisuallyHidden>
+          <DialogTitle>עריכת פריט</DialogTitle>
+        </VisuallyHidden>
+        <DialogContent className='h-full max-h-[90vh] overflow-y-auto'>
           {children}
         </DialogContent>
       </Dialog>

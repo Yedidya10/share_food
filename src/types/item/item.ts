@@ -7,7 +7,7 @@ type ItemBaseFormValues = {
 } & ContactFields &
   AddressFields;
 
-enum ItemStatusEnum {
+export enum ItemStatusEnum {
   Draft = "draft",
   PendingPublication = "pending_publication",
   Published = "published",

@@ -42,7 +42,7 @@ export default async function ChatThread({
     if (!otherUserId) throw new Error("Other user not found");
 
     const { data: otherUser, error: otherUserError } = await supabase
-      .from("users")
+      .from("profiles")
       .select("id, full_name, avatar_url")
       .eq("id", otherUserId)
       .single();

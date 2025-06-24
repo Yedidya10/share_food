@@ -23,10 +23,6 @@ import { Button } from "@/components/ui/button";
 import { Tooltip } from "@/components/ui/tooltip";
 import StartChatButton from "@/components/startChatButton/StartChatButton";
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { render } from "@react-email/render";
-import WelcomeEmail from "@/components/emailTemplates/welcomeEmail/WelcomeEmail";
-import { Session, User } from "@supabase/supabase-js";
 import { Badge } from "@/components/ui/badge";
 import FilterAndSearchBar from "../productSearchBar/filterAndSearchBar/FilterAndSearchBar";
 import { Clock, Loader, Mail, Smartphone, User2 } from "lucide-react";
@@ -47,12 +43,14 @@ import { DbFoodItem } from "@/types/item/item";
 import { posthog } from "posthog-js";
 import { LinkButton } from "../ui/link-button";
 import { Separator } from "../ui/separator";
+import { useWelcomeEmailOnFirstLogin } from "@/hooks/useWelcomeEmailOnFirstLogin";
 
 export default function ItemsGrid() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const [openItemId, setOpenItemId] = useState<string | null>(null);
   const { data: currentUser } = useCurrentUser();
   const { filters } = useSearchFilters();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useItems({
@@ -69,93 +67,12 @@ export default function ItemsGrid() {
     },
   });
 
-  const [openItemId, setOpenItemId] = useState<string | null>(null);
-
   const searchParamsString = searchParams.toString();
 
+  useWelcomeEmailOnFirstLogin();
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [searchParamsString]);
-
-  useEffect(() => {
-    const supabase = createClient();
-
-    async function upsertProfile(user: User, session: Session) {
-      try {
-        const { error: profileError } = await supabase.from("profiles").upsert(
-          {
-            id: user?.id,
-            email: user?.email,
-            full_name: user?.user_metadata?.full_name || "",
-            first_name: user?.user_metadata?.full_name?.split(" ")[0] || "",
-            last_name: user?.user_metadata?.full_name?.split(" ")[1] || "",
-            phone: user?.phone || null,
-            avatar_url: user?.user_metadata?.avatar_url || null,
-            created_at: session?.user.created_at,
-            updated_at: session?.user.updated_at,
-          },
-          { onConflict: "id" }
-        );
-
-        if (profileError) {
-          console.error("Error upserting profile:", profileError);
-        }
-      } catch (error) {
-        console.error("Error in upsertProfile:", error);
-      }
-    }
-
-    const { data: authData } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === "SIGNED_IN") {
-          const user = session?.user;
-
-          if (user && user.created_at === user.updated_at) {
-            upsertProfile(user, session);
-
-            async function sendWelcomeEmail() {
-              try {
-                const html = await render(
-                  <WelcomeEmail
-                    userName={
-                      user?.user_metadata?.full_name.split(" ")[0] || ""
-                    }
-                    steps={[]}
-                    links={[
-                      {
-                        href: "https://sparebite.com",
-                        title: "בקר באתר SpareBite",
-                      },
-                    ]}
-                  />
-                );
-
-                await fetch("/api/send-welcome-oauth", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    email: user?.email,
-                    html,
-                  }),
-                });
-              } catch (error) {
-                console.error(error);
-              }
-            }
-
-            sendWelcomeEmail();
-          }
-        }
-
-        if (event === "SIGNED_OUT") {
-        }
-      }
-    );
-
-    return () => {
-      authData?.subscription?.unsubscribe();
-    };
-  }, []);
 
   function getPublishedText(date: Date | null) {
     if (!date) {

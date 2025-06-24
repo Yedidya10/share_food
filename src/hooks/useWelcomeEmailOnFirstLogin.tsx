@@ -111,7 +111,9 @@ export default function useWelcomeEmailOnFirstLogin() {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (event === "SIGNED_IN" && session) {
-          await handleUser(session);
+          setTimeout(() => {
+            handleUser(session); // async
+          }, 0);
         }
       }
     );

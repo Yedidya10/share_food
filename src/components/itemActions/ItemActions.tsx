@@ -43,7 +43,6 @@ export default function ItemActions({ item }: { item: DbFoodItem }) {
       <DropdownMenu
         onOpenChange={(open) => {
           if (open) {
-            console.log("Dropdown opened for item:", item.id);
             router.prefetch(`/edit-item/${item.id}`);
           }
         }}

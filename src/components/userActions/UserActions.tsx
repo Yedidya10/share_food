@@ -65,10 +65,7 @@ export default function UserActions({ user }: { user: User }) {
             <Trash2 className=' text-red-500' />
             <span>Delete User</span>
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => console.log("Send message")}
-            className='flex items-center space-x-1'
-          >
+          <DropdownMenuItem className='flex items-center space-x-1'>
             <Send />
             <span>Send Message</span>
           </DropdownMenuItem>

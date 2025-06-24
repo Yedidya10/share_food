@@ -34,8 +34,6 @@ export default function WelcomeEmailEffect() {
           />
         );
 
-        console.log("html type:", typeof html); // חייב להיות "string"
-
         const res = await fetch("/api/send-welcome-oauth", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -52,8 +50,6 @@ export default function WelcomeEmailEffect() {
           console.error("Failed to send welcome email:", data.message);
           return false;
         }
-
-        console.log("Welcome email sent successfully.");
         return true;
       } catch (err) {
         console.error("Failed to send welcome email:", err);

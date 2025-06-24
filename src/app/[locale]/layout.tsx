@@ -97,10 +97,12 @@ export default async function LocaleLayout({
   children,
   params,
   auth,
+  editItem,
 }: Readonly<{
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
   auth: React.ReactNode;
+  editItem: React.ReactNode;
 }>) {
   // Ensure that the incoming `locale` is valid
   const { locale } = await params;
@@ -143,6 +145,7 @@ export default async function LocaleLayout({
                 }}
               />
               <div>{auth}</div>
+              <div>{editItem}</div>
               <div>{children}</div>
               <FeedbackButton />
             </QueryProvider>

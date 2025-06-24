@@ -13,7 +13,6 @@ import LocationFormFields from "@/components/forms/LocationFormFields";
 import ImagesFormField from "@/components/forms/ImagesFormField";
 import { editItemDefaultFormValues } from "@/components/forms/utils/item/itemDefaultFormValues";
 import type { EditItemFormValues } from "@/types/item/item";
-import type { UnifiedImage } from "@/types/item/unifiedImage";
 import { useLocale } from "next-intl";
 import { useUpdateItem } from "@/hooks/useUpdateItem";
 import { Check, Loader2, RotateCcw } from "lucide-react";
@@ -81,7 +80,7 @@ export default function EditItemForm({
   const onSubmit = async (values: EditItemFormSchema) => {
     try {
       const response = await updateItem({
-        values: { ...values, images: values.images as UnifiedImage[] },
+        values: { ...values },
         itemId,
         itemStatus,
       });

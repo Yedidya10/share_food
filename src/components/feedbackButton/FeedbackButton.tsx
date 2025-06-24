@@ -1,8 +1,6 @@
-// FeedbackButton.tsx
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import html2canvas from "html2canvas-pro"; // שים לב! html2canvas-pro
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,70 +10,60 @@ import {
 } from "@/components/ui/dialog";
 import { Lightbulb, Trash } from "lucide-react";
 import { motion } from "framer-motion";
+import Image from "next/image";
+import { submitFeedbackReport } from "@/lib/supabase/actions/submitFeedback";
+
+type Rect = {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  type: "highlight" | "blackout";
+};
 
 export default function FeedbackButton() {
   const [open, setOpen] = useState(false);
   const [screenshot, setScreenshot] = useState<string | null>(null);
-  const [rects, setRects] = useState<
-    { x1: number; y1: number; x2: number; y2: number }[]
-  >([]);
+  const [rects, setRects] = useState<Rect[]>([]);
+  const [mode, setMode] = useState<"highlight" | "blackout">("highlight");
+  const [description, setDescription] = useState("");
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
   const isDrawing = useRef(false);
   const start = useRef({ x: 0, y: 0 });
 
-  const takeScreenshot = async () => {
-    const canvas = await html2canvas(document.body, {
-      ignoreElements: (el) => el.classList.contains("feedback-overlay"),
-    });
-    setScreenshot(canvas.toDataURL("image/png"));
-    setRects([]);
-  };
+  const captureScreen = async () => {
+    setOpen(false);
+    await new Promise((res) => setTimeout(res, 10000)); // זמן המתנה שהדיאלוג ייעלם
 
-  const redrawRects = (
-    ctx: CanvasRenderingContext2D,
-    rects: { x1: number; y1: number; x2: number; y2: number }[]
-  ) => {
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.strokeStyle = "red";
-    ctx.lineWidth = 2;
-    const scaleX = ctx.canvas.width / ctx.canvas.getBoundingClientRect().width;
-    const scaleY =
-      ctx.canvas.height / ctx.canvas.getBoundingClientRect().height;
-    rects.forEach(({ x1, y1, x2, y2 }) => {
-      const xStart = x1 * scaleX;
-      const yStart = y1 * scaleY;
-      const xEnd = x2 * scaleX;
-      const yEnd = y2 * scaleY;
-      const x = Math.min(xStart, xEnd);
-      const y = Math.min(yStart, yEnd);
-      const w = Math.abs(xStart - xEnd);
-      const h = Math.abs(yStart - yEnd);
-      ctx.strokeRect(x, y, w, h);
-    });
-  };
+    try {
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        audio: false,
+        video: true,
+      });
 
-  const saveAnnotatedImage = () => {
-    if (!imgRef.current || !canvasRef.current) return;
+      const video = document.createElement("video");
+      video.srcObject = stream;
+      await video.play();
 
-    const img = new Image();
-    img.src = screenshot!;
-    img.onload = () => {
-      const tempCanvas = document.createElement("canvas");
-      const ctx = tempCanvas.getContext("2d")!;
-      tempCanvas.width = img.width;
-      tempCanvas.height = img.height;
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
 
-      ctx.drawImage(img, 0, 0);
-      ctx.drawImage(canvasRef.current!, 0, 0);
+      const ctx = canvas.getContext("2d")!;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL("image/png");
 
-      const finalDataUrl = tempCanvas.toDataURL("image/png");
-      console.log("📤 Final image ready:", finalDataUrl);
+      stream.getTracks().forEach((track) => track.stop());
 
-      setOpen(false);
-      setScreenshot(null);
+      setScreenshot(dataUrl);
       setRects([]);
-    };
+      setTimeout(() => setOpen(true), 100);
+    } catch (err) {
+      console.error("שגיאה בצילום המסך:", err);
+      setOpen(true);
+    }
   };
 
   const clearScreenshot = () => {
@@ -85,11 +73,54 @@ export default function FeedbackButton() {
 
   const clearRects = () => {
     setRects([]);
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
-    if (canvas && ctx) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
+    canvasRef.current
+      ?.getContext("2d")
+      ?.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+  };
+
+  const saveAnnotatedImage = async () => {
+    if (!imgRef.current || !canvasRef.current || !screenshot) return;
+
+    const img = new window.Image();
+    img.onload = async () => {
+      const tempCanvas = document.createElement("canvas");
+      const ctx = tempCanvas.getContext("2d")!;
+      tempCanvas.width = img.width;
+      tempCanvas.height = img.height;
+
+      ctx.drawImage(img, 0, 0);
+
+      const scaleX = img.width / canvasRef.current!.clientWidth;
+      const scaleY = img.height / canvasRef.current!.clientHeight;
+
+      rects.forEach(({ x1, y1, x2, y2, type }) => {
+        const x = Math.min(x1, x2) * scaleX;
+        const y = Math.min(y1, y2) * scaleY;
+        const w = Math.abs(x1 - x2) * scaleX;
+        const h = Math.abs(y1 - y2) * scaleY;
+
+        if (type === "highlight") {
+          ctx.strokeStyle = "red";
+          ctx.lineWidth = 4;
+          ctx.strokeRect(x, y, w, h);
+        } else {
+          ctx.fillStyle = "black";
+          ctx.fillRect(x, y, w, h);
+        }
+      });
+
+      const finalDataUrl = tempCanvas.toDataURL("image/png");
+
+      await submitFeedbackReport({
+        description,
+        imageDataUrl: finalDataUrl,
+      });
+
+      setOpen(false);
+      setScreenshot(null);
+      setRects([]);
+      setDescription("");
+    };
   };
 
   useEffect(() => {
@@ -111,7 +142,7 @@ export default function FeedbackButton() {
       isDrawing.current = false;
       setRects((prev) => [
         ...prev,
-        { x1: start.current.x, y1: start.current.y, x2, y2 },
+        { x1: start.current.x, y1: start.current.y, x2, y2, type: mode },
       ]);
     };
 
@@ -120,24 +151,43 @@ export default function FeedbackButton() {
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      redrawRects(ctx, [
-        ...rects,
-        { x1: start.current.x, y1: start.current.y, x2: x, y2: y },
-      ]);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      rects
+        .concat({
+          x1: start.current.x,
+          y1: start.current.y,
+          x2: x,
+          y2: y,
+          type: mode,
+        })
+        .forEach(({ x1, y1, x2, y2, type }) => {
+          const x = Math.min(x1, x2);
+          const y = Math.min(y1, y2);
+          const w = Math.abs(x1 - x2);
+          const h = Math.abs(y1 - y2);
+
+          if (type === "highlight") {
+            ctx.strokeStyle = "red";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x, y, w, h);
+          } else {
+            ctx.fillStyle = "black";
+            ctx.fillRect(x, y, w, h);
+          }
+        });
     };
 
     canvas.addEventListener("mousedown", handleMouseDown);
     canvas.addEventListener("mousemove", handleMouseMove);
     canvas.addEventListener("mouseup", handleMouseUp);
 
-    redrawRects(ctx, rects);
-
     return () => {
       canvas.removeEventListener("mousedown", handleMouseDown);
       canvas.removeEventListener("mousemove", handleMouseMove);
       canvas.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [screenshot, rects]);
+  }, [screenshot, rects, mode]);
 
   return (
     <>
@@ -166,20 +216,25 @@ export default function FeedbackButton() {
             <textarea
               placeholder='פרט כאן את הבאג או ההצעה שלך...'
               className='w-full border rounded-md p-2 min-h-[100px]'
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
             />
 
             {!screenshot && (
-              <Button variant='secondary' onClick={takeScreenshot}>
-                📸 צלם מסך והוסף סימון
+              <Button variant='secondary' onClick={captureScreen}>
+                📸 צילום מסך אמיתי
               </Button>
             )}
 
             {screenshot && (
               <div className='relative border rounded-md overflow-hidden'>
-                <img
+                <Image
                   ref={imgRef}
                   src={screenshot}
                   alt='screenshot'
+                  width={1280}
+                  height={720}
+                  unoptimized
                   className='w-full block'
                 />
                 <canvas
@@ -201,6 +256,16 @@ export default function FeedbackButton() {
                 <Button variant='ghost' onClick={clearRects}>
                   🧽 הסר סימונים
                 </Button>
+                <Button
+                  variant='ghost'
+                  onClick={() =>
+                    setMode((m) =>
+                      m === "highlight" ? "blackout" : "highlight"
+                    )
+                  }
+                >
+                  🖊️ {mode === "highlight" ? "עבור להשחרה" : "עבור לסימון"}
+                </Button>
               </div>
             )}
 
@@ -209,15 +274,11 @@ export default function FeedbackButton() {
                 <Button onClick={saveAnnotatedImage}>שליחה עם צילום</Button>
               )}
               {!screenshot && (
-                <Button onClick={() => setOpen(false)}>שליחה בלי צילום</Button>
+                <Button onClick={() => submitFeedbackReport({ description })}>
+                  שליחה בלי צילום
+                </Button>
               )}
-              <Button
-                variant='destructive'
-                onClick={() => {
-                  setOpen(false);
-                  setScreenshot(null);
-                }}
-              >
+              <Button variant='destructive' onClick={() => setOpen(false)}>
                 ביטול
               </Button>
             </div>

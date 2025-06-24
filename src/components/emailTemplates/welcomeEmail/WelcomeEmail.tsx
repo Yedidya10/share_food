@@ -18,7 +18,7 @@ import type * as React from "react";
 interface WelcomeEmailProps {
   steps: {
     id: number;
-    Description: React.ReactNode;
+    description: React.ReactNode;
   }[];
   links: {
     title: string;
@@ -101,7 +101,7 @@ const WelcomeEmail = ({
             <ul className='mt-4'>
               {steps?.map((step) => (
                 <li className='mb-4' key={step.id}>
-                  {step.Description}
+                  {step.description}
                 </li>
               ))}
             </ul>
@@ -158,7 +158,7 @@ WelcomeEmail.PreviewProps = {
   steps: [
     {
       id: 1,
-      Description: (
+      description: (
         <li className='mb-20' key={1}>
           <strong>פרסם שאריות אוכל טובות.</strong> העלה פריטים שלא תצרוך כדי
           שאחרים יוכלו להיעזר בהם.
@@ -167,7 +167,7 @@ WelcomeEmail.PreviewProps = {
     },
     {
       id: 2,
-      Description: (
+      description: (
         <li className='mb-20' key={2}>
           <strong>מצא אוכל בסביבה שלך.</strong> חפש תרומות מזון באזור שלך וקח
           חלק בפתרון חברתי.
@@ -176,7 +176,7 @@ WelcomeEmail.PreviewProps = {
     },
     {
       id: 3,
-      Description: (
+      description: (
         <li className='mb-20' key={3}>
           <strong>שתף חברים.</strong> ככל שיותר יצטרפו – כך נוכל לעזור ליותר
           אנשים ולמנוע בזבוז מיותר.

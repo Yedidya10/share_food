@@ -8,7 +8,6 @@ import {
   FilePen,
   Loader,
   XCircle,
-  Archive,
   Hourglass,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -48,11 +47,6 @@ function getStatusBadge(status: ItemStatusEnum) {
       icon: Clock,
       variant: "outline",
     },
-    [ItemStatusEnum.Archived]: {
-      label: "ארכיון",
-      icon: Archive,
-      variant: "secondary",
-    },
     [ItemStatusEnum.Rejected]: {
       label: "נדחה",
       icon: XCircle,
@@ -62,6 +56,11 @@ function getStatusBadge(status: ItemStatusEnum) {
       label: "פג תוקף",
       icon: Hourglass,
       variant: "destructive",
+    },
+    [ItemStatusEnum.GivenAway]: {
+      label: "נמסר",
+      icon: CheckCircle,
+      variant: "secondary",
     },
   };
 

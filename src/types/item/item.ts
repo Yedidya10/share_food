@@ -12,7 +12,7 @@ export enum ItemStatusEnum {
   PendingPublication = "pending_publication",
   Published = "published",
   UpdatePending = "update_pending",
-  Archived = "archived",
+  GivenAway = "given_away",
   Rejected = "rejected",
   Expired = "expired",
 }

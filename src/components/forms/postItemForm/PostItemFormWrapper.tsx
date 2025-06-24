@@ -1,6 +1,6 @@
 "use client";
 
-import { TranslationType } from "@/types/translation";
+import { FormTranslationType } from "@/types/formTranslation";
 import dynamic from "next/dynamic";
 
 const PostItemForm = dynamic(() => import("../postItemForm/PostItemForm"), {
@@ -8,7 +8,7 @@ const PostItemForm = dynamic(() => import("../postItemForm/PostItemForm"), {
 });
 
 export default function PostItemFormWrapper(props: {
-  translation: TranslationType;
+  translation: FormTranslationType;
   openModal: boolean;
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
   setIsSubmitSuccess: React.Dispatch<React.SetStateAction<boolean | null>>;

@@ -38,6 +38,7 @@ export type FormTranslationType = {
   emailPlaceholder: string;
   emailError: string;
   submitButton: string;
+  submitButtonProcessing: string;
   cancel: string;
   required: string;
   reset: string;

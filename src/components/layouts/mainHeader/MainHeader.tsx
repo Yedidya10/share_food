@@ -159,6 +159,7 @@ export default function MainHeader() {
                 emailPlaceholder: tPostItemForm("email_placeholder"),
                 emailError: tPostItemForm("email_error"),
                 submitButton: tPostItemForm("submit_button"),
+                submitButtonProcessing: tPostItemForm("submit_button_processing"),
                 cancel: tGenericForm("cancel"),
                 required: tGenericForm("required"),
                 reset: tGenericForm("reset"),

@@ -15,7 +15,7 @@ import {
 } from "@react-email/components";
 import type * as React from "react";
 
-interface ShareFoodWelcomeEmailProps {
+interface WelcomeEmailProps {
   steps: {
     id: number;
     Description: React.ReactNode;
@@ -31,11 +31,11 @@ interface ShareFoodWelcomeEmailProps {
 //   ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
 //   : "";
 
-export const ShareFoodWelcomeEmail = ({
+const WelcomeEmail = ({
   steps,
   links,
   userName = "משתמש יקר",
-}: ShareFoodWelcomeEmailProps) => {
+}: WelcomeEmailProps) => {
   return (
     <Html lang='he'>
       <Head />
@@ -145,7 +145,7 @@ export const ShareFoodWelcomeEmail = ({
               </Row>
             </Section> */}
             <Text className='mb-45 text-center text-gray-400'>
-              Share Food, ירושלים, ישראל | © {new Date().getFullYear()}
+              SpareBite, ירושלים, ישראל | © {new Date().getFullYear()}
             </Text>
           </Container>
         </Body>
@@ -154,7 +154,7 @@ export const ShareFoodWelcomeEmail = ({
   );
 };
 
-ShareFoodWelcomeEmail.PreviewProps = {
+WelcomeEmail.PreviewProps = {
   steps: [
     {
       id: 1,
@@ -192,6 +192,6 @@ ShareFoodWelcomeEmail.PreviewProps = {
     { title: "קראו עוד על הפרויקט", href: "https://your-domain.com/about" },
     { title: "צרו קשר", href: "https://your-domain.com/contact" },
   ],
-} satisfies ShareFoodWelcomeEmailProps;
+} satisfies WelcomeEmailProps;
 
-export default ShareFoodWelcomeEmail;
+export default WelcomeEmail;

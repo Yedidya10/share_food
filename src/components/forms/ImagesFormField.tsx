@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   FormControl,
   FormField,
@@ -11,19 +11,17 @@ import {
 } from "@/components/ui/form";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { UseFormReturn, FieldValues, Path, PathValue } from "react-hook-form";
+import { UseFormReturn } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { FormTranslationType } from "@/types/formTranslation";
 import imageCompression from "browser-image-compression";
 import { UnifiedImage } from "@/types/item/unifiedImage";
+import type { EditItemFormSchema } from "@/lib/zod/item/editItemSchema";
 
-type Props<T extends FieldValues & { images: UnifiedImage[] }> = {
-  form: UseFormReturn<T>;
+type Props = {
+  form: UseFormReturn<EditItemFormSchema>;
   translation: FormTranslationType;
-  state: {
-    images: UnifiedImage[];
-    setImages: React.Dispatch<React.SetStateAction<UnifiedImage[]>>;
-  };
+  initialImages?: string[];
 };
 
 async function hashFile(file: File): Promise<string> {
@@ -34,15 +32,25 @@ async function hashFile(file: File): Promise<string> {
     .join("");
 }
 
-export default function ImagesFormField<
-  T extends FieldValues & { images: UnifiedImage[] },
->({ form, translation, state: { images, setImages } }: Props<T>) {
+export default function ImagesFormField({
+  form,
+  translation,
+  initialImages = [],
+}: Props) {
+  // Initialize images from initialValues
+  const [images, setImages] = useState<UnifiedImage[]>(() =>
+    initialImages.map((url, i) => ({
+      id: `existing-${i}`,
+      url,
+    }))
+  );
+
   useEffect(() => {
-    form.register("images" as Path<T>);
+    form.register("images");
   }, [form]);
 
   useEffect(() => {
-    form.setValue("images" as Path<T>, images as PathValue<T, Path<T>>, {
+    form.setValue("images", images, {
       shouldValidate: true,
     });
   }, [images, form]);
@@ -103,7 +111,7 @@ export default function ImagesFormField<
   return (
     <FormField
       control={form.control}
-      name={"images" as Path<T>}
+      name={"images"}
       render={() => (
         <FormItem>
           <FormLabel>

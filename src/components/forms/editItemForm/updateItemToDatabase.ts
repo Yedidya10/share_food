@@ -18,10 +18,20 @@ export default async function updateItemToDatabase({
 }) {
   try {
     const supabase = await createClient();
-    const { error: userError } = await supabase.auth.getUser();
+    const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError) {
-      console.error("Session error:", JSON.stringify(userError, null, 2));
-      return;
+      throw new Error(`Error fetching user: ${userError.message}`);
+    }
+
+    // Get user role from profiles table
+    const { data: profileData, error: profileError } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", userData.user.id)
+      .single();
+
+    if (profileError) {
+      throw new Error(`Error fetching user profile: ${profileError.message}`);
     }
 
     const storage = supabase.storage.from("share-food-images");
@@ -87,7 +97,12 @@ export default async function updateItemToDatabase({
           ? !!values.isHaveWhatsApp
           : false,
         email: values.contactByEmail ? values.email?.trim() : null,
-        status: itemStatus === "pending" ? "pending" : "edited",
+        status:
+          profileData.role === "admin"
+            ? "published"
+            : itemStatus === "pending_publication"
+              ? "pending_publication"
+              : "update_pending",
       })
       .eq("id", itemId);
 

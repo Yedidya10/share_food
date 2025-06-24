@@ -10,11 +10,9 @@ import {
   DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { useLocale } from "next-intl";
 import postItemSchema from "@/lib/zod/item/postItemSchema";
@@ -24,9 +22,13 @@ import LocationFormFields from "@/components/forms/LocationFormFields";
 import ImagesFormField from "@/components/forms/ImagesFormField";
 import ItemBaseFormFields from "@/components/forms/ItemBaseFormFields";
 import { FormTranslationType } from "@/types/formTranslation";
-import { UnifiedImage } from "@/types/item/unifiedImage";
 import { useInsertItem } from "@/hooks/useInsertItem";
-import { Loader } from "lucide-react";
+import { Loader, RotateCcw } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function PostItemForm({
   openModal,
@@ -39,7 +41,6 @@ export default function PostItemForm({
   setIsSubmitSuccess: React.Dispatch<React.SetStateAction<boolean | null>>;
   translation: FormTranslationType;
 }) {
-  const [images, setImages] = useState<UnifiedImage[]>([]); // Initialize with an empty array
   const locale = useLocale();
   // const supabase = createClient();
 
@@ -69,7 +70,6 @@ export default function PostItemForm({
         setIsSubmitSuccess(true);
         setOpenModal(false);
         postItemForm.reset();
-        setImages([]);
       } else {
         setIsSubmitSuccess(false);
         setOpenModal(false);
@@ -79,6 +79,13 @@ export default function PostItemForm({
       console.error("Error in onSubmit:", error);
     }
   };
+
+  // Check if form can be submitted
+  const canSubmit =
+    postItemForm.formState.isValid &&
+    !postItemForm.formState.isSubmitting &&
+    !postItemForm.formState.isDirty &&
+    !isPending;
 
   return (
     <Dialog open={openModal} onOpenChange={setOpenModal}>
@@ -100,40 +107,76 @@ export default function PostItemForm({
             className='space-y-8'
           >
             <ItemBaseFormFields form={postItemForm} translation={translation} />
-            <ImagesFormField
-              form={postItemForm}
-              translation={translation}
-              state={{
-                images,
-                setImages,
-              }}
-            />
+            <ImagesFormField form={postItemForm} translation={translation} />
             <Separator />
             <LocationFormFields form={postItemForm} translation={translation} />
             <Separator />
             <ContactFormFields form={postItemForm} translation={translation} />
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button type='button' variant='outline'>
-                  {translation.cancel}
-                </Button>
-              </DialogClose>
-              <Button
-                type='submit'
-                disabled={
-                  !postItemForm.formState.isValid ||
-                  postItemForm.formState.disabled ||
-                  postItemForm.formState.isSubmitting ||
-                  isPending
-                }
-              >
-                {isPending ? (
-                  <Loader className='animate-spin mr-2 h-4 w-4' />
-                ) : (
-                  translation.submitButton
-                )}
-              </Button>
-            </DialogFooter>
+
+            <div className='gap-2 flex justify-between items-center'>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className='inline-block'>
+                    <Button
+                      type='button'
+                      variant='outline'
+                      onClick={() => postItemForm.reset()}
+                      className='min-w-[120px]'
+                      disabled={!postItemForm.formState.isDirty}
+                    >
+                      <RotateCcw />
+                      {translation.reset}
+                    </Button>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {postItemForm.formState.isDirty
+                    ? "לחץ כדי לאפס את הטופס לערכים המקוריים"
+                    : "לא בוצעו שינויים בטופס"}
+                </TooltipContent>
+              </Tooltip>
+              <div className='flex  gap-3'>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <DialogClose asChild>
+                      <Button
+                        type='button'
+                        variant='outline'
+                        onClick={() => setOpenModal(false)}
+                      >
+                        {translation.cancel}
+                      </Button>
+                    </DialogClose>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    לחץ כדי לבטל את השינויים ולחזור לעמוד הקודם
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className='inline-block'>
+                      <Button type='submit' disabled={!canSubmit}>
+                        {isPending || postItemForm.formState.isSubmitting ? (
+                          <div className='flex items-center gap-2'>
+                            <Loader className='animate-spin mr-2 h-4 w-4' />
+                            <span className='sr-only'>
+                              {translation.submitButtonProcessing}
+                            </span>
+                          </div>
+                        ) : (
+                          translation.submitButton
+                        )}
+                      </Button>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {!canSubmit
+                      ? "יש למלא את כל השדות הנדרשים כדי לשלוח את הטופס"
+                      : "לחץ כדי לשלוח את הטופס"}
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </div>
           </form>
         </Form>
       </DialogContent>

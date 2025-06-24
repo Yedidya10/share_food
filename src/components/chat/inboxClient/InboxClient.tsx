@@ -101,7 +101,7 @@ export default function InboxClient() {
     };
 
     fetchConversations();
-  }, [userId]);
+  }, [supabase, userId]);
 
   // טעינת פרטי משתמשים אחרים
   useEffect(() => {

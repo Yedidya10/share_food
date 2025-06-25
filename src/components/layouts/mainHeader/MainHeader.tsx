@@ -87,6 +87,7 @@ export default function MainHeader() {
           width={40}
           height={40}
           className='h-10 w-10 rounded-full'
+          priority
         />
         <span className='hidden md:inline'>SpareBite</span>
       </Link>

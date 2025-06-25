@@ -111,6 +111,7 @@ export default function Item({
                 alt={item.title}
                 className='object-cover rounded-md'
                 fill
+                priority
               />
             </div>
             <div className='flex flex-col space-y-1'>

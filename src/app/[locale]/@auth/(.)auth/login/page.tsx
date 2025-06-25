@@ -1,7 +1,7 @@
 import { LoginForm } from "@/components/login-form";
 import LoginDialog from "@/components/loginDialog/LoginDialog";
 
-export default async function Page({
+export default async function LoginSlot({
   searchParams,
 }: {
   searchParams: Promise<{ redirect: string }>;

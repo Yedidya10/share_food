@@ -146,9 +146,9 @@ export default async function LocaleLayout({
                   },
                 }}
               />
-              <div>{auth}</div>
-              <div>{editItem}</div>
-              <div>{children}</div>
+              {auth}
+              {editItem}
+              {children}
               <FeedbackButton />
             </QueryProvider>
           </NextIntlClientProvider>

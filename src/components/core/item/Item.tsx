@@ -111,6 +111,7 @@ export default function Item({
                 alt={item.title}
                 className='object-cover rounded-md'
                 fill
+                sizes='(max-width: 768px) 100vw, (min-width: 769px) 50vw'
                 priority
               />
             </div>

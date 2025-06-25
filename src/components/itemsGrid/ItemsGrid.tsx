@@ -230,13 +230,17 @@ export default function ItemsGrid() {
                                       src={image}
                                       alt={`${item.title} blurred background`}
                                       fill
+                                      sizes='(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw'
                                       className='object-cover blur-sm scale-110 opacity-70'
                                       aria-hidden='true'
+                                      loading="lazy"
                                     />
                                     <Image
                                       src={image}
                                       alt={`${item.title} image ${index + 1}`}
                                       fill
+                                      sizes='(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw'
+                                      priority={index === 0}
                                       className='object-contain z-10'
                                     />
                                   </div>

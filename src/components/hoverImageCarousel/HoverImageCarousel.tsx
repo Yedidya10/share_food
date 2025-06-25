@@ -99,6 +99,7 @@ export default function HoverImageCarousel({
                     src={img}
                     alt={`תמונה ${i + 1}`}
                     fill
+                    sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
                     className='rounded-md object-contain'
                   />
                 </AspectRatio>

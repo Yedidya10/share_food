@@ -5,12 +5,14 @@ import { useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import { Loader2, MessageSquarePlus } from "lucide-react";
+import { toast } from "sonner";
 
 type Props = {
   targetUserId: string;
+  itemId: string;
 };
 
-export default function StartChatButton({ targetUserId }: Props) {
+export default function StartChatButton({ targetUserId, itemId }: Props) {
   const [loading, setLoading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const router = useRouter();
@@ -67,10 +69,10 @@ export default function StartChatButton({ targetUserId }: Props) {
         conversationIdToNavigate = newConversation.id;
       }
 
-      router.push(`/chat/${conversationIdToNavigate}`);
+      router.push(`/chat/${conversationIdToNavigate}?itemId=${itemId}`);
     } catch (error) {
       console.error("Error details:", JSON.stringify(error, null, 2));
-      alert("שגיאה בהתחלת השיחה. אנא נסה שוב מאוחר יותר.");
+      toast.error("שגיאה בהתחלת השיחה. אנא נסה שוב מאוחר יותר.");
     } finally {
       setLoading(false);
     }

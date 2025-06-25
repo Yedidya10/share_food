@@ -233,7 +233,7 @@ export default function ItemsGrid() {
                                       sizes='(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw'
                                       className='object-cover blur-sm scale-110 opacity-70'
                                       aria-hidden='true'
-                                      loading="lazy"
+                                      loading='lazy'
                                     />
                                     <Image
                                       src={image}
@@ -341,6 +341,7 @@ export default function ItemsGrid() {
                                   )}
                                   <StartChatButton
                                     targetUserId={item.user_id}
+                                    itemId={item.id}
                                   />
                                 </div>
                               </div>

@@ -11,6 +11,7 @@ import PostItemFormWrapper from "@/components/forms/postItemForm/PostItemFormWra
 import PostItemButton from "@/components/postItemButton/PostItemButton";
 import { CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
+import { LinkButton } from "@/components/ui/link-button";
 
 export default function MainHeader() {
   const pathname = usePathname();
@@ -171,14 +172,15 @@ export default function MainHeader() {
           </div>
         ) : (
           <>
-            <Link
+            <LinkButton
               href={{
                 pathname: `/auth/login`,
                 query: { redirect: pathname },
               }}
+              variant='outline'
             >
               {tLogin("login")}
-            </Link>
+            </LinkButton>
           </>
         )}
       </div>

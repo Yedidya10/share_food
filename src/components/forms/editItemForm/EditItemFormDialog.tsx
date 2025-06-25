@@ -1,6 +1,11 @@
 "use client";
 
-import { Dialog, DialogTitle, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { useRouter } from "@/i18n/navigation";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { DirectionProvider } from "@radix-ui/react-direction";
@@ -20,6 +25,7 @@ export default function EditItemDialog({
         {/* Visually hidden title for screen readers */}
         <VisuallyHidden>
           <DialogTitle>עריכת פריט</DialogTitle>
+          <DialogDescription>ערוך את הפריט כדי להמשיך</DialogDescription>
         </VisuallyHidden>
         <DialogContent className='max-h-[80vh] md:min-w-[700px] overflow-y-auto rounded-lg'>
           {children}

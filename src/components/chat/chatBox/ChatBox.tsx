@@ -1,53 +1,88 @@
+// components/chat/ChatBox.tsx
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useForm } from "react-hook-form";
+import { useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
+
+import { useChatMessages } from "@/hooks/db/useChatMessages";
+import { useSendMessage } from "@/hooks/db/useSendMessage";
+import { createClient } from "@/lib/supabase/client";
+
+import ChatHeader from "@/components/chat/chatHeader/ChatHeader";
+import MessageBubble from "@/components/chat/messageBubble/MessageBubble";
+import ItemPreviewMessage from "@/components/chat/itemPreviewMessage/ItemPreviewMessage";
+
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { useForm } from "react-hook-form";
 import { Label } from "@/components/ui/label";
-import ChatHeader from "@/components/chat/chatHeader/ChatHeader";
+import { Button } from "@/components/ui/button";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 
-type Message = {
-  id: string;
-  sender_id: string;
-  conversation_id: string;
-  content: string;
-  created_at: string;
-};
+import { DbFoodItem } from "@/types/item/item";
+import { Message } from "@/types/chat/chat";
 
 export default function ChatBox({
   otherUser,
   conversationId,
   userId,
-  initialMessages = [],
+  item,
 }: {
-  otherUser: {
-    id: string;
-    full_name: string;
-    avatar_url: string;
-  };
+  otherUser: { id: string; full_name: string; avatar_url: string };
   conversationId: string;
   userId?: string;
-  initialMessages: Message[];
+  item?: DbFoodItem | null;
 }) {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const supabase = createClient();
+  const queryClient = useQueryClient();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const form = useForm({ mode: "onChange", defaultValues: { message: "" } });
+
+  const { data: messages = [] } = useChatMessages(conversationId);
+  const { mutate: sendMessage, isPending: isSending } = useSendMessage();
+
+  const [itemsMap, setItemsMap] = useState<Record<string, DbFoodItem>>({});
   const [sendOnEnter, setSendOnEnter] = useState(true);
 
-  const form = useForm({
-    mode: "onChange",
-    defaultValues: {
-      message: "",
-    },
-  });
+  // האם כבר קיימת הודעת פריט ב־DB?
+  const previewExistsInDb = Boolean(
+    item &&
+      messages.find(
+        (m) =>
+          m.type === "system" &&
+          m.content === "__ITEM_PREVIEW__" &&
+          m.metadata?.item_id === item.id
+      )
+  );
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const supabase = createClient();
-
+  // טעינת פריטים עבור הודעות מערכת
   useEffect(() => {
+    const ids = messages
+      .filter((m) => m.type === "system" && m.content === "__ITEM_PREVIEW__")
+      .map((m) => m.metadata?.item_id)
+      .filter(Boolean) as string[];
+    if (!ids.length) return;
+
+    (async () => {
+      const { data } = await supabase.from("items").select("*").in("id", ids);
+      if (data) {
+        setItemsMap((prev) => ({
+          ...prev,
+          ...Object.fromEntries(data.map((i) => [i.id, i])),
+        }));
+      }
+    })();
+  }, [messages, supabase]);
+
+  // גלילה אוטומטית
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  // מנוי ריל־טיים
+  useEffect(() => {
+    // פותחים את הערוץ
     const channel = supabase
       .channel(`chat-room-${conversationId}`)
       .on(
@@ -58,145 +93,124 @@ export default function ChatBox({
           table: "messages",
           filter: `conversation_id=eq.${conversationId}`,
         },
-        (payload) => {
-          const msg = payload.new as Message;
-          setMessages((prev) => [...prev, msg]);
+        () => {
+          queryClient.invalidateQueries({
+            queryKey: ["chat-messages", conversationId],
+          });
         }
       )
       .subscribe();
 
+    // ה־cleanup — פונקציה סינכרונית שמפעילה את supabase.removeChannel
     return () => {
-      supabase.removeChannel(channel);
+      // בלי async, בלי לחכות לתוצאה
+      void supabase.removeChannel(channel);
     };
-  }, [conversationId, supabase]);
+  }, [conversationId, supabase, queryClient]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const groupMessagesByDate = () => {
+  // קיבוץ לפי תאריך
+  const groupByDate = (msgs: Message[]) => {
     const groups: { date: string; messages: Message[] }[] = [];
-
-    messages.forEach((msg) => {
-      const createdAt = new Date(msg.created_at);
-      const msgDateObj = dayjs(createdAt);
-
-      let displayDate = msgDateObj.format("DD/MM/YYYY");
-      if (dayjs().isSame(msgDateObj, "day")) {
-        displayDate = "היום";
-      } else if (dayjs().subtract(1, "day").isSame(msgDateObj, "day")) {
-        displayDate = "אתמול";
-      }
-
-      const existingGroup = groups.find((g) => g.date === displayDate);
-      if (existingGroup) {
-        existingGroup.messages.push(msg);
-      } else {
-        groups.push({ date: displayDate, messages: [msg] });
-      }
+    msgs.forEach((m) => {
+      const d = dayjs(m.created_at);
+      const label = dayjs().isSame(d, "day")
+        ? "היום"
+        : dayjs().subtract(1, "day").isSame(d, "day")
+          ? "אתמול"
+          : d.format("DD/MM/YYYY");
+      const g = groups.find((x) => x.date === label);
+      if (g) g.messages.push(m);
+      else groups.push({ date: label, messages: [m] });
     });
-
     return groups;
   };
 
-  if (!userId) {
-    return (
-      <div className='flex items-center justify-center'>
-        <p className='text-gray-500'>בודק התחברות...</p>
-      </div>
-    );
-  }
-
-  if (!userId) {
-    return (
-      <div className='flex items-center justify-center'>
-        <p className='text-gray-500'>עליך להתחבר כדי להשתמש בצ&apos;אט.</p>
-      </div>
-    );
-  }
-
-  async function onSubmit(data: { message: string }) {
-    if (!data.message.trim()) return;
-
-    const newMsg = {
-      sender_id: userId!,
-      conversation_id: conversationId,
-      content: data.message.trim(),
-    };
-
-    const { error } = await supabase.from("messages").insert(newMsg);
-
-    if (error) {
-      console.error("Error sending message:", error);
-      console.error("Error details:", JSON.stringify(error, null, 2));
-      alert("שגיאה בשליחת ההודעה. אנא נסה שוב מאוחר יותר.");
-      return;
-    }
-
+  // שליחה
+  const onSubmit = form.handleSubmit((data) => {
+    if (!data.message.trim() || isSending) return;
+    sendMessage({
+      conversationId,
+      userId: userId!,
+      content: data.message,
+      shouldSendPreview: !previewExistsInDb,
+      item: item ?? null,
+    });
     form.reset();
+  });
+
+  if (!userId) {
+    return (
+      <div className='p-4 text-center'>עליך להתחבר כדי להשתמש בצ&apos;אט.</div>
+    );
   }
 
   return (
-    <div className='h-[calc(100svh-60px)] flex flex-col relative'>
-      {/* HEADER - קבוע למעלה */}
-      <div className='border-b sticky top-0 z-20 flex items-center'>
+    <div className='h-[calc(100svh-60px)] flex flex-col'>
+      {/* HEADER */}
+      <div className='border-b sticky top-0 z-20 bg-background'>
         <ChatHeader
           fullName={otherUser.full_name}
           avatarUrl={otherUser.avatar_url}
         />
       </div>
 
-      {/* MESSAGES AREA - תופס את כל הגובה הפנוי */}
+      {/* MESSAGES */}
+
       <div className='flex-1 overflow-y-auto px-4 py-2 space-y-2'>
-        {groupMessagesByDate().map((group, index) => (
-          <div key={index} className='flex flex-col items-center'>
+        {/* 1️⃣ קודם כל – מיפוי ושיוך קבוצות ההודעות מה-DB */}
+        {groupByDate(messages).map((group) => (
+          <div key={group.date} className='flex flex-col items-center'>
             <div className='text-center text-xs text-muted-foreground my-2'>
               {group.date}
             </div>
-            {group.messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`px-3 py-2 text-sm rounded-xl shadow-sm transition w-fit max-w-[75%] mb-1 flex flex-col ${
-                  msg.sender_id === userId
-                    ? "bg-primary/20 text-primary self-end"
-                    : "bg-muted text-muted-foreground self-start"
-                }`}
-              >
-                <div>{msg.content}</div>
-                <div className='text-[10px] text-right text-gray-500 mt-1'>
-                  {dayjs(msg.created_at).format("HH:mm")}
-                </div>
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
+            {group.messages.map((msg) => {
+              if (msg.type === "system" && msg.content === "__ITEM_PREVIEW__") {
+                const id = msg.metadata?.item_id;
+                if (!id) return null;
+                const itm = item?.id === id ? item : itemsMap[id];
+                return itm ? (
+                  <ItemPreviewMessage key={msg.id} item={itm} />
+                ) : null;
+              }
+              return (
+                <MessageBubble
+                  key={msg.id}
+                  msg={msg}
+                  isOwn={msg.sender_id === userId}
+                />
+              );
+            })}
           </div>
         ))}
+
+        {/* 2️⃣ לאחר כל ההודעות מה-DB – ה-preview הזמני בתחתית (אם עוד לא שמור ב-DB) */}
+        {!previewExistsInDb && item && (
+          <div className='flex flex-col items-center'>
+            <ItemPreviewMessage key='temp-preview' item={item} />
+          </div>
+        )}
+
+        {/* 3️⃣ אלמנט גולל */}
+        <div ref={messagesEndRef} />
       </div>
 
-      {/* INPUT - קבוע בתחתית המסך */}
-      <div className='border-t p-3 sticky bottom-0 z-20'>
+      {/* INPUT */}
+      <div className='border-t p-3 sticky bottom-0 z-20 bg-background'>
         <div className='flex items-center space-x-2 mb-2'>
           <Checkbox
             id='sendOnEnter'
             checked={sendOnEnter}
-            onCheckedChange={(checked: boolean) => setSendOnEnter(!!checked)}
+            onCheckedChange={(c) => setSendOnEnter(!!c)}
           />
           <Label
             htmlFor='sendOnEnter'
             className='text-sm text-muted-foreground'
           >
-            שלח הודעה בלחיצת Enter
+            שלח בלחיצת Enter
           </Label>
         </div>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className='flex gap-2 items-end'
-          >
+          <form onSubmit={onSubmit} className='flex gap-2 items-end'>
             <FormField
               control={form.control}
               name='message'
@@ -209,23 +223,20 @@ export default function ChatBox({
                       autoFocus
                       autoComplete='off'
                       onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          if (e.shiftKey) return;
-                          if (sendOnEnter) {
-                            e.preventDefault();
-                            form.handleSubmit(onSubmit)();
-                          }
+                        if (e.key === "Enter" && !e.shiftKey && sendOnEnter) {
+                          e.preventDefault();
+                          onSubmit();
                         }
                       }}
                       className='resize-none max-h-[120px] rounded-xl bg-muted text-sm'
-                      {...field}
                       placeholder='כתוב הודעה...'
+                      {...field}
                     />
                   </FormControl>
                 </FormItem>
               )}
             />
-            <Button type='submit' className='rounded-xl'>
+            <Button type='submit' className='rounded-xl' disabled={isSending}>
               שלח
             </Button>
           </form>

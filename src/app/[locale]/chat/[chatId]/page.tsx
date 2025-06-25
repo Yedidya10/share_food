@@ -1,10 +1,13 @@
 import ChatBox from "@/components/chat/chatBox/ChatBox";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "@/i18n/navigation";
+import { getItemById } from "@/lib/supabase/actions/getItemById";
 
 export default async function ChatThread({
   params,
+  searchParams,
 }: {
+  searchParams?: Promise<{ itemId?: string }>;
   params: Promise<{
     chatId: string;
     locale: string;
@@ -12,11 +15,15 @@ export default async function ChatThread({
 }) {
   try {
     const { chatId: conversationId, locale } = await params;
+    const { itemId } = (await searchParams) ?? {};
 
     if (!conversationId || conversationId === "null") {
       console.error("Invalid conversation ID");
       redirect({ href: "/chat", locale });
     }
+
+    // Get item details if itemId is provided
+    const item = itemId ? await getItemById(itemId) : null;
 
     const supabase = await createClient();
     const { data: userData, error: userError } = await supabase.auth.getUser();
@@ -49,24 +56,13 @@ export default async function ChatThread({
 
     if (otherUserError) throw new Error("Failed to fetch other user");
 
-    const { data: messagesData, error: messagesError } = await supabase
-      .from("messages")
-      .select("*")
-      .eq("conversation_id", conversationId)
-      .order("created_at", { ascending: true });
-
-    if (messagesError) {
-      console.error("Error fetching messages:", messagesError);
-      throw new Error("Failed to load messages");
-    }
-
     return (
       <div className='flex flex-1 flex flex-col h-[calc(100vh-60px)] overflow-hidden'>
         <ChatBox
+          item={item}
           otherUser={otherUser}
           conversationId={conversationId}
           userId={userData.user.id}
-          initialMessages={messagesData || []}
         />
       </div>
     );

@@ -160,7 +160,9 @@ export default function MainHeader() {
                 emailPlaceholder: tPostItemForm("email_placeholder"),
                 emailError: tPostItemForm("email_error"),
                 submitButton: tPostItemForm("submit_button"),
-                submitButtonProcessing: tPostItemForm("submit_button_processing"),
+                submitButtonProcessing: tPostItemForm(
+                  "submit_button_processing"
+                ),
                 cancel: tGenericForm("cancel"),
                 required: tGenericForm("required"),
                 reset: tGenericForm("reset"),
@@ -169,12 +171,17 @@ export default function MainHeader() {
             />
           </div>
         ) : (
-          <LinkButton
-            href={`/auth/login?redirect=${encodeURIComponent(pathname)}`}
-            variant='outline'
-          >
-            {tLogin("login")}
-          </LinkButton>
+          <>
+            <LinkButton
+              href={{
+                pathname: `/auth/login`,
+                query: { redirect: pathname },
+              }}
+              variant='outline'
+            >
+              {tLogin("login")}
+            </LinkButton>
+          </>
         )}
       </div>
     </header>

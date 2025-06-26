@@ -80,7 +80,7 @@ export const googleConfig = {
 
 export const smtpConfig = {
   host: env.SMTP_HOST,
-  port: Number(env.SMTP_PORT),
+  port: env.SMTP_PORT,
   user: env.SMTP_USER,
   password: env.SMTP_PASSWORD,
   fromEmail: env.SMTP_FROM_EMAIL,

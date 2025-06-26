@@ -1,19 +1,25 @@
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
+import React from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Separator } from '@/components/ui/separator'
 
 export default function TermsPage() {
   return (
-    <div className='max-w-3xl mx-auto p-6' dir='rtl'>
-      <Card className='space-y-4'>
+    <div
+      className="max-w-3xl mx-auto p-6"
+      dir="rtl"
+    >
+      <Card className="space-y-4">
         <CardHeader>
-          <CardTitle className='text-2xl'>תקנון ותנאי שימוש</CardTitle>
+          <CardTitle className="text-2xl">תקנון ותנאי שימוש</CardTitle>
         </CardHeader>
         <CardContent>
-          <ScrollArea className='pr-4'>
-            <section dir='rtl' className='space-y-4'>
-              <h2 className='text-xl font-semibold'>1. כללי</h2>
+          <ScrollArea className="pr-4">
+            <section
+              dir="rtl"
+              className="space-y-4"
+            >
+              <h2 className="text-xl font-semibold">1. כללי</h2>
               <p>
                 מסמך זה מגדיר את ההסכמות וההתחייבויות בין SpareBite
                 (&quot;האתר&quot;) ובין משתמשיו (&quot;המשתמש&quot; או
@@ -21,16 +27,16 @@ export default function TermsPage() {
                 במלואו.
               </p>
               <Separator />
-              <h2 className='text-xl font-semibold'>2. תיאור השירות</h2>
+              <h2 className="text-xl font-semibold">2. תיאור השירות</h2>
               <p>
                 SpareBite מאפשר פלטפורמה לשיתוף אוכל בחינם בין אנשים. כל פרסום
                 והצעת מזון באתר נעשים על אחריות המשתמש המפרסם.
               </p>
               <Separator />
-              <h2 className='text-xl font-semibold'>
+              <h2 className="text-xl font-semibold">
                 3. הרשאות ואחריות המשתמש
               </h2>
-              <ul className='list-disc list-inside space-y-2'>
+              <ul className="list-disc list-inside space-y-2">
                 <li>
                   על כל משתמש לוודא כי המזון המוצע במצב תקין, עונה לכללי בטיחות
                   המזון המוכרים ברפואה ובחוק.
@@ -45,7 +51,7 @@ export default function TermsPage() {
                 </li>
               </ul>
               <Separator />
-              <h2 className='text-xl font-semibold'>
+              <h2 className="text-xl font-semibold">
                 4. חובת עמידה בחוק עידוד תרומות מזון
               </h2>
               <p>
@@ -54,25 +60,25 @@ export default function TermsPage() {
                 ידועים להם תנאי החוק ושיחולו עליהם הגנותיו.
               </p>
               <Separator />
-              <h2 className='text-xl font-semibold'>5. זכויות קניין רוחני</h2>
+              <h2 className="text-xl font-semibold">5. זכויות קניין רוחני</h2>
               <p>
                 תוכן האתר הוא רכוש SpareBite או של צדדים שלישיים שהעניקו רישוי.
                 אין להעתיק או להפיץ ללא אישור.
               </p>
               <Separator />
-              <h2 className='text-xl font-semibold'>6. הגבלת אחריות</h2>
+              <h2 className="text-xl font-semibold">6. הגבלת אחריות</h2>
               <p>
                 האתר מסופק &quot;כפי שהוא&quot;. SpareBite לא תהיה אחראית לכל
                 נזק ישיר או עקיף הנובע מהשימוש באתר.
               </p>
               <Separator />
-              <h2 className='text-xl font-semibold'>7. סיום והשעיה</h2>
+              <h2 className="text-xl font-semibold">7. סיום והשעיה</h2>
               <p>
                 SpareBite רשאית לשלול הרשאות או להשעות משתמש העובר את התקנון.
                 פריטים ומשתמשים שמוחקו נשמרים לצרכי סטטיסטיקה במחיקה רכה.
               </p>
               <Separator />
-              <h2 className='text-xl font-semibold'>8. שינויים בתקנון</h2>
+              <h2 className="text-xl font-semibold">8. שינויים בתקנון</h2>
               <p>
                 עדכונים יפורסמו באתר ובדוא&quot;ל; המשך השימוש יהווה הסכמה
                 לתקנון המעודכן.
@@ -84,5 +90,5 @@ export default function TermsPage() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

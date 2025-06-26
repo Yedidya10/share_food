@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,81 +11,81 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { deleteUser } from "@/lib/supabase/actions/deleteUser";
-import { useRouter } from "@/i18n/navigation";
-import { toast } from "sonner";
+} from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
+import { deleteUser } from '@/lib/supabase/actions/deleteUser'
+import { useRouter } from '@/i18n/navigation'
+import { toast } from 'sonner'
 
 export default function DeleteUserAccount({
   userId,
   locale,
 }: {
-  userId: string;
-  locale: string;
+  userId: string
+  locale: string
 }) {
-  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false)
 
-  const route = useRouter();
+  const route = useRouter()
 
   useEffect(() => {
     // Fetch the current user data
     const fetchUserId = async () => {
       try {
       } catch (error) {
-        console.error("Error fetching user ID:", error);
+        console.error('Error fetching user ID:', error)
       }
-    };
-    fetchUserId();
-  }, []);
+    }
+    fetchUserId()
+  }, [])
 
   const handleDeleteUserAccount = async (userId: string) => {
-    setIsDeleting(true);
+    setIsDeleting(true)
 
-    const toastId = toast.loading("מוחק חשבון…", {
+    const toastId = toast.loading('מוחק חשבון…', {
       duration: Infinity,
-    });
+    })
 
     try {
-      const response = await deleteUser(userId);
+      const response = await deleteUser(userId)
 
       if (response?.success) {
-        setIsDeleting(false);
-        toast.success("החשבון נמחק בהצלחה", { id: toastId });
-        route.push("/");
+        setIsDeleting(false)
+        toast.success('החשבון נמחק בהצלחה', { id: toastId })
+        route.push('/')
       } else {
-        toast.error(response?.message || "נכשל למחוק את החשבון", {
+        toast.error(response?.message || 'נכשל למחוק את החשבון', {
           id: toastId,
-        });
+        })
       }
     } catch (error) {
-      console.error(error);
-      toast.error("שגיאה במחיקת החשבון", { id: toastId });
+      console.error(error)
+      toast.error('שגיאה במחיקת החשבון', { id: toastId })
     }
-  };
+  }
 
   return (
-    <div className='flex flex-col border p-4 rounded-lg bg-white shadow-md dark:bg-gray-800'>
-      <h2 className='text-lg font-semibold mb-4'>מחיקת חשבון משתמש</h2>
+    <div className="flex flex-col border p-4 rounded-lg bg-white shadow-md dark:bg-gray-800">
+      <h2 className="text-lg font-semibold mb-4">מחיקת חשבון משתמש</h2>
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button
-            variant='destructive'
+            variant="destructive"
             disabled={isDeleting}
-            className='max-w-[200px]'
+            className="max-w-[200px]"
           >
-            {isDeleting ? "מוחק..." : "מחק חשבון"}
+            {isDeleting ? 'מוחק...' : 'מחק חשבון'}
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle
-              className={locale === "he" ? "text-right" : "text-left"}
+              className={locale === 'he' ? 'text-right' : 'text-left'}
             >
               האם אתה בטוח?
             </AlertDialogTitle>
             <AlertDialogDescription
-              className={locale === "he" ? "text-right" : "text-left"}
+              className={locale === 'he' ? 'text-right' : 'text-left'}
             >
               מחיקת החשבון שלך היא פעולה בלתי הפיכה. כל הנתונים הקשורים לחשבון
               זה, כולל הודעות, תמונות ופרטים אישיים, יימחקו לצמיתות. האם אתה
@@ -96,17 +96,17 @@ export default function DeleteUserAccount({
             <AlertDialogCancel>ביטול</AlertDialogCancel>
             <AlertDialogAction asChild>
               <Button
-                variant='destructive'
-                className='text-white'
+                variant="destructive"
+                className="text-white"
                 onClick={() => handleDeleteUserAccount(userId)}
                 disabled={isDeleting}
               >
-                {isDeleting ? "מוחק..." : "אישור"}
+                {isDeleting ? 'מוחק...' : 'אישור'}
               </Button>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  );
+  )
 }

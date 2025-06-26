@@ -1,21 +1,21 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
-import { validateCity } from "@/lib/supabase/actions/locations";
+import { useEffect, useState } from 'react'
+import { validateCity } from '@/lib/supabase/actions/locations'
 
 export default function useCityValidation(city: string) {
-  const [isValid, setIsValid] = useState(false);
+  const [isValid, setIsValid] = useState(false)
 
   useEffect(() => {
     if (city.length < 2) {
-      setIsValid(false);
-      return;
+      setIsValid(false)
+      return
     }
 
     validateCity(city.trim()).then((result) => {
-      setIsValid(result);
-    });
-  }, [city]);
+      setIsValid(result)
+    })
+  }, [city])
 
-  return isValid;
+  return isValid
 }

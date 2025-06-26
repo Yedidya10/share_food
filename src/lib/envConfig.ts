@@ -42,7 +42,9 @@ export const siteUrl = (() => {
 
   if (isPreview) {
     if (!env.NEXT_PUBLIC_VERCEL_URL) {
-      throw new Error('Missing: NEXT_PUBLIC_VERCEL_URL (preview deployment URL)')
+      throw new Error(
+        'Missing: NEXT_PUBLIC_VERCEL_URL (preview deployment URL)',
+      )
     }
     url = `https://${env.NEXT_PUBLIC_VERCEL_URL}`
   }
@@ -52,7 +54,9 @@ export const siteUrl = (() => {
   }
 
   if (!url) {
-    throw new Error('Unable to determine site URL. Check environment variables.')
+    throw new Error(
+      'Unable to determine site URL. Check environment variables.',
+    )
   }
 
   if (url.startsWith('http://')) {

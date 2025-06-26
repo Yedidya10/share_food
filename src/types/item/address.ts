@@ -1,9 +1,9 @@
 type AddressFields = {
-  streetName: string;
-  streetNumber: string;
-  city: string;
-  country: string;
-  postalCode?: string;
-};
+  streetName: string
+  streetNumber: string
+  city: string
+  country: string
+  postalCode?: string
+}
 
-export default AddressFields;
+export default AddressFields

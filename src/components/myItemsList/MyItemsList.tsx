@@ -1,81 +1,87 @@
-"use client";
+'use client'
 
-import { Loader, LayoutGrid, List, CheckCircle, XCircle } from "lucide-react";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
-import { toast } from "sonner";
-import useItems from "@/hooks/db/useItems";
-import { useInView } from "react-intersection-observer";
-import Item from "@/components/core/item/Item";
-import { DbFoodItem } from "@/types/item/item";
+import { Loader, LayoutGrid, List, CheckCircle, XCircle } from 'lucide-react'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { useEffect, useState } from 'react'
+import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
+import useItems from '@/hooks/db/useItems'
+import { useInView } from 'react-intersection-observer'
+import Item from '@/components/core/item/Item'
+import { DbFoodItem } from '@/types/item/item'
 
 export default function MyItemsList({
   initialItems,
   includeUserId,
 }: {
-  initialItems?: DbFoodItem[];
-  includeUserId?: string | null;
+  initialItems?: DbFoodItem[]
+  includeUserId?: string | null
 }) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useItems({
     includeUserId: includeUserId ?? undefined,
     pageSize: 20,
-  });
-  const [layout, setLayout] = useState<"grid-md" | "list">("list");
+  })
+  const [layout, setLayout] = useState<'grid-md' | 'list'>('list')
   const [isEditItemFormSubmitSuccess, setIsEditItemFormSubmitSuccess] =
-    useState<boolean | null>(null);
+    useState<boolean | null>(null)
 
   const { ref } = useInView({
     onChange: (inView) => {
       if (inView && hasNextPage && !isFetchingNextPage) {
-        fetchNextPage();
+        fetchNextPage()
       }
     },
-  });
+  })
 
-  const items = data?.pages.flat() ?? initialItems;
+  const items = data?.pages.flat() ?? initialItems
 
   useEffect(() => {
     if (isEditItemFormSubmitSuccess) {
-      toast.success("הפריט נערך בהצלחה!", {
-        description: "הפריט יפורסם לאחר אישור המערכת.",
-        icon: <CheckCircle className='text-green-500' />,
-      });
-      setIsEditItemFormSubmitSuccess(null);
+      toast.success('הפריט נערך בהצלחה!', {
+        description: 'הפריט יפורסם לאחר אישור המערכת.',
+        icon: <CheckCircle className="text-green-500" />,
+      })
+      setIsEditItemFormSubmitSuccess(null)
     }
 
     if (isEditItemFormSubmitSuccess === false) {
-      toast.error("שגיאה בעריכת הפריט", {
-        description: "אנא נסה שוב מאוחר יותר.",
-        icon: <XCircle className='text-red-500' />,
-      });
-      setIsEditItemFormSubmitSuccess(null);
+      toast.error('שגיאה בעריכת הפריט', {
+        description: 'אנא נסה שוב מאוחר יותר.',
+        icon: <XCircle className="text-red-500" />,
+      })
+      setIsEditItemFormSubmitSuccess(null)
     }
-  }, [isEditItemFormSubmitSuccess]);
+  }, [isEditItemFormSubmitSuccess])
 
   const itemsWrapper = cn(
-    "w-full gap-4",
-    layout === "grid-md"
-      ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-      : "lg:flex lg:flex-col"
-  );
+    'w-full gap-4',
+    layout === 'grid-md'
+      ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+      : 'lg:flex lg:flex-col',
+  )
 
   return (
-    <div className='flex flex-col w-full space-y-4'>
-      <div className='w-full hidden lg:flex justify-end items-center'>
+    <div className="flex flex-col w-full space-y-4">
+      <div className="w-full hidden lg:flex justify-end items-center">
         <ToggleGroup
-          type='single'
+          type="single"
           value={layout}
           onValueChange={(value) =>
-            setLayout((value as "grid-md" | "list") ?? "grid-md")
+            setLayout((value as 'grid-md' | 'list') ?? 'grid-md')
           }
-          className='lg:flex'
+          className="lg:flex"
         >
-          <ToggleGroupItem value='grid-md' aria-label='Grid view'>
-            <LayoutGrid className='h-4 w-4' />
+          <ToggleGroupItem
+            value="grid-md"
+            aria-label="Grid view"
+          >
+            <LayoutGrid className="h-4 w-4" />
           </ToggleGroupItem>
-          <ToggleGroupItem value='list' aria-label='List view'>
-            <List className='h-4 w-4' />
+          <ToggleGroupItem
+            value="list"
+            aria-label="List view"
+          >
+            <List className="h-4 w-4" />
           </ToggleGroupItem>
         </ToggleGroup>
       </div>
@@ -96,14 +102,24 @@ export default function MyItemsList({
       )} */}
       <div className={itemsWrapper}>
         {items?.map((item: DbFoodItem) => (
-          <Item key={item.id} item={item} layout={layout} />
+          <Item
+            key={item.id}
+            item={item}
+            layout={layout}
+          />
         ))}
         {hasNextPage && (
-          <div ref={ref} className='text-center text-muted-foreground py-4'>
-            <Loader className='animate-spin' size={24} />
+          <div
+            ref={ref}
+            className="text-center text-muted-foreground py-4"
+          >
+            <Loader
+              className="animate-spin"
+              size={24}
+            />
           </div>
         )}
       </div>
     </div>
-  );
+  )
 }

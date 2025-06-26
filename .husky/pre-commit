@@ -1,3 +1,6 @@
+echo "🎨 Running Prettier (auto-fix)..."
+npx prettier --write . || exit 1
+
 echo "🧼 Running lint (next lint --fix)..."
 npm run lint -- --fix || exit 1
 

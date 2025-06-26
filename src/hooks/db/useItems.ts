@@ -1,27 +1,27 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { createClient } from "@/lib/supabase/client";
-import { useMemo } from "react";
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { createClient } from '@/lib/supabase/client'
+import { useMemo } from 'react'
 
-type Coords = { lat: number; lng: number };
+type Coords = { lat: number; lng: number }
 
 export type UseInfiniteItemsOptions = {
-  userCoords?: Coords;
-  sortBy?: "distance" | "date";
-  category?: string[];
-  search?: string;
-  maxDistanceKm?: number;
-  fromDate?: Date;
-  toDate?: Date;
-  excludeUserId?: string;
-  includeUserId?: string;
-  status?: string[];
-  pageSize?: number;
-};
+  userCoords?: Coords
+  sortBy?: 'distance' | 'date'
+  category?: string[]
+  search?: string
+  maxDistanceKm?: number
+  fromDate?: Date
+  toDate?: Date
+  excludeUserId?: string
+  includeUserId?: string
+  status?: string[]
+  pageSize?: number
+}
 
 export default function useItems(options: UseInfiniteItemsOptions = {}) {
   const {
     userCoords,
-    sortBy = "date",
+    sortBy = 'date',
     category,
     search,
     maxDistanceKm,
@@ -31,11 +31,11 @@ export default function useItems(options: UseInfiniteItemsOptions = {}) {
     includeUserId,
     status,
     pageSize = 20,
-  } = options;
+  } = options
 
   const queryKey = useMemo(
     () => [
-      "items",
+      'items',
       {
         sortBy,
         category,
@@ -62,17 +62,17 @@ export default function useItems(options: UseInfiniteItemsOptions = {}) {
       status,
       userCoords?.lat,
       userCoords?.lng,
-    ]
-  );
+    ],
+  )
 
-  const shouldUseDistance = sortBy === "distance" && userCoords;
+  const shouldUseDistance = sortBy === 'distance' && userCoords
 
   return useInfiniteQuery({
     queryKey,
     queryFn: async ({ pageParam = 0 }) => {
-      const supabase = createClient();
+      const supabase = createClient()
 
-      const { data, error } = await supabase.rpc("get_items_nearby", {
+      const { data, error } = await supabase.rpc('get_items_nearby', {
         sort_by: sortBy,
         category_filter: category?.length ? category : null,
         status_filter: status?.length ? status : null,
@@ -89,19 +89,19 @@ export default function useItems(options: UseInfiniteItemsOptions = {}) {
           user_lat: userCoords!.lat,
           user_lng: userCoords!.lng,
         }),
-      });
+      })
 
       if (error) {
-        console.error("Error fetching items:", error);
-        throw new Error(error.message);
+        console.error('Error fetching items:', error)
+        throw new Error(error.message)
       }
 
-      return data ?? [];
+      return data ?? []
     },
     getNextPageParam: (lastPage, allPages) => {
-      if (!lastPage || lastPage.length < pageSize) return undefined;
-      return allPages.flat().length;
+      if (!lastPage || lastPage.length < pageSize) return undefined
+      return allPages.flat().length
     },
     initialPageParam: 0,
-  });
+  })
 }

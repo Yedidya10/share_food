@@ -1,4 +1,4 @@
-import { redirect } from "@/i18n/navigation";
+import { redirect } from '@/i18n/navigation'
 // import {
 //   FoodStatsBanner,
 //   StatItem,
@@ -6,9 +6,9 @@ import { redirect } from "@/i18n/navigation";
 
 export default function Home() {
   redirect({
-    href: "/items",
-    locale: "he",
-  });
+    href: '/items',
+    locale: 'he',
+  })
   // const stats: StatItem[] = [
   //   {
   //     label: "אובדן מזון בישראל",
@@ -41,7 +41,7 @@ export default function Home() {
   // ];
 
   return (
-    <div className='flex flex-col'>
+    <div className="flex flex-col">
       {/* <div className='p-4'>
         <div className='w-full flex gap-1 h-[250px] rounded-lg overflow-hidden'>
           <div className='relative h-[inherit] w-[calc(100%/3)]'>
@@ -73,5 +73,5 @@ export default function Home() {
       {/* Uncomment the following line to include the FoodStatsBanner component */}
       {/* <FoodStatsBanner stats={stats} /> */}
     </div>
-  );
+  )
 }

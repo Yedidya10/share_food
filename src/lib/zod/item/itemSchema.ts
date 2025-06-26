@@ -1,10 +1,10 @@
-import { z } from "zod";
+import { z } from 'zod'
 import {
   isValidPhoneNumber,
   isPossiblePhoneNumber,
-} from "react-phone-number-input";
-import { FormTranslationType } from "@/types/formTranslation";
-import { validateCity, validateStreet } from "@/lib/supabase/actions/locations";
+} from 'react-phone-number-input'
+import { FormTranslationType } from '@/types/formTranslation'
+import { validateCity, validateStreet } from '@/lib/supabase/actions/locations'
 
 export function itemBaseSchema(translation: FormTranslationType) {
   return z.object({
@@ -16,7 +16,7 @@ export function itemBaseSchema(translation: FormTranslationType) {
       .string({ required_error: translation.descriptionRequired })
       .min(10, { message: translation.descriptionMinLength })
       .max(300, { message: translation.descriptionMaxLength }),
-  });
+  })
 }
 
 export function locationSchema(translation: FormTranslationType) {
@@ -29,36 +29,36 @@ export function locationSchema(translation: FormTranslationType) {
       country: z.string().min(2).max(20),
     })
     .refine(
-      (data) => data.postalCode?.trim() === "" || data.postalCode?.length === 7,
+      (data) => data.postalCode?.trim() === '' || data.postalCode?.length === 7,
       {
-        path: ["postalCode"],
+        path: ['postalCode'],
         message: translation.postalCodeError,
-      }
+      },
     )
     .superRefine(async (data, ctx) => {
       // ולידציה לעיר
-      const isValidCity = await validateCity(data.city);
+      const isValidCity = await validateCity(data.city)
       if (!isValidCity) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "עיר לא קיימת, נא לבחור מתוך הרשימה",
-          path: ["city"],
-        });
+          message: 'עיר לא קיימת, נא לבחור מתוך הרשימה',
+          path: ['city'],
+        })
       }
 
       // ולידציה לרחוב
       const isValidStreet = await validateStreet({
         street: data.streetName,
         city: data.city,
-      });
+      })
       if (!isValidStreet) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "רחוב לא קיים, נא לבחור מתוך הרשימה",
-          path: ["streetName"],
-        });
+          message: 'רחוב לא קיים, נא לבחור מתוך הרשימה',
+          path: ['streetName'],
+        })
       }
-    });
+    })
 }
 
 export function contactSchema(translation: FormTranslationType) {
@@ -74,28 +74,28 @@ export function contactSchema(translation: FormTranslationType) {
     .refine(
       (data) =>
         !data.contactByPhone ||
-        (data.phoneNumber?.trim() !== "" &&
-          isValidPhoneNumber(data.phoneNumber ?? "") &&
-          isPossiblePhoneNumber(data.phoneNumber ?? "")),
+        (data.phoneNumber?.trim() !== '' &&
+          isValidPhoneNumber(data.phoneNumber ?? '') &&
+          isPossiblePhoneNumber(data.phoneNumber ?? '')),
       {
         message: translation.phoneNumberError,
-        path: ["phoneNumber"],
-      }
+        path: ['phoneNumber'],
+      },
     )
     .refine(
       (data) =>
         !data.contactByEmail ||
-        (data.email?.trim() !== "" &&
+        (data.email?.trim() !== '' &&
           z.string().email().safeParse(data.email).success),
       {
         message: translation.emailError,
-        path: ["email"],
-      }
-    );
+        path: ['email'],
+      },
+    )
 }
 
 export default function itemSchema(translation: FormTranslationType) {
   return itemBaseSchema(translation)
     .and(locationSchema(translation))
-    .and(contactSchema(translation));
+    .and(contactSchema(translation))
 }

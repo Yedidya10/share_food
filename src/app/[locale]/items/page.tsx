@@ -1,5 +1,5 @@
-import ItemsGrid from "@/components/itemsGrid/ItemsGrid";
+import ItemsGrid from '@/components/itemsGrid/ItemsGrid'
 
 export default function ItemsPage() {
-  return <ItemsGrid />;
+  return <ItemsGrid />
 }

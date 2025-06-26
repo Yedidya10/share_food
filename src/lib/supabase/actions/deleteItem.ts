@@ -1,16 +1,16 @@
-"use server";
+'use server'
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from '@/lib/supabase/server'
 
 export async function deleteItem(itemId: string) {
-  const supabase = await createClient();
+  const supabase = await createClient()
 
   const { error: itemError } = await supabase
-    .from("items")
+    .from('items')
     .update({ deleted_at: new Date().toISOString() })
-    .eq("id", itemId);
+    .eq('id', itemId)
 
-  if (itemError) throw new Error("שגיאה במחיקת פריט: " + itemError.message);
+  if (itemError) throw new Error('שגיאה במחיקת פריט: ' + itemError.message)
 
-  return { success: true };
+  return { success: true }
 }

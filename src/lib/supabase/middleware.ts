@@ -3,20 +3,29 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { supabaseConfig } from '@/lib/envConfig'
 import { routing } from '@/i18n/routing'
 
-export async function updateSession(request: NextRequest, response: NextResponse) {
-  const supabase = createServerClient(supabaseConfig.url, supabaseConfig.anonKey, {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll()
-      },
-      setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-        cookiesToSet.forEach(({ name, value, options }) =>
-          response.cookies.set(name, value, options),
-        )
+export async function updateSession(
+  request: NextRequest,
+  response: NextResponse,
+) {
+  const supabase = createServerClient(
+    supabaseConfig.url,
+    supabaseConfig.anonKey,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value),
+          )
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options),
+          )
+        },
       },
     },
-  })
+  )
 
   // Do not run code between createServerClient and
   // supabase.auth.getUser(). A simple mistake could make it very hard to debug
@@ -33,8 +42,12 @@ export async function updateSession(request: NextRequest, response: NextResponse
   // Check if the pathname starts with a locale
   const segments = pathname.split('/')
   const potentialLocale = segments[1]
-  const isLocale = routing.locales.includes(potentialLocale as (typeof routing.locales)[number])
-  const pathWithoutLocale = isLocale ? '/' + segments.slice(2).join('/') : pathname
+  const isLocale = routing.locales.includes(
+    potentialLocale as (typeof routing.locales)[number],
+  )
+  const pathWithoutLocale = isLocale
+    ? '/' + segments.slice(2).join('/')
+    : pathname
 
   // Check if the path is public
   // (i.e., does not require authentication)

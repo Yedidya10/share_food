@@ -1,30 +1,30 @@
-import { FormTranslationType } from "@/types/formTranslation";
-import { EditItemFormValues } from "@/types/item/item";
+import { FormTranslationType } from '@/types/formTranslation'
+import { EditItemFormValues } from '@/types/item/item'
 
 export function postItemDefaultFormValues(translation: FormTranslationType) {
   return {
-    title: "",
-    description: "",
-    streetName: "",
-    streetNumber: "",
-    city: "",
+    title: '',
+    description: '',
+    streetName: '',
+    streetNumber: '',
+    city: '',
     country: translation.israel, // Default
-    postalCode: "",
+    postalCode: '',
     contactViaSite: true, // Default to true for contact via site
     contactByPhone: false,
     contactByEmail: false,
-    phoneNumber: "",
+    phoneNumber: '',
     isHaveWhatsApp: false,
-    email: "",
+    email: '',
     images: [],
-  };
+  }
 }
 
 export const editItemDefaultFormValues = ({
   initialValues,
 }: {
-  translation: FormTranslationType;
-  initialValues: EditItemFormValues;
+  translation: FormTranslationType
+  initialValues: EditItemFormValues
 }) => {
   return {
     title: initialValues.title,
@@ -33,12 +33,12 @@ export const editItemDefaultFormValues = ({
     streetNumber: initialValues.streetNumber,
     city: initialValues.city,
     country: initialValues.country,
-    postalCode: initialValues?.postalCode || "",
+    postalCode: initialValues?.postalCode || '',
     contactViaSite: true, // Default to true for contact via site
     contactByPhone: initialValues.contactByPhone,
     contactByEmail: initialValues.contactByEmail,
-    phoneNumber: initialValues?.phoneNumber || "",
+    phoneNumber: initialValues?.phoneNumber || '',
     isHaveWhatsApp: initialValues.isHaveWhatsApp,
-    email: initialValues?.email || "",
-  };
-};
+    email: initialValues?.email || '',
+  }
+}

@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack --experimental-https",
-    "build": "next build",
+    "validate-env": "tsx scripts/validate-env.ts",
+    "dev": "npm run validate-env && next dev --turbopack --experimental-https",
+    "build": "npm run validate-env && next build",
     "start": "next start",
     "lint": "next lint",
     "test": "echo \"No tests specified\" && exit 0",
@@ -92,12 +93,14 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/web-push": "^3.6.4",
+    "dotenv": "^16.5.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
     "prettier": "^3.6.1",
     "tailwindcss": "^4",
+    "tsx": "^4.20.3",
     "tw-animate-css": "^1.3.0",
     "typescript": "^5"
   }

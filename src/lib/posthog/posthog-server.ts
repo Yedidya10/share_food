@@ -1,21 +1,15 @@
-import { PostHog } from "posthog-node";
+import { PostHog } from 'posthog-node'
+import { externalServices } from '@/lib/envConfig'
 
-let posthogInstance: PostHog | null = null;
+let posthogInstance: PostHog | null = null
 
 export function getPostHogServer() {
-  // Use a secure, server-only environment variable
-  const apiKey = process.env.POSTHOG_API_KEY;
-  if (!apiKey) {
-    throw new Error(
-      "POSTHOG_API_KEY is not set. Please set it in your server environment variables."
-    );
-  }
   if (!posthogInstance) {
-    posthogInstance = new PostHog(apiKey, {
-      host: "https://us.i.posthog.com",
+    posthogInstance = new PostHog(externalServices.posthog.apiKey, {
+      host: 'https://us.i.posthog.com',
       flushAt: 1,
       flushInterval: 0, // Because server-side functions in Next.js can be short-lived we flush regularly
-    });
+    })
   }
-  return posthogInstance;
+  return posthogInstance
 }

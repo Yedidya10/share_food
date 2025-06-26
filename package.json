@@ -6,7 +6,20 @@
     "dev": "next dev --turbopack --experimental-https",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint --dir ./src",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write ."
+  },
+  "lint-staged": {
+    "**/*.{js,ts,jsx,tsx}": [
+      "next lint --fix",
+      "prettier --write",
+      "git add"
+    ],
+    "**/*.{json,md,css,scss,html}": [
+      "prettier --write",
+      "git add"
+    ]
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
@@ -79,6 +92,7 @@
     "@types/web-push": "^3.6.4",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
+    "prettier": "^3.6.1",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.0",
     "typescript": "^5"

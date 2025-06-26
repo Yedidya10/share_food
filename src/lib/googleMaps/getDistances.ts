@@ -1,4 +1,4 @@
-import { googleConfig } from "../envConfig";
+import { googleConfig } from '../envConfig'
 
 type LatLng = { lat: number; lng: number }
 

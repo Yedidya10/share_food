@@ -100,6 +100,6 @@ export const externalServices = {
     privateKey: process.env.VAPID_PRIVATE_KEY!, // שרת בלבד
   },
   posthog: {
-    apiKey: process.env.POSTHOG_API_KEY!, // שרת בלבד
+    apiKey: process.env.NEXT_PUBLIC_POSTHOG_API_KEY!,
   },
 }

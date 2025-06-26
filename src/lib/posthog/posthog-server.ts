@@ -3,7 +3,7 @@ import { externalServices } from '@/lib/envConfig'
 
 let posthogInstance: PostHog | null = null
 
-export function getPostHogServer() {
+export default function getPostHogServer() {
   if (!posthogInstance) {
     posthogInstance = new PostHog(externalServices.posthog.apiKey, {
       host: 'https://us.i.posthog.com',

@@ -8,7 +8,7 @@ const transporter = nodemailer.createTransport({
   secure: true,
   auth: {
     user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
+    pass: process.env.SMTP_PASSWORD,
   },
 });
 
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     }
 
     await transporter.sendMail({
-      from: process.env.FROM_EMAIL,
+      from: process.env.SMTP_FROM_EMAIL,
       to: email,
       subject: "ברוך הבא ל-SpareBite!",
       html: html,

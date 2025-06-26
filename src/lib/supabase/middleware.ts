@@ -58,7 +58,8 @@ export async function updateSession(
     pathWithoutLocale.startsWith('/privacy') ||
     pathWithoutLocale.startsWith('/terms') ||
     pathWithoutLocale.startsWith('/about') ||
-    pathWithoutLocale.startsWith('/items')
+    pathWithoutLocale.startsWith('/items') ||
+    pathWithoutLocale.startsWith('/error')
 
   // If the user is not authenticated and the path is not public,
   // redirect them to the login page.

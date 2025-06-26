@@ -14,7 +14,7 @@
   },
   "lint-staged": {
     "**/*.{js,ts,jsx,tsx}": [
-      "npm run lint",
+      "next lint --fix --file",
       "prettier --write",
       "git add"
     ],

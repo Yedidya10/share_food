@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Provider } from '@supabase/supabase-js'
 import { revalidatePath } from 'next/cache'
 import { siteUrl } from '@/lib/envConfig'
+import { console } from 'inspector'
 
 export async function login(formData: FormData) {
   const supabase = await createClient()
@@ -68,18 +69,27 @@ export async function signInWithOAuthServer({
   redirectTo: string
   locale: string
 }) {
-  const supabase = await createClient()
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider,
-    options: {
-      redirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
-    },
-  })
-  if (error) {
+  try {
+    const supabase = await createClient()
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
+      },
+    })
+
+    if (error) {
+      throw new Error(`OAuth sign-in error: ${error.message}`)
+    }
+
+    if (data?.url) {
+      redirect({ href: data.url, locale })
+    } else {
+      throw new Error('No URL returned from OAuth sign-in')
+    }
+  } catch (error) {
+    console.error(error)
     redirect({ href: '/error', locale })
-  }
-  if (data?.url) {
-    redirect({ href: data.url, locale })
   }
 }
 
@@ -87,5 +97,11 @@ export async function oauthAction(formData: FormData) {
   const provider = formData.get('provider') as Provider
   const redirectTo = formData.get('redirectTo') as string
   const locale = formData.get('locale') as string
-  await signInWithOAuthServer({ provider, redirectTo, locale })
+
+  try {
+    await signInWithOAuthServer({ provider, redirectTo, locale })
+  } catch (error) {
+    console.error(error)
+    redirect({ href: '/error', locale })
+  }
 }

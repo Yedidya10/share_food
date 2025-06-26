@@ -18,6 +18,8 @@ const envSchema = z.object({
   NEXT_PUBLIC_VAPID_PUBLIC_KEY: z.string().min(1),
   VAPID_PRIVATE_KEY: z.string().min(1),
 
+  POSTHOG_API_KEY: z.string().min(1).optional(),
+
   // SMTP configuration for sending emails
   SMTP_HOST: z.string().min(1),
   // ...existing code...

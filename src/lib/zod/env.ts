@@ -23,14 +23,7 @@ const envSchema = z.object({
   // SMTP configuration for sending emails
   SMTP_HOST: z.string().min(1),
   // ...existing code...
-  SMTP_PORT: z.string().refine(
-    (val) => {
-      const num = Number(val)
-      return Number.isInteger(num) && num >= 1 && num <= 65535
-    },
-    { message: 'SMTP_PORT must be a string representing an integer between 1 and 65535' },
-  ),
-  // ...existing code...
+  SMTP_PORT: z.number().int().min(1).max(65535),
   SMTP_USER: z.string().min(1),
   SMTP_PASSWORD: z.string().min(1),
   SMTP_FROM_EMAIL: z.string().email(),

@@ -7,6 +7,7 @@ import {
   sendNotification,
 } from "@/app/actions/webpush";
 import urlBase64ToUint8Array from "@/components/pwa/utils/urlBase64ToUint8Array";
+import { externalServices } from "@/lib/envConfig";
 
 export default function PushNotificationManager() {
   const [isSupported, setIsSupported] = useState(false);
@@ -36,7 +37,7 @@ export default function PushNotificationManager() {
     const sub = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(
-        process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!
+        externalServices.vapid.publicKey
       ),
     });
     setSubscription(sub);

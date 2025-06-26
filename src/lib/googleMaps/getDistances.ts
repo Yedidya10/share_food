@@ -1,3 +1,5 @@
+import { googleConfig } from "../envConfig";
+
 type LatLng = { lat: number; lng: number }
 
 type GetDistanceInKmInput = {
@@ -9,12 +11,6 @@ export async function getDistanceInKm({
   from,
   to,
 }: GetDistanceInKmInput): Promise<number | null> {
-  const apiKey = process.env.GOOGLE_MAPS_API_KEY
-  if (!apiKey) {
-    console.error('Missing GOOGLE_MAPS_API_KEY')
-    return null
-  }
-
   const formatLocation = (loc: string | LatLng): string => {
     if (typeof loc === 'string') return loc
     return `${loc.lat},${loc.lng}`
@@ -25,7 +21,7 @@ export async function getDistanceInKm({
 
   const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(
     origins,
-  )}&destinations=${encodeURIComponent(destinations)}&units=metric&key=${apiKey}`
+  )}&destinations=${encodeURIComponent(destinations)}&units=metric&key=${googleConfig.mapsApiKey}`
 
   try {
     const res = await fetch(url)

@@ -27,10 +27,6 @@ interface WelcomeEmailProps {
   userName?: string
 }
 
-// const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
-//   ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-//   : "";
-
 const WelcomeEmail = ({
   steps,
   links,

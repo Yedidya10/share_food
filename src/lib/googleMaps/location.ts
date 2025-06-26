@@ -23,8 +23,7 @@ export async function getDistanceInKm({
   from: string
   to: string
 }): Promise<number | null> {
-  const apiKey = process.env.GOOGLE_MAPS_API_KEY
-  const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(from)}&destinations=${encodeURIComponent(to)}&units=metric&key=${apiKey}`
+  const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(from)}&destinations=${encodeURIComponent(to)}&units=metric&key=${googleConfig.mapsApiKey}`
 
   const res = await fetch(url)
   const data = await res.json()

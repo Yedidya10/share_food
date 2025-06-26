@@ -1,11 +1,12 @@
 'use server'
 
+import { externalServices } from '@/lib/envConfig'
 import webpush from 'web-push'
 
 webpush.setVapidDetails(
   '<mailto:yedidya.dev@gmail.com>',
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!,
+  externalServices.vapid.publicKey,
+  externalServices.vapid.privateKey,
 )
 
 import type { PushSubscription as WebPushSubscription } from 'web-push'

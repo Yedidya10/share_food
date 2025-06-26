@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { CredentialResponse } from 'google-one-tap'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
+import { googleConfig } from '@/lib/envConfig'
 
 const OneTapComponent = () => {
   const supabase = createClient()
@@ -41,7 +42,7 @@ const OneTapComponent = () => {
 
         /* global google */
         google.accounts.id.initialize({
-          client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
+          client_id: googleConfig.clientId,
           callback: async (response: CredentialResponse) => {
             try {
               // send id token returned in response.credential to supabase

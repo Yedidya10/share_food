@@ -1,7 +1,8 @@
 // import posthog from "posthog-js";
+// import { externalServices, isDev } from '@/lib/envConfig'
 
 // if (typeof window !== "undefined") {
-//   const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
+//   const posthogKey = externalServices.posthog.apiKey;
 //   if (posthogKey) {
 //     posthog.init(posthogKey, {
 //       api_host: "https://us.posthog.com",
@@ -10,10 +11,10 @@
 //       capture_pageleave: true,
 //       capture_exceptions: true,
 //       autocapture: true,
-//       // debug: process.env.NODE_ENV === "development",
+//       // debug: isDev,
 //     });
 //   } else {
-//     if (process.env.NODE_ENV === "development") {
+//     if (isDev) {
 //       // Optionally log a warning in development
 //       console.warn(
 //         "PostHog API key is missing. Analytics will not be initialized."

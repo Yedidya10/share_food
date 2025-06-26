@@ -12,6 +12,17 @@
     "format": "prettier --write .",
     "prepare": "husky"
   },
+  "lint-staged": {
+    "**/*.{js,ts,jsx,tsx}": [
+      "npm run lint",
+      "prettier --write",
+      "git add"
+    ],
+    "**/*.{json,md,css,scss,html}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
     "@radix-ui/react-alert-dialog": "^1.1.14",

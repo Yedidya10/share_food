@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     }
 
     await transporter.sendMail({
-      from: process.env.FROM_EMAIL,
+      from: process.env.SMTP_FROM_EMAIL,
       to: email,
       subject: "ברוך הבא ל-SpareBite!",
       html: html,

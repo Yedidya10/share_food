@@ -1,6 +1,7 @@
 import { redirect } from '@/i18n/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getLocale } from 'next-intl/server'
+import PostHogClient from '@/lib/posthog/posthog-server'
 
 export default async function ConfirmPage({
   searchParams,
@@ -9,6 +10,7 @@ export default async function ConfirmPage({
 }) {
   const { next } = await searchParams
   const locale = await getLocale()
+  const posthog = PostHogClient()
 
   const supabase = await createClient()
   const {
@@ -17,11 +19,21 @@ export default async function ConfirmPage({
 
   console.log('User:', user)
 
-  // if (!user) {
-  //   redirect({ href: '/auth/login', locale })
-  // }
+  if (!user || !user?.id) {
+    throw new Error('User not authenticated')
+  }
 
-  // בדוק אם המשתמש חדש (למשל שדה custom או שאילתא)
+  // Capture a server-side event with PostHog
+  posthog.capture({
+    distinctId: user.id,
+    event: 'user_logged_in',
+    properties: {
+      userId: user.id,
+      email: user.email,
+      locale,
+    },
+  })
+
   const { data: existingUser } = await supabase
     .from('profiles')
     .select('id')
@@ -29,6 +41,16 @@ export default async function ConfirmPage({
     .single()
 
   if (!existingUser) {
+    posthog.capture({
+      distinctId: user.id,
+      event: 'user_onboarding_started',
+      properties: {
+        userId: user.id,
+        email: user.email,
+        locale,
+      },
+    })
+
     redirect({
       href: `/onboarding?next=${encodeURIComponent(next)}`,
       locale,

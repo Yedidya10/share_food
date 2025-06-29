@@ -32,6 +32,11 @@ const eslintConfig = [
           ],
           message: 'Please import from `@/i18n/navigation` instead.',
         },
+        {
+          name: 'inspector',
+          importNames: ['console'],
+          message: 'אסור לייבא console מ־inspector – זה משתיק את כל הלוגים!',
+        },
       ],
     },
   },

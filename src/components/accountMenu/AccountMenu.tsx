@@ -31,6 +31,7 @@ import { DirectionProvider } from "@radix-ui/react-direction";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import posthog from "posthog-js";
 
 export default function AccountMenu({
   translation, // Translation function, if needed
@@ -55,6 +56,7 @@ export default function AccountMenu({
 
   const handleLogout = async () => {
     try {
+      posthog.reset();
       await supabase.auth.signOut();
       queryClient.removeQueries({ queryKey: ["user"] });
       router.refresh();

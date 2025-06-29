@@ -33,6 +33,7 @@ export default function LocationFormFields<
   },
 >({ form }: LocationFormFieldsProps<T>) {
   const tAddress = useTranslations('form.address')
+  console.log('tAddress', tAddress)
   const tGeneric = useTranslations('form.generic')
 
   return (

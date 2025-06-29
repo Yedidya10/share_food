@@ -34,6 +34,7 @@ export default function MainHeader() {
   const tAccountMenu = useTranslations('header.account_menu')
   const tGenericForm = useTranslations('form.generic')
   const tPostItemForm = useTranslations('form.postItem')
+  const tAddressForm = useTranslations('form.address')
   const tCountries = useTranslations('countries')
 
   useEffect(() => {
@@ -132,21 +133,21 @@ export default function MainHeader() {
                 uploadImages: tPostItemForm('upload_images'),
                 uploadImagesError: tPostItemForm('upload_images_error'),
                 addressDetails: tPostItemForm('address_details'),
-                streetName: tPostItemForm('street_name'),
-                streetNamePlaceholder: tPostItemForm('street_name_placeholder'),
-                streetNameError: tPostItemForm('street_name_error'),
-                streetNumber: tPostItemForm('street_number'),
-                streetNumberPlaceholder: tPostItemForm(
+                streetName: tAddressForm('street_name'),
+                streetNamePlaceholder: tAddressForm('street_name_placeholder'),
+                streetNameError: tAddressForm('street_name_error'),
+                streetNumber: tAddressForm('street_number'),
+                streetNumberPlaceholder: tAddressForm(
                   'street_number_placeholder',
                 ),
-                streetNumberError: tPostItemForm('street_number_error'),
-                city: tPostItemForm('city'),
-                cityPlaceholder: tPostItemForm('city_placeholder'),
-                cityError: tPostItemForm('city_error'),
-                postalCode: tPostItemForm('postal_code'),
-                postalCodePlaceholder: tPostItemForm('postal_code_placeholder'),
-                postalCodeError: tPostItemForm('postal_code_error'),
-                country: tPostItemForm('country'),
+                streetNumberError: tAddressForm('street_number_error'),
+                city: tAddressForm('city'),
+                cityPlaceholder: tAddressForm('city_placeholder'),
+                cityError: tAddressForm('city_error'),
+                postalCode: tAddressForm('postal_code'),
+                postalCodePlaceholder: tAddressForm('postal_code_placeholder'),
+                postalCodeError: tAddressForm('postal_code_error'),
+                country: tAddressForm('country'),
                 contactDetails: tPostItemForm('contact_details'),
                 contactViaSite: tPostItemForm('contact_via_site'),
                 phoneNumber: tPostItemForm('phone_number'),

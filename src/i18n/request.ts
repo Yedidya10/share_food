@@ -13,12 +13,13 @@ export default getRequestConfig(async ({ requestLocale }) => {
     await Promise.all([
       import(`../../locales/${locale}/common.json`).then((m) => m.default),
       import(`../../locales/${locale}/header.json`).then((m) => m.default),
-      import(`../../locales/${locale}/form/address.json`).then(
-        (m) => m.default,
-      ),
       import(`../../locales/${locale}/form/generic.json`).then(
         (m) => m.default,
       ),
+      import(`../../locales/${locale}/form/address.json`).then(
+        (m) => m.default,
+      ),
+
       import(`../../locales/${locale}/form/postItem.json`).then(
         (m) => m.default,
       ),

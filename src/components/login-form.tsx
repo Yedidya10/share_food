@@ -10,7 +10,7 @@ import {
 // import { Input } from "@/components/ui/input";
 // import { Label } from "@/components/ui/label";
 import { getLocale, getTranslations } from 'next-intl/server'
-import { oauthAction } from '@/lib/supabase/actions/auth'
+import { signInWithOAuthServer } from '@/lib/supabase/actions/auth'
 import { Link } from '@/i18n/navigation'
 
 export async function LoginForm({
@@ -34,7 +34,7 @@ export async function LoginForm({
           <CardDescription>התחבר עם חשבון גוגל</CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={oauthAction}>
+          <form action={signInWithOAuthServer}>
             {/* hidden inputs */}
             <input
               type="hidden"

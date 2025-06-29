@@ -5,7 +5,6 @@ import { createClient } from '@/lib/supabase/server'
 import { Provider } from '@supabase/supabase-js'
 import { revalidatePath } from 'next/cache'
 import { siteUrl } from '@/lib/envConfig'
-import { console } from 'inspector'
 
 export async function login(formData: FormData) {
   const supabase = await createClient()
@@ -60,48 +59,42 @@ export async function logout({ locale }: { locale: string }) {
   redirect({ href: '/', locale })
 }
 
-export async function signInWithOAuthServer({
-  provider,
-  redirectTo,
-  locale,
-}: {
-  provider: Provider
-  redirectTo: string
-  locale: string
-}) {
+export async function signInWithOAuthServer(formData: FormData) {
+  const provider = formData.get('provider') as Provider
+  const redirectTo = formData.get('redirectTo') as string
+  const locale = formData.get('locale') as string
+  let url: string | null = null
+
   try {
     const supabase = await createClient()
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
         redirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
+        // scopes: [
+        //   'email',
+        //   'profile',
+        //   'openid',
+        //   'https://www.googleapis.com/auth/user.phonenumbers.read',
+        //   'https://www.googleapis.com/auth/user.addresses.read',
+        //   'https://www.googleapis.com/auth/user.gender.read',
+        // ].join(' '),
       },
     })
 
     if (error) {
-      throw new Error(`OAuth sign-in error: ${error.message}`)
+      throw error
     }
 
     if (data?.url) {
-      redirect({ href: data.url, locale })
+      url = data.url
     } else {
-      throw new Error('No URL returned from OAuth sign-in')
+      throw new Error('No URL')
     }
   } catch (error) {
     console.error(error)
-    redirect({ href: '/error', locale })
+    url = '/error'
   }
-}
 
-export async function oauthAction(formData: FormData) {
-  const provider = formData.get('provider') as Provider
-  const redirectTo = formData.get('redirectTo') as string
-  const locale = formData.get('locale') as string
-
-  try {
-    await signInWithOAuthServer({ provider, redirectTo, locale })
-  } catch (error) {
-    console.error(error)
-    redirect({ href: '/error', locale })
-  }
+  redirect({ href: url, locale })
 }

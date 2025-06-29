@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { CredentialResponse } from "google-one-tap";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import posthog from "posthog-js";
 
 const OneTapComponent = () => {
   const supabase = createClient();
@@ -45,7 +46,7 @@ const OneTapComponent = () => {
           callback: async (response: CredentialResponse) => {
             try {
               // send id token returned in response.credential to supabase
-              const { error } = await supabase.auth.signInWithIdToken({
+              const { data, error } = await supabase.auth.signInWithIdToken({
                 provider: "google",
                 token: response.credential,
                 nonce,
@@ -56,6 +57,16 @@ const OneTapComponent = () => {
                   description: error.message,
                 });
               }
+
+              // If sign-in is successful, you can redirect or perform other actions
+              if (data.session) {
+                  posthog.identify(data.session.user.id, {
+                    email: data.session.user.email,
+                    fullName: data.session.user.user_metadata?.full_name,
+                    firstName: data.session.user.user_metadata?.full_name?.split(" ")[0],
+                    lastName: data.session.user.user_metadata?.full_name?.split(" ")[1],
+                  });
+                }
             } catch (error) {
               console.error("Error logging in with Google One Tap", error);
               toast.error("Google One Tap sign-in failed. Please try again.");

@@ -7,18 +7,7 @@ const envSchema = z.object({
 
   NEXT_PUBLIC_ENV: z.enum(['development', 'preview', 'production']).optional(),
   NEXT_PUBLIC_BASE_URL: z.string().url().optional(),
-  NEXT_PUBLIC_VERCEL_URL: z
-    .string()
-    .refine(
-      (val) =>
-        val.startsWith('${') ||
-        /^https?:\/\/(?:[a-z0-9-]+\.)+[a-z]{2,}$/.test(val),
-      {
-        message:
-          'NEXT_PUBLIC_VERCEL_URL חייב להיות כתובת חוקית או משתנה סביבה כמו ${VERCEL_URL}',
-      },
-    )
-    .optional(),
+  NEXT_PUBLIC_VERCEL_URL: z.string().optional(),
 
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),

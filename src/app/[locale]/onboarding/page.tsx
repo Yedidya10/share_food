@@ -1,91 +1,91 @@
-'use client'
+// 'use client'
 
-import { useRouter } from '@/i18n/navigation'
-import { useSearchParams } from 'next/navigation'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
-import { use } from 'react'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { createClient } from '@/lib/supabase/client'
+// import { useRouter } from '@/i18n/navigation'
+// import { useSearchParams } from 'next/navigation'
+// import { useForm } from 'react-hook-form'
+// import { zodResolver } from '@hookform/resolvers/zod'
+// import * as z from 'zod'
+// import { use } from 'react'
+// import { Input } from '@/components/ui/input'
+// import { Button } from '@/components/ui/button'
+// import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+// import { Label } from '@/components/ui/label'
+// import { Textarea } from '@/components/ui/textarea'
+// import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+// import { createClient } from '@/lib/supabase/client'
 
-const schema = z.object({
-  first_name: z.string().min(1, 'יש להזין שם פרטי'),
-  last_name: z.string().min(1, 'יש להזין שם משפחה'),
-  email: z.string().email('יש להזין כתובת אימייל תקינה'),
-  avatar_url: z.string().url('יש להזין כתובת URL תקינה לתמונה'),
-  phone: z.string().min(6, 'מספר טלפון קצר מדי'),
-  main_address: z.string().min(5, 'כתובת לא תקינה'),
-  community_name: z.string().min(2, 'יש להזין שם קהילה'),
-})
+// const schema = z.object({
+//   first_name: z.string().min(1, 'יש להזין שם פרטי'),
+//   last_name: z.string().min(1, 'יש להזין שם משפחה'),
+//   email: z.string().email('יש להזין כתובת אימייל תקינה'),
+//   avatar_url: z.string().url('יש להזין כתובת URL תקינה לתמונה'),
+//   phone: z.string().min(6, 'מספר טלפון קצר מדי'),
+//   main_address: z.string().min(5, 'כתובת לא תקינה'),
+//   community_name: z.string().min(2, 'יש להזין שם קהילה'),
+// })
 
-type FormData = z.infer<typeof schema>
+// type FormData = z.infer<typeof schema>
 
-async function loadUser() {
-  const supabase = createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) throw new Error('Unauthorized')
+// async function loadUser() {
+//   const supabase = createClient()
+//   const {
+//     data: { user },
+//   } = await supabase.auth.getUser()
+//   if (!user) throw new Error('Unauthorized')
 
-  return user
-}
+//   return user
+// }
 
 export default function OnboardingPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const next = searchParams.get('next')
+  // const router = useRouter()
+  // const searchParams = useSearchParams()
+  // const next = searchParams.get('next')
 
-  const user = use(loadUser())
+  // const user = use(loadUser())
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
-    defaultValues: {
-      first_name: user?.user_metadata?.full_name?.split(' ')[0] || '',
-      last_name: user?.user_metadata?.full_name?.split(' ')[1] || '',
-      email: user?.email || '',
-      avatar_url: user?.user_metadata?.avatar_url || '',
-      phone: user?.phone || '',
-      main_address: '',
-      community_name: '',
-    },
-  })
+  // const {
+  //   register,
+  //   handleSubmit,
+  //   formState: { errors, isSubmitting },
+  // } = useForm<FormData>({
+  //   resolver: zodResolver(schema),
+  //   defaultValues: {
+  //     first_name: user?.user_metadata?.full_name?.split(' ')[0] || '',
+  //     last_name: user?.user_metadata?.full_name?.split(' ')[1] || '',
+  //     email: user?.email || '',
+  //     avatar_url: user?.user_metadata?.avatar_url || '',
+  //     phone: user?.phone || '',
+  //     main_address: '',
+  //     community_name: '',
+  //   },
+  // })
 
-  const onSubmit = async (data: FormData) => {
-    const supabase = createClient()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-    if (!user) return
+  // const onSubmit = async (data: FormData) => {
+  //   const supabase = createClient()
+  //   const {
+  //     data: { user },
+  //   } = await supabase.auth.getUser()
+  //   if (!user) return
 
-    const { error } = await supabase
-      .from('profiles')
-      .update({
-        first_name: data.first_name,
-        last_name: data.last_name,
-        phone: data.phone,
-        main_address: { text: data.main_address },
-        full_name: `${data.first_name} ${data.last_name}`,
-        community_name: data.community_name,
-      })
-      .eq('id', user.id)
+  //   const { error } = await supabase
+  //     .from('profiles')
+  //     .update({
+  //       first_name: data.first_name,
+  //       last_name: data.last_name,
+  //       phone: data.phone,
+  //       main_address: { text: data.main_address },
+  //       full_name: `${data.first_name} ${data.last_name}`,
+  //       community_name: data.community_name,
+  //     })
+  //     .eq('id', user.id)
 
-    if (!error) router.push(next || '/')
-    else console.error('שגיאה בעדכון הפרופיל:', error)
-  }
+  //   if (!error) router.push(next || '/')
+  //   else console.error('שגיאה בעדכון הפרופיל:', error)
+  // }
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-muted">
-      <Card className="w-full max-w-md">
+      {/* <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>השלמת פרטי פרופיל</CardTitle>
         </CardHeader>
@@ -161,7 +161,7 @@ export default function OnboardingPage() {
             </Button>
           </form>
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   )
 }

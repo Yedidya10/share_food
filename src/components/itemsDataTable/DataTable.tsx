@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import {
   ColumnDef,
@@ -10,8 +10,8 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table";
-import { useState, useMemo } from "react";
+} from '@tanstack/react-table'
+import { useState, useMemo } from 'react'
 import {
   Table,
   TableBody,
@@ -19,53 +19,53 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useInView } from "react-intersection-observer";
-import useItems from "@/hooks/db/useItems";
-import { cn } from "@/lib/utils";
-import { DirectionProvider } from "@radix-ui/react-direction";
-import { useLocale } from "next-intl";
+} from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { useInView } from 'react-intersection-observer'
+import useItems from '@/hooks/db/useItems'
+import { cn } from '@/lib/utils'
+import { DirectionProvider } from '@radix-ui/react-direction'
+import { useLocale } from 'next-intl'
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
+  columns: ColumnDef<TData, TValue>[]
 }
 
 export function DataTable<TData, TValue>({
   columns,
 }: DataTableProps<TData, TValue>) {
-  const locale = useLocale();
+  const locale = useLocale()
   const {
     data: pages,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useItems();
+  } = useItems()
 
   const { ref } = useInView({
     threshold: 1,
     onChange: (inView) => {
       if (inView && hasNextPage && !isFetchingNextPage) {
-        fetchNextPage();
+        fetchNextPage()
       }
     },
-  });
+  })
 
   const items = useMemo(() => {
-    return pages?.pages.flat() ?? [];
-  }, [pages]);
+    return pages?.pages.flat() ?? []
+  }, [pages])
 
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
   const table = useReactTable({
     data: items,
@@ -75,7 +75,7 @@ export function DataTable<TData, TValue>({
       sorting,
       columnVisibility,
     },
-    columnResizeMode: "onChange",
+    columnResizeMode: 'onChange',
     onColumnFiltersChange: setColumnFilters,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
@@ -85,33 +85,33 @@ export function DataTable<TData, TValue>({
     debugTable: true,
     debugHeaders: true,
     debugColumns: true,
-  });
+  })
 
   return (
-    <DirectionProvider dir={locale === "he" ? "rtl" : "ltr"}>
-      <div className='space-y-4'>
-        <div className='flex items-center gap-2'>
+    <DirectionProvider dir={locale === 'he' ? 'rtl' : 'ltr'}>
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
           <Input
-            placeholder='חפש לפי שם...'
-            value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
+            placeholder="חפש לפי שם..."
+            value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
-              table.getColumn("title")?.setFilterValue(event.target.value)
+              table.getColumn('title')?.setFilterValue(event.target.value)
             }
-            className='max-w-sm'
+            className="max-w-sm"
           />
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant='outline'>עמודות</Button>
+              <Button variant="outline">עמודות</Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align='start'>
+            <DropdownMenuContent align="start">
               {table
                 .getAllColumns()
                 .filter((column) => column.getCanHide())
                 .map((column) => (
                   <DropdownMenuCheckboxItem
                     key={column.id}
-                    className='capitalize'
+                    className="capitalize"
                     checked={column.getIsVisible()}
                     onCheckedChange={(value) =>
                       column.toggleVisibility(!!value)
@@ -124,7 +124,7 @@ export function DataTable<TData, TValue>({
           </DropdownMenu>
         </div>
 
-        <div className='rounded-md border rtl:text-right ltr:text-left'>
+        <div className="rounded-md border rtl:text-right ltr:text-left">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -132,13 +132,13 @@ export function DataTable<TData, TValue>({
                   {headerGroup.headers.map((header) => (
                     <TableHead
                       key={header.id}
-                      className='rtl:text-right ltr:text-left'
+                      className="rtl:text-right ltr:text-left"
                     >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   ))}
@@ -150,13 +150,13 @@ export function DataTable<TData, TValue>({
               {table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
+                  data-state={row.getIsSelected() && 'selected'}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
@@ -165,7 +165,10 @@ export function DataTable<TData, TValue>({
 
               {isLoading && (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className='text-center'>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="text-center"
+                  >
                     טוען נתונים...
                   </TableCell>
                 </TableRow>
@@ -175,18 +178,18 @@ export function DataTable<TData, TValue>({
           <div
             ref={ref}
             className={cn(
-              "py-4 text-center",
-              isFetchingNextPage && "opacity-50"
+              'py-4 text-center',
+              isFetchingNextPage && 'opacity-50',
             )}
           >
             {isFetchingNextPage
-              ? "טוען עוד..."
+              ? 'טוען עוד...'
               : hasNextPage
-                ? "גלול לטעינה נוספת"
-                : "הגעת לסוף"}
+                ? 'גלול לטעינה נוספת'
+                : 'הגעת לסוף'}
           </div>
         </div>
       </div>
     </DirectionProvider>
-  );
+  )
 }

@@ -1,0 +1,7 @@
+echo "🔍 Running typecheck..."
+npm run typecheck || exit 1
+
+echo "🧼 Running lint-staged (includes prettier)..."
+npx lint-staged || exit 1
+
+echo "✅ All checks passed. Proceeding with commit."

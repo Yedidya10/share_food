@@ -1,64 +1,65 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react'
 import {
   subscribeUser,
   unsubscribeUser,
   sendNotification,
-} from "@/app/actions/webpush";
-import urlBase64ToUint8Array from "@/components/pwa/utils/urlBase64ToUint8Array";
+} from '@/app/actions/webpush'
+import urlBase64ToUint8Array from '@/components/pwa/utils/urlBase64ToUint8Array'
+import { externalServices } from '@/lib/envConfig'
 
 export default function PushNotificationManager() {
-  const [isSupported, setIsSupported] = useState(false);
+  const [isSupported, setIsSupported] = useState(false)
   const [subscription, setSubscription] = useState<PushSubscription | null>(
-    null
-  );
-  const [message, setMessage] = useState("");
+    null,
+  )
+  const [message, setMessage] = useState('')
 
   useEffect(() => {
-    if ("serviceWorker" in navigator && "PushManager" in window) {
-      setIsSupported(true);
-      registerServiceWorker();
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+      setIsSupported(true)
+      registerServiceWorker()
     }
-  }, []);
+  }, [])
 
   async function registerServiceWorker() {
-    const registration = await navigator.serviceWorker.register("/sw.js", {
-      scope: "/",
-      updateViaCache: "none",
-    });
-    const sub = await registration.pushManager.getSubscription();
-    setSubscription(sub);
+    const registration = await navigator.serviceWorker.register('/sw.js', {
+      scope: '/',
+      updateViaCache: 'none',
+    })
+    const sub = await registration.pushManager.getSubscription()
+    setSubscription(sub)
   }
 
   async function subscribeToPush() {
-    const registration = await navigator.serviceWorker.ready;
+    const registration = await navigator.serviceWorker.ready
     const sub = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(
-        process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!
+        externalServices.vapid.publicKey,
       ),
-    });
-    setSubscription(sub);
-    const serializedSub = JSON.parse(JSON.stringify(sub));
-    await subscribeUser(serializedSub);
+    })
+    setSubscription(sub)
+    const serializedSub = JSON.parse(JSON.stringify(sub))
+    await subscribeUser(serializedSub)
   }
 
   async function unsubscribeFromPush() {
-    await subscription?.unsubscribe();
-    setSubscription(null);
-    await unsubscribeUser();
+    await subscription?.unsubscribe()
+    setSubscription(null)
+    await unsubscribeUser()
   }
 
   async function sendTestNotification() {
     if (subscription) {
-      await sendNotification(message);
-      setMessage("");
+      await sendNotification(message)
+      setMessage('')
     }
   }
 
   if (!isSupported) {
-    return <p>Push notifications are not supported in this browser.</p>;
+    return <p>Push notifications are not supported in this browser.</p>
   }
 
   return (
@@ -69,8 +70,8 @@ export default function PushNotificationManager() {
           <p>You are subscribed to push notifications.</p>
           <button onClick={unsubscribeFromPush}>Unsubscribe</button>
           <input
-            type='text'
-            placeholder='Enter notification message'
+            type="text"
+            placeholder="Enter notification message"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
           />
@@ -83,5 +84,5 @@ export default function PushNotificationManager() {
         </>
       )}
     </div>
-  );
+  )
 }

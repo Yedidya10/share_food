@@ -1,32 +1,32 @@
-"use client";
+'use client'
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button'
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from '@/components/ui/tooltip'
 
 export default function EditItemButton({
   onClick,
   disabled,
   children,
 }: {
-  children?: React.ReactNode;
-  onClick?: () => void;
-  disabled?: boolean;
+  children?: React.ReactNode
+  onClick?: () => void
+  disabled?: boolean
 }) {
   function handleClick() {
     if (onClick) {
-      onClick();
+      onClick()
     }
   }
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <Button
-          variant='outline'
-          size='icon'
+          variant="outline"
+          size="icon"
           onClick={handleClick}
           disabled={disabled}
         >
@@ -37,5 +37,5 @@ export default function EditItemButton({
         <span>ערוך פריט</span>
       </TooltipContent>
     </Tooltip>
-  );
+  )
 }

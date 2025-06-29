@@ -1,5 +1,5 @@
-import ItemsSkeleton from "@/components/skeletons/itemsSkeleton/ItemsSkeleton";
+import ItemsSkeleton from '@/components/skeletons/itemsSkeleton/ItemsSkeleton'
 
 export default function Loading() {
-  return <ItemsSkeleton />;
+  return <ItemsSkeleton />
 }

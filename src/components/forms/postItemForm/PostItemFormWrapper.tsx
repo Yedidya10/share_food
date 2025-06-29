@@ -1,19 +1,19 @@
-"use client";
+'use client'
 
-import { FormTranslationType } from "@/types/formTranslation";
-import dynamic from "next/dynamic";
+import { FormTranslationType } from '@/types/formTranslation'
+import dynamic from 'next/dynamic'
 
-const PostItemForm = dynamic(() => import("../postItemForm/PostItemForm"), {
+const PostItemForm = dynamic(() => import('../postItemForm/PostItemForm'), {
   ssr: false,
-});
+})
 
 export default function PostItemFormWrapper(props: {
-  translation: FormTranslationType;
-  openModal: boolean;
-  setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsSubmitSuccess: React.Dispatch<React.SetStateAction<boolean | null>>;
+  translation: FormTranslationType
+  openModal: boolean
+  setOpenModal: React.Dispatch<React.SetStateAction<boolean>>
+  setIsSubmitSuccess: React.Dispatch<React.SetStateAction<boolean | null>>
 }) {
-  if (!props.openModal) return null;
+  if (!props.openModal) return null
 
-  return <PostItemForm {...props} />;
+  return <PostItemForm {...props} />
 }

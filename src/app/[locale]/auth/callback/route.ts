@@ -35,7 +35,7 @@ export async function GET(request: Request) {
 
         if (!existingProfile) {
           return NextResponse.redirect(
-            `${redirectOrigin}/onboarding?next=${encodeURIComponent(next)}`
+            `${redirectOrigin}/onboarding?next=${encodeURIComponent(next)}`,
           )
         }
       }

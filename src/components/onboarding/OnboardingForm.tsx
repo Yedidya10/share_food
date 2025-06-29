@@ -3,13 +3,19 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { use, useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from '@/i18n/navigation'
-import { Button, Input, Avatar, AvatarImage, AvatarFallback, Card, CardHeader, CardTitle, CardContent, Label } from '@/components/ui/
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import PhoneInput from '@/components/forms/phoneInput/PhoneInput'
 import CityInput from '@/components/forms/address/CityInput'
 import StreetInput from '@/components/forms/address/StreetInput'
 import { createClient } from '@/lib/supabase/client'
+import { User } from '@supabase/supabase-js'
+import { useTranslations } from 'next-intl'
 
 const schema = z.object({
   first_name: z.string().min(1),
@@ -23,39 +29,54 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
-export default function OnboardingForm({ user, next }: { user: any, next: string }) {
+export default function OnboardingForm({
+  user,
+  next,
+}: {
+  user: User & {
+    full_name?: string
+    avatar_url?: string
+    access_token?: string
+  }
+  next: string
+}) {
   const router = useRouter()
   const supabase = createClient()
   const [loadingGoogle, setLoadingGoogle] = useState(false)
+
+  const tAddress = useTranslations('form.address')
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
       first_name: user?.full_name?.split(' ')[0],
       last_name: user?.full_name?.split(' ')[1],
-      phoneNumber:  '',
-      city:  '',
-      streetName:  '',
+      phoneNumber: '',
+      city: '',
+      streetName: '',
       streetNumber: '',
-      community_name:  '',
+      community_name: '',
     },
   })
 
   const importFromGoogle = async () => {
     setLoadingGoogle(true)
     try {
-      const {
-      data: { session },
-    } = use(supabase.auth.getSession())
-      const res = use(fetch(
-      'https://people.googleapis.com/v1/people/me?personFields=phoneNumbers,addresses',
-      {
-        headers: {
-          Authorization: `Bearer ${session?.provider_token}`,
+      const response = await fetch(
+        'https://people.googleapis.com/v1/people/me?personFields=phoneNumbers,genders,addresses',
+        {
+          headers: {
+            Authorization: `Bearer ${user.access_token}`,
+          },
         },
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch data from Google People API')
       }
-    ))
-      const data = use( res.json())
+
+      const data = await response.json()
+
       if (data.phone) form.setValue('phoneNumber', data.phone)
       if (data.address) {
         form.setValue('city', data.address.city || '')
@@ -63,29 +84,33 @@ export default function OnboardingForm({ user, next }: { user: any, next: string
         form.setValue('streetNumber', data.address.number || '')
       }
     } catch (error) {
-      console.error( error)
+      console.error(error)
     } finally {
       setLoadingGoogle(false)
     }
- 
   }
 
   const onSubmit = async (values: FormData) => {
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     if (!user) return
 
-    await supabase.from('profiles').update({
-      first_name: values.first_name,
-      last_name: values.last_name,
-      phone: values.phoneNumber,
-      main_address: {
-        city: values.city,
-        street: values.streetName,
-        number: values.streetNumber,
-      },
-      full_name: `${values.first_name} ${values.last_name}`,
-      community_name: values.community_name,
-    }).eq('id', user.id)
+    await supabase
+      .from('profiles')
+      .update({
+        first_name: values.first_name,
+        last_name: values.last_name,
+        phone: values.phoneNumber,
+        main_address: {
+          city: values.city,
+          street: values.streetName,
+          number: values.streetNumber,
+        },
+        full_name: `${values.first_name} ${values.last_name}`,
+        community_name: values.community_name,
+      })
+      .eq('id', user.id)
 
     router.push(next)
   }
@@ -96,7 +121,10 @@ export default function OnboardingForm({ user, next }: { user: any, next: string
         <CardTitle>השלמת פרטי פרופיל</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4"
+        >
           <div className="flex justify-center">
             <Avatar className="h-20 w-20">
               <AvatarImage src={user?.avatar_url || ''} />
@@ -110,21 +138,33 @@ export default function OnboardingForm({ user, next }: { user: any, next: string
           <Label>שם משפחה</Label>
           <Input {...form.register('last_name')} />
 
-          <Button type="button" onClick={importFromGoogle} disabled={loadingGoogle}>
+          <Button
+            type="button"
+            onClick={importFromGoogle}
+            disabled={loadingGoogle}
+          >
             {loadingGoogle ? 'מייבא...' : 'ייבוא טלפון וכתובת מגוגל'}
           </Button>
 
-          <PhoneInput/>
+          <PhoneInput />
           <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
-            <CityInput />
-            <StreetInput  />
-            <Input {...form.register('streetNumber')} placeholder="מס׳ בית" />
+            <CityInput form={form} />
+            <StreetInput form={form} />
+            <Input
+              {...form.register('streetNumber')}
+              placeholder={tAddress('street_number_placeholder')}
+            />
           </div>
 
           <Label>שם קהילה</Label>
           <Input {...form.register('community_name')} />
 
-          <Button type="submit" className="w-full">שמירה והמשך</Button>
+          <Button
+            type="submit"
+            className="w-full"
+          >
+            שמירה והמשך
+          </Button>
         </form>
       </CardContent>
     </Card>

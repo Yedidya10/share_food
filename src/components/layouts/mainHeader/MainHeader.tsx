@@ -175,7 +175,7 @@ export default function MainHeader() {
             <LinkButton
               href={{
                 pathname: `/auth/login`,
-                query: { redirect: pathname },
+                query: { redirectTo: pathname },
               }}
               variant="outline"
             >

@@ -4,13 +4,13 @@ import LoginDialog from '@/components/loginDialog/LoginDialog'
 export default async function LoginSlot({
   searchParams,
 }: {
-  searchParams: Promise<{ redirect: string }>
+  searchParams: Promise<{ redirectTo: string }>
 }) {
-  const { redirect } = await searchParams
+  const { redirectTo } = await searchParams
 
   return (
     <LoginDialog>
-      <LoginForm redirectTo={redirect} />
+      <LoginForm redirectTo={redirectTo} />
     </LoginDialog>
   )
 }

@@ -181,10 +181,10 @@ export default function Item({
                   {isUpdatingStatus ? (
                     <Loader className='animate-spin ml-2' size={16} />
                   ) : (
-                    <>
+                    <div className='flex items-center gap-2'>
                       <PackageCheck />
-                      <span className='sr-only'>סמן כנמסר</span>
-                    </>
+                      <span>סמן כנמסר</span>
+                   </div>
                   )}
                 </Button>
               </TooltipTrigger>

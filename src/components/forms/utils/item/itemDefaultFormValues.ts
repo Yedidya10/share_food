@@ -10,6 +10,7 @@ export function postItemDefaultFormValues(translation: FormTranslationType) {
     city: '',
     country: translation.israel, // Default
     postalCode: '',
+    saveAddress: false,
     contactViaSite: true, // Default to true for contact via site
     contactByPhone: false,
     contactByEmail: false,
@@ -40,5 +41,9 @@ export const editItemDefaultFormValues = ({
     phoneNumber: initialValues?.phoneNumber || '',
     isHaveWhatsApp: initialValues.isHaveWhatsApp,
     email: initialValues?.email || '',
+    images: (initialValues.images || []).map((url, i) => ({
+      id: `existing-${i}`,
+      url, // url is always a string here
+    })),
   }
 }

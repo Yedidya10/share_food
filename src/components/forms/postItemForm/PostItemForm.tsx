@@ -84,7 +84,7 @@ export default function PostItemForm({
   const canSubmit =
     postItemForm.formState.isValid &&
     !postItemForm.formState.isSubmitting &&
-    !postItemForm.formState.isDirty &&
+    postItemForm.formState.isDirty &&
     !isPending
 
   return (

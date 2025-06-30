@@ -46,7 +46,7 @@ export type DbFoodItem = DbItem & {
 // Extend the default form values with images
 export type PostItemFormValues = ItemBaseFormValues & {
   images: File[]
-  saveAddress: boolean // Optional, defaults to false
+  saveAddress: boolean
 }
 
 export type EditItemFormValues = ItemBaseFormValues & {

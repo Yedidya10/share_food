@@ -1,42 +1,47 @@
-import { z } from 'zod'
+// itemSchema.ts
+import { itemSchemaBase } from './itemSchemaBase'
+import { FormTranslationType } from '@/types/formTranslation'
+import { RefinementCtx, z } from 'zod'
+import { validateCity, validateStreet } from '@/lib/supabase/actions/locations'
 import {
   isValidPhoneNumber,
   isPossiblePhoneNumber,
 } from 'react-phone-number-input'
-import { FormTranslationType } from '@/types/formTranslation'
-import { validateCity, validateStreet } from '@/lib/supabase/actions/locations'
 
-export function itemBaseSchema(translation: FormTranslationType) {
-  return z.object({
-    title: z
-      .string()
-      .min(5, { message: translation.titleMinLength })
-      .max(50, { message: translation.titleMaxLength }),
-    description: z
-      .string({ required_error: translation.descriptionRequired })
-      .min(10, { message: translation.descriptionMinLength })
-      .max(300, { message: translation.descriptionMaxLength }),
-  })
-}
+type FormData = z.infer<ReturnType<typeof itemSchemaBase>>
 
-export function locationSchema(translation: FormTranslationType) {
-  return z
-    .object({
-      streetName: z.string().min(2).max(50),
-      streetNumber: z.string().min(1).max(10),
-      city: z.string().min(2).max(10),
-      postalCode: z.string().optional(),
-      country: z.string().min(2).max(20),
-    })
+export default function itemSchema(translation: FormTranslationType) {
+  return itemSchemaBase(translation)
     .refine(
-      (data) => data.postalCode?.trim() === '' || data.postalCode?.length === 7,
+      (data: FormData) =>
+        data.postalCode?.trim() === '' || data.postalCode?.length === 7,
       {
         path: ['postalCode'],
         message: translation.postalCodeError,
       },
     )
-    .superRefine(async (data, ctx) => {
-      // ולידציה לעיר
+    .refine(
+      (data: FormData) =>
+        !data.contactByPhone ||
+        (data.phoneNumber?.trim() !== '' &&
+          isValidPhoneNumber(data.phoneNumber ?? '') &&
+          isPossiblePhoneNumber(data.phoneNumber ?? '')),
+      {
+        message: translation.phoneNumberError,
+        path: ['phoneNumber'],
+      },
+    )
+    .refine(
+      (data: FormData) =>
+        !data.contactByEmail ||
+        (data.email?.trim() !== '' &&
+          z.string().email().safeParse(data.email).success),
+      {
+        message: translation.emailError,
+        path: ['email'],
+      },
+    )
+    .superRefine(async (data: FormData, ctx: RefinementCtx) => {
       const isValidCity = await validateCity(data.city)
       if (!isValidCity) {
         ctx.addIssue({
@@ -46,7 +51,6 @@ export function locationSchema(translation: FormTranslationType) {
         })
       }
 
-      // ולידציה לרחוב
       const isValidStreet = await validateStreet({
         street: data.streetName,
         city: data.city,
@@ -59,43 +63,4 @@ export function locationSchema(translation: FormTranslationType) {
         })
       }
     })
-}
-
-export function contactSchema(translation: FormTranslationType) {
-  return z
-    .object({
-      contactViaSite: z.boolean(),
-      contactByPhone: z.boolean(),
-      phoneNumber: z.string().optional(),
-      isHaveWhatsApp: z.boolean(),
-      contactByEmail: z.boolean(),
-      email: z.string().optional(),
-    })
-    .refine(
-      (data) =>
-        !data.contactByPhone ||
-        (data.phoneNumber?.trim() !== '' &&
-          isValidPhoneNumber(data.phoneNumber ?? '') &&
-          isPossiblePhoneNumber(data.phoneNumber ?? '')),
-      {
-        message: translation.phoneNumberError,
-        path: ['phoneNumber'],
-      },
-    )
-    .refine(
-      (data) =>
-        !data.contactByEmail ||
-        (data.email?.trim() !== '' &&
-          z.string().email().safeParse(data.email).success),
-      {
-        message: translation.emailError,
-        path: ['email'],
-      },
-    )
-}
-
-export default function itemSchema(translation: FormTranslationType) {
-  return itemBaseSchema(translation)
-    .and(locationSchema(translation))
-    .and(contactSchema(translation))
 }

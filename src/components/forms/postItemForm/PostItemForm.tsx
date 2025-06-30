@@ -29,6 +29,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import SaveAddress from '../address/SaveAddress'
+import { insertAddressToProfile } from '@/lib/supabase/actions/insertAddress'
 
 export default function PostItemForm({
   openModal,
@@ -54,8 +56,9 @@ export default function PostItemForm({
   // Define your form
   const postItemForm = useForm<PostItemFormSchema>({
     resolver: zodResolver(formSchema),
-    reValidateMode: 'onChange',
-    mode: 'onChange',
+    mode: 'onBlur',
+    reValidateMode: 'onBlur',
+    criteriaMode: 'firstError',
     defaultValues: defaultValues,
   })
 
@@ -64,16 +67,42 @@ export default function PostItemForm({
   // Handle form submission
   const onSubmit = async (values: PostItemFormSchema) => {
     try {
-      const response = await insertItem(values)
+      // Log the form values for debugging
+      console.log('Form submitted with values:', values)
 
-      if (response?.success) {
+      // Save the address to profile if it is new
+      if (values.saveAddress) {
+        const { streetName, streetNumber, city, country, postalCode } = values
+
+        const insertAddressResponse = await insertAddressToProfile({
+          streetName,
+          streetNumber,
+          city,
+          country,
+          postalCode: postalCode ?? '',
+        })
+
+        if (insertAddressResponse?.success) {
+          console.log('Address saved to profile successfully')
+        } else {
+          console.error(
+            'Error saving address to profile:',
+            insertAddressResponse?.message,
+          )
+        }
+      }
+
+      // Call the insertItem function with the form values
+      const insertItemResponse = await insertItem(values)
+
+      if (insertItemResponse?.success) {
         setIsSubmitSuccess(true)
         setOpenModal(false)
         postItemForm.reset()
       } else {
         setIsSubmitSuccess(false)
         setOpenModal(false)
-        console.error('Error inserting item:', response?.message)
+        console.error('Error inserting item:', insertItemResponse?.message)
       }
     } catch (error) {
       console.error('Error in onSubmit:', error)
@@ -122,6 +151,7 @@ export default function PostItemForm({
               {translation.addressDetails}
             </h3>
             <AddressFormFields form={postItemForm} />
+            <SaveAddress form={postItemForm} />
             <Separator />
             <ContactFormFields
               form={postItemForm}

@@ -9,11 +9,11 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Path, UseFormReturn } from 'react-hook-form'
-import CityInputWrapper from './address/CityInputWrapper'
-import StreetInputWrapper from './address/StreetInputWrapper'
+import CityInputWrapper from '@/components/forms/address/CityInputWrapper'
+import StreetInputWrapper from '@/components/forms/address/StreetInputWrapper'
 import { useTranslations } from 'next-intl'
 
-type LocationFormFieldsProps<
+type AddressFormFieldsProps<
   T extends {
     city: string
     streetName: string
@@ -24,22 +24,19 @@ type LocationFormFieldsProps<
   form: UseFormReturn<T>
 }
 
-export default function LocationFormFields<
+export default function AddressFormFields<
   T extends {
     city: string
     streetName: string
     streetNumber: string
     country: string
   },
->({ form }: LocationFormFieldsProps<T>) {
+>({ form }: AddressFormFieldsProps<T>) {
   const tAddress = useTranslations('form.address')
-  console.log('tAddress', tAddress)
   const tGeneric = useTranslations('form.generic')
 
   return (
     <div className="flex flex-col space-y-4">
-      <h3 className="text-lg font-semibold">{tAddress('location')}</h3>
-
       <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
         <CityInputWrapper form={form} />
         <StreetInputWrapper form={form} />

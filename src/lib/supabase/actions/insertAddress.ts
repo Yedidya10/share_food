@@ -35,6 +35,7 @@ export async function insertAddressToProfile({
         },
       })
       .eq('id', userData.user.id)
+      .select('main_address')
 
     if (error) {
       throw error

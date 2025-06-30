@@ -80,7 +80,7 @@ export default async function insertItemToDatabase(values: PostItemFormSchema) {
         phone_number: values.phoneNumber || null,
         is_have_whatsapp: values.phoneNumber ? values.isHaveWhatsApp : false,
         email: values.email?.trim() || null,
-        status: 'pending', // Default status
+        status: 'pending_publication',
         user_id: userId,
       },
     ])

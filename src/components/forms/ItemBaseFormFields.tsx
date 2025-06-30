@@ -21,10 +21,16 @@ type ItemBaseFormFieldsProps<T extends FieldValues> = {
 export default function ItemBaseFormFields<
   T extends { title: string; description: string } & FieldValues,
 >({ form, translation }: ItemBaseFormFieldsProps<T>) {
+  const {
+    control,
+    formState: { errors },
+    trigger,
+  } = form
+
   return (
     <>
       <FormField
-        control={form.control}
+        control={control}
         name={'title' as Path<T>}
         render={({ field }) => (
           <FormItem>
@@ -38,6 +44,13 @@ export default function ItemBaseFormFields<
               <Input
                 {...field}
                 placeholder={translation.titlePlaceholder}
+                // override onChange to handle validation on change
+                onChange={(e) => {
+                  field.onChange(e)
+                  if (errors.title && e.target.value.length > 0) {
+                    trigger('title' as Path<T>)
+                  }
+                }}
                 inputMode="text"
                 autoComplete="off"
               />
@@ -50,7 +63,7 @@ export default function ItemBaseFormFields<
         )}
       />
       <FormField
-        control={form.control}
+        control={control}
         name={'description' as Path<T>}
         render={({ field }) => (
           <FormItem>
@@ -62,11 +75,19 @@ export default function ItemBaseFormFields<
             </FormLabel>
             <FormControl>
               <Textarea
+                {...field}
                 className="resize-none"
                 placeholder={translation.descriptionPlaceholder}
+                // override onChange to handle validation on change
+                onChange={(e) => {
+                  field.onChange(e)
+                  if (errors.description && e.target.value.length > 0) {
+                    trigger('description' as Path<T>)
+                  }
+                }}
+                rows={2}
                 inputMode="text"
                 autoComplete="off"
-                {...field}
               />
             </FormControl>
             <FormDescription className="text-xs text-muted-foreground">

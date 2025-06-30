@@ -17,10 +17,19 @@ export function editItemImagesSchema(translation: FormTranslationType) {
         1,
         translation.uploadImagesError || 'Please upload at least one image.',
       )
-      .max(
-        3,
-        translation.uploadImagesError || 'You can upload up to 3 images.',
-      ),
+      .max(3, translation.uploadImagesError || 'You can upload up to 3 images.')
+      .superRefine((images, ctx) => {
+        // Check if at least we have one image file or URL
+        const hasFileOrUrl = images.some((img) => img.file || img.url)
+        if (!hasFileOrUrl) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message:
+              translation.uploadImagesError ||
+              'Please upload at least one image.',
+          })
+        }
+      }),
   })
 }
 

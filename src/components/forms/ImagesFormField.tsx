@@ -3,10 +3,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import {
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormDescription,
   FormMessage,
 } from '@/components/ui/form'
 import Image from 'next/image'
@@ -46,12 +46,8 @@ export default function ImagesFormField({
   )
 
   useEffect(() => {
-    form.register('images')
-  }, [form])
-
-  useEffect(() => {
     form.setValue('images', images, {
-      shouldValidate: true,
+      shouldValidate: images.length > 0,
     })
   }, [images, form])
 
@@ -119,6 +115,9 @@ export default function ImagesFormField({
               type="button"
               variant="outline"
               className="w-full h-10"
+              aria-label={translation.uploadImages}
+              disabled={images.length >= 3}
+              data-testid="upload-images-button"
               onClick={() =>
                 (
                   document.querySelector(

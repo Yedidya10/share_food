@@ -18,7 +18,7 @@ import { useLocale } from 'next-intl'
 import postItemSchema from '@/lib/zod/item/postItemSchema'
 import { postItemDefaultFormValues } from '@/components/forms/utils/item/itemDefaultFormValues'
 import ContactFormFields from '@/components/forms/ContactFormFields'
-import LocationFormFields from '@/components/forms/LocationFormFields'
+import AddressFormFields from '@/components/forms/address/AddressFormFields'
 import ImagesFormField from '@/components/forms/ImagesFormField'
 import ItemBaseFormFields from '@/components/forms/ItemBaseFormFields'
 import { FormTranslationType } from '@/types/formTranslation'
@@ -118,7 +118,10 @@ export default function PostItemForm({
               translation={translation}
             />
             <Separator />
-            <LocationFormFields form={postItemForm} />
+            <h3 className="text-lg font-semibold">
+              {translation.addressDetails}
+            </h3>
+            <AddressFormFields form={postItemForm} />
             <Separator />
             <ContactFormFields
               form={postItemForm}

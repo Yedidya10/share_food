@@ -9,7 +9,7 @@ import { Separator } from '@/components/ui/separator'
 import editItemSchema from '@/lib/zod/item/editItemSchema'
 import ItemBaseFormFields from '@/components/forms/ItemBaseFormFields'
 import ContactFormFields from '@/components/forms/ContactFormFields'
-import LocationFormFields from '@/components/forms/LocationFormFields'
+import AddressFormFields from '@/components/forms/address/AddressFormFields'
 import ImagesFormField from '@/components/forms/ImagesFormField'
 import { editItemDefaultFormValues } from '@/components/forms/utils/item/itemDefaultFormValues'
 import type { EditItemFormValues } from '@/types/item/item'
@@ -109,7 +109,8 @@ export default function EditItemForm({
   const canSubmit =
     editItemForm.formState.isValid &&
     !editItemForm.formState.isSubmitting &&
-    editItemForm.formState.isDirty
+    editItemForm.formState.isDirty &&
+    !isPending
 
   return (
     <DirectionProvider dir={locale === 'he' ? 'rtl' : 'ltr'}>
@@ -137,7 +138,10 @@ export default function EditItemForm({
               initialImages={initialValues.images || []}
             />
             <Separator />
-            <LocationFormFields form={editItemForm} />
+            <h3 className="text-lg font-semibold">
+              {translation.addressDetails}
+            </h3>
+            <AddressFormFields form={editItemForm} />
             <Separator />
             <ContactFormFields
               form={editItemForm}

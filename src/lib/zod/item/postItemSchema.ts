@@ -1,8 +1,9 @@
+// postItemSchema.ts
 import { z } from 'zod'
-import itemSchema from './itemSchema'
+import { itemSchemaBase } from '@/lib/zod/item/itemSchemaBase'
 import { FormTranslationType } from '@/types/formTranslation'
 
-export function postItemImagesSchema(translation: FormTranslationType) {
+function postItemImagesSchema(translation: FormTranslationType) {
   return z.object({
     images: z
       .array(
@@ -24,9 +25,17 @@ export function postItemImagesSchema(translation: FormTranslationType) {
   })
 }
 
+function saveAddressSchema() {
+  return z.object({
+    saveAddress: z.boolean().default(false).optional(),
+  })
+}
+
 export default function postItemSchema(translation: FormTranslationType) {
-  return z.intersection(
-    itemSchema(translation),
-    postItemImagesSchema(translation),
-  )
+  const base = itemSchemaBase(translation)
+    .merge(postItemImagesSchema(translation))
+    .merge(saveAddressSchema())
+
+  // עכשיו על base אתה מוסיף refine / superRefine כמו קודם אם צריך.
+  return base
 }

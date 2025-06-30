@@ -27,7 +27,7 @@ export default function SaveAddress<T extends FieldValues>({ form }: Props<T>) {
           <div>
             <FormLabel
               className="font-medium"
-              htmlFor="contactViaSite"
+              htmlFor="saveAddress"
             >
               שמירת כתובת בפרופיל לשימוש עתידי
               <span className="text-xs text-muted-foreground">(אופציונלי)</span>

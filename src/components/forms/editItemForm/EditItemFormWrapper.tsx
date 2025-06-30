@@ -15,6 +15,7 @@ export async function EditItemFormWrapper({ itemId }: { itemId: string }) {
   const tPostItemForm = await getTranslations('form.postItem')
   const tEditItemForm = await getTranslations('form.editItem')
   const tGenericForm = await getTranslations('form.generic')
+  const tAddressForm = await getTranslations('form.address')
   const tCountries = await getTranslations('countries')
 
   const formInitialValues: EditItemFormValues = {
@@ -55,19 +56,19 @@ export async function EditItemFormWrapper({ itemId }: { itemId: string }) {
         uploadImages: tPostItemForm('upload_images'),
         uploadImagesError: tPostItemForm('upload_images_error'),
         addressDetails: tPostItemForm('address_details'),
-        streetName: tPostItemForm('street_name'),
-        streetNamePlaceholder: tPostItemForm('street_name_placeholder'),
-        streetNameError: tPostItemForm('street_name_error'),
-        streetNumber: tPostItemForm('street_number'),
-        streetNumberPlaceholder: tPostItemForm('street_number_placeholder'),
-        streetNumberError: tPostItemForm('street_number_error'),
-        city: tPostItemForm('city'),
-        cityPlaceholder: tPostItemForm('city_placeholder'),
-        cityError: tPostItemForm('city_error'),
-        postalCode: tPostItemForm('postal_code'),
-        postalCodePlaceholder: tPostItemForm('postal_code_placeholder'),
-        postalCodeError: tPostItemForm('postal_code_error'),
-        country: tPostItemForm('country'),
+        streetName: tAddressForm('street_name'),
+        streetNamePlaceholder: tAddressForm('street_name_placeholder'),
+        streetNameError: tAddressForm('street_name_error'),
+        streetNumber: tAddressForm('street_number'),
+        streetNumberPlaceholder: tAddressForm('street_number_placeholder'),
+        streetNumberError: tAddressForm('street_number_error'),
+        city: tAddressForm('city'),
+        cityPlaceholder: tAddressForm('city_placeholder'),
+        cityError: tAddressForm('city_error'),
+        postalCode: tAddressForm('postal_code'),
+        postalCodePlaceholder: tAddressForm('postal_code_placeholder'),
+        postalCodeError: tAddressForm('postal_code_error'),
+        country: tAddressForm('country'),
         contactDetails: tPostItemForm('contact_details'),
         contactViaSite: tPostItemForm('contact_via_site'),
         phoneNumber: tPostItemForm('phone_number'),

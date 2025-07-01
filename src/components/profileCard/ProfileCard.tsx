@@ -1,46 +1,64 @@
-import Image from 'next/image'
+import AvatarEditor from './AvatarEditor'
+import EditableName from './EditableName'
+import EditablePhone from './EditablePhone'
+import AddressDisplay from './AddressDisplay'
+import CommunityBadges from './CommunityBadges'
+import AchievementTags from './AchievementTags'
 
-export function ProfileCard({
+type UserWithCommunitiesAndTags = {
+  id: string
+  email: string
+  createdAt: string
+  phone: string
+  firstName: string
+  lastName: string
+  address: string
+  avatarUrl: string
+}
+
+export default function ProfilePage({
   user,
 }: {
-  user: {
-    full_name: string
-    email: string
-    created_at: string
-    phone?: string
-    avatar_url?: string
-  }
+  user: UserWithCommunitiesAndTags
 }) {
   return (
-    <div className="flex gap-4 space-y-4 p-4">
-      {user.avatar_url ? (
-        <Image
-          src={user.avatar_url}
-          alt={`${user.full_name}'s avatar`}
-          width={80}
-          height={80}
-          className="w-20 h-20 rounded-full object-cover"
-          priority
+    <main className="max-w-5xl mx-auto flex gap-8 px-6 py-12 rounded-lg shadow items-start">
+      <section className="flex items-start gap-6">
+        <AvatarEditor
+          avatarUrl={user.avatarUrl}
+          userId={user.id}
         />
-      ) : (
-        <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
-          No Avatar
-        </div>
-      )}
-      <div className="flex flex-col gap-2">
-        <div className="space-y-1">
-          <h2 className="text-2xl font-semibold">
-            {user.full_name || 'Unknown User'}
-          </h2>
-          <p className="text-sm text-gray-500">{user.email}</p>
-        </div>
-        <div className=" border-t pt-2 space-y-2 text-sm text-gray-700">
-          <p>
-            <span className="font-medium">Joined:</span>{' '}
-            {new Date(user.created_at).toLocaleDateString()}
-          </p>
-        </div>
+      </section>
+      <div className="flex-1 flex flex-col gap-16 px-6">
+        <section className="rounded-xl shadow flex gap-10 items-start">
+          <div className="flex flex-col gap-3 flex-1">
+            <EditableName
+              firstName={user.firstName}
+              lastName={user.lastName}
+              userId={user.id}
+            />
+            <p className="text-gray-500">{user.email}</p>
+            <EditablePhone
+              phone={user.phone}
+              userId={user.id}
+            />
+            <AddressDisplay address={user.address} />
+            <p className="text-xs text-gray-400">
+              הצטרפת ב: {new Date(user.createdAt).toLocaleDateString()}
+            </p>
+          </div>
+        </section>
+
+        <section className="rounded-xl shadow">
+          <h3 className="text-lg font-semibold mb-4">קהילות</h3>
+          <CommunityBadges userId={user.id} />
+        </section>
+
+        <section className="rounded-xl shadow">
+          <h3 className="text-lg font-semibold mb-4">הישגים</h3>
+          <AchievementTags profileId={user.id} />
+        </section>
       </div>
-    </div>
+    </main>
   )
 }

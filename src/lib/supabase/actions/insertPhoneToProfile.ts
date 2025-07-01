@@ -31,6 +31,8 @@ export async function insertPhoneToProfile({
       throw new Error('No profile found to update')
     }
 
+    // Update WhatsApp status
+    // This is a separate update to ensure this field is updated only if phone number is successfully updated
     const { data: dataWhatsApp, error: errorWhatsApp } = await supabase
       .from('profiles')
       .update({ is_have_whatsapp: isHaveWhatsApp })

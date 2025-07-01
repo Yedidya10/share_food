@@ -13,14 +13,14 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { FormTranslationType } from '@/types/formTranslation'
 
-type ItemBaseFormFieldsProps<T extends FieldValues> = {
+type Props<T extends FieldValues> = {
   form: UseFormReturn<T>
   translation: FormTranslationType
 }
 
 export default function ItemBaseFormFields<
   T extends { title: string; description: string } & FieldValues,
->({ form, translation }: ItemBaseFormFieldsProps<T>) {
+>({ form, translation }: Props<T>) {
   const {
     control,
     formState: { errors },

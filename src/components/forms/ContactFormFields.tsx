@@ -24,7 +24,7 @@ type Props<T extends FieldValues> = {
     contactByPhone: Path<T>
     phoneNumber: Path<T>
     isHaveWhatsApp: Path<T>
-    savePhone: Path<T>
+    savePhone?: Path<T>
     contactByEmail: Path<T>
     email: Path<T>
   }

@@ -35,6 +35,7 @@ export function contactSchemaBase() {
     contactByPhone: z.boolean(),
     phoneNumber: z.string().optional(),
     isHaveWhatsApp: z.boolean(),
+    savePhone: z.boolean().default(false).optional(),
     contactByEmail: z.boolean(),
     email: z.string().optional(),
   })

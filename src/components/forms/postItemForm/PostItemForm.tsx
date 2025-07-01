@@ -31,16 +31,19 @@ import {
 } from '@/components/ui/tooltip'
 import SaveAddress from '../address/SaveAddress'
 import { insertAddressToProfile } from '@/lib/supabase/actions/insertAddress'
+import { insertPhoneToProfile } from '@/lib/supabase/actions/insertPhoneToProfile'
 
 export default function PostItemForm({
   openModal,
   setOpenModal,
   setIsSubmitSuccess,
+  setIsPhoneSaved,
   translation,
 }: {
   openModal: boolean
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>
   setIsSubmitSuccess: React.Dispatch<React.SetStateAction<boolean | null>>
+  setIsPhoneSaved: React.Dispatch<React.SetStateAction<boolean | null>>
   translation: FormTranslationType
 }) {
   const locale = useLocale()
@@ -89,6 +92,26 @@ export default function PostItemForm({
             'Error saving address to profile:',
             insertAddressResponse?.message,
           )
+        }
+      }
+
+      if (values.savePhone && values.phoneNumber) {
+        // Save the phone number to profile if the user opted in
+        const { phoneNumber, isHaveWhatsApp } = values
+
+        const savePhoneResponse = await insertPhoneToProfile({
+          phoneNumber,
+          isHaveWhatsApp: isHaveWhatsApp ?? false,
+        })
+        if (savePhoneResponse?.success) {
+          console.log('Phone number saved to profile successfully')
+          setIsPhoneSaved(true)
+        } else {
+          console.error(
+            'Error saving phone number to profile:',
+            savePhoneResponse?.message,
+          )
+          setIsPhoneSaved(false)
         }
       }
 

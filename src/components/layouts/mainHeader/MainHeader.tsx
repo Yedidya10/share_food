@@ -22,6 +22,7 @@ export default function MainHeader() {
   const [isUserConnected, setIsUserConnected] = useState(false)
   const [openModal, setOpenModal] = useState(false)
   const [isSubmitSuccess, setIsSubmitSuccess] = useState<boolean | null>(null)
+  const [isPhoneSaved, setIsPhoneSaved] = useState<boolean | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
 
   const handleCreateItemClick = async () => {
@@ -76,6 +77,24 @@ export default function MainHeader() {
     }
   }, [isSubmitSuccess])
 
+  useEffect(() => {
+    if (isPhoneSaved) {
+      toast.success('מספר הטלפון נשמר בהצלחה!', {
+        description: 'תוכל להשתמש בו בעתיד ליצירת קשר.',
+        icon: <CheckCircle className="text-green-500" />,
+      })
+      setIsPhoneSaved(null)
+    }
+
+    if (isPhoneSaved === false) {
+      toast.error('שגיאה בשמירת מספר הטלפון', {
+        description: 'ניתן להוסיף טלפון בעמוד פרופיל שלך.',
+        icon: <XCircle className="text-red-500" />,
+      })
+      setIsPhoneSaved(null)
+    }
+  }, [isPhoneSaved])
+
   return (
     <header className="h-[60px] flex items-center justify-between border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 bg-white dark:bg-gray-900 backdrop-blur-sm bg-opacity-50 dark:bg-opacity-50">
       <Link
@@ -114,6 +133,7 @@ export default function MainHeader() {
             <PostItemFormWrapper
               openModal={openModal}
               setIsSubmitSuccess={setIsSubmitSuccess}
+              setIsPhoneSaved={setIsPhoneSaved}
               setOpenModal={setOpenModal}
               translation={{
                 formTitle: tPostItemForm('form_title'),

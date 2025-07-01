@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input'
 import PhoneInput from '@/components/forms/phoneInput/PhoneInput'
 import { useLocale } from 'next-intl'
 import { FormTranslationType } from '@/types/formTranslation'
+import SavePhone from '@/components/forms/SavePhone'
 
 type Props<T extends FieldValues> = {
   form: UseFormReturn<T>
@@ -147,6 +148,7 @@ export default function ContactFormFields<T extends FieldValues>({
               </FormItem>
             )}
           />
+          <SavePhone form={form} />
         </div>
       </div>
       <div className="rounded-lg border px-4 py-3">

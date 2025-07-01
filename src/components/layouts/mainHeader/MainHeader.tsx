@@ -23,6 +23,7 @@ export default function MainHeader() {
   const [openModal, setOpenModal] = useState(false)
   const [isSubmitSuccess, setIsSubmitSuccess] = useState<boolean | null>(null)
   const [isPhoneSaved, setIsPhoneSaved] = useState<boolean | null>(null)
+  const [isAddressSaved, setIsAddressSaved] = useState<boolean | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
 
   const handleCreateItemClick = async () => {
@@ -95,6 +96,24 @@ export default function MainHeader() {
     }
   }, [isPhoneSaved])
 
+  useEffect(() => {
+    if (isAddressSaved) {
+      toast.success('כתובת נשמרה בהצלחה!', {
+        description: 'תוכל להשתמש בה בעתיד ליצירת קשר.',
+        icon: <CheckCircle className="text-green-500" />,
+      })
+      setIsAddressSaved(null)
+    }
+
+    if (isAddressSaved === false) {
+      toast.error('שגיאה בשמירת הכתובת', {
+        description: 'ניתן להוסיף כתובת בעמוד פרופיל שלך.',
+        icon: <XCircle className="text-red-500" />,
+      })
+      setIsAddressSaved(null)
+    }
+  }, [isAddressSaved])
+
   return (
     <header className="h-[60px] flex items-center justify-between border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 bg-white dark:bg-gray-900 backdrop-blur-sm bg-opacity-50 dark:bg-opacity-50">
       <Link
@@ -134,6 +153,7 @@ export default function MainHeader() {
               openModal={openModal}
               setIsSubmitSuccess={setIsSubmitSuccess}
               setIsPhoneSaved={setIsPhoneSaved}
+              setIsAddressSaved={setIsAddressSaved}
               setOpenModal={setOpenModal}
               translation={{
                 formTitle: tPostItemForm('form_title'),

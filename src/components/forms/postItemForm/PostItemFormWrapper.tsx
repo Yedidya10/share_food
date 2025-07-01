@@ -13,6 +13,7 @@ export default function PostItemFormWrapper(props: {
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>
   setIsSubmitSuccess: React.Dispatch<React.SetStateAction<boolean | null>>
   setIsPhoneSaved: React.Dispatch<React.SetStateAction<boolean | null>>
+  setIsAddressSaved: React.Dispatch<React.SetStateAction<boolean | null>>
 }) {
   if (!props.openModal) return null
 

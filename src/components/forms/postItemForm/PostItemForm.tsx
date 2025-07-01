@@ -38,12 +38,14 @@ export default function PostItemForm({
   setOpenModal,
   setIsSubmitSuccess,
   setIsPhoneSaved,
+  setIsAddressSaved,
   translation,
 }: {
   openModal: boolean
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>
   setIsSubmitSuccess: React.Dispatch<React.SetStateAction<boolean | null>>
   setIsPhoneSaved: React.Dispatch<React.SetStateAction<boolean | null>>
+  setIsAddressSaved: React.Dispatch<React.SetStateAction<boolean | null>>
   translation: FormTranslationType
 }) {
   const locale = useLocale()
@@ -86,12 +88,9 @@ export default function PostItemForm({
         })
 
         if (insertAddressResponse?.success) {
-          console.log('Address saved to profile successfully')
+          setIsAddressSaved(true)
         } else {
-          console.error(
-            'Error saving address to profile:',
-            insertAddressResponse?.message,
-          )
+          setIsAddressSaved(false)
         }
       }
 
@@ -104,13 +103,8 @@ export default function PostItemForm({
           isHaveWhatsApp: isHaveWhatsApp ?? false,
         })
         if (savePhoneResponse?.success) {
-          console.log('Phone number saved to profile successfully')
           setIsPhoneSaved(true)
         } else {
-          console.error(
-            'Error saving phone number to profile:',
-            savePhoneResponse?.message,
-          )
           setIsPhoneSaved(false)
         }
       }

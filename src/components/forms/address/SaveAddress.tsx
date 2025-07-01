@@ -16,10 +16,13 @@ export default function SaveAddress<T extends FieldValues>({ form }: Props<T>) {
     <FormField
       control={form.control}
       name={'saveAddress' as Path<T>}
-      render={() => (
+      render={({ field }) => (
         <FormItem className="flex items-start gap-3">
           <FormControl>
             <Checkbox
+              {...field}
+              checked={field.value}
+              onCheckedChange={field.onChange}
               className="h-5 w-5"
               id="saveAddress"
             />

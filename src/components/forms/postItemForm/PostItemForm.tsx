@@ -179,6 +179,15 @@ export default function PostItemForm({
             <ContactFormFields
               form={postItemForm}
               translation={translation}
+              fieldNames={{
+                contactViaSite: 'contactViaSite',
+                contactByPhone: 'contactByPhone',
+                phoneNumber: 'phoneNumber',
+                isHaveWhatsApp: 'isHaveWhatsApp',
+                savePhone: 'savePhone',
+                contactByEmail: 'contactByEmail',
+                email: 'email',
+              }}
             />
 
             <div className="gap-2 flex justify-between items-center">

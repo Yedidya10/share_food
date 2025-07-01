@@ -146,6 +146,14 @@ export default function EditItemForm({
             <ContactFormFields
               form={editItemForm}
               translation={translation}
+              fieldNames={{
+                contactViaSite: 'contactViaSite',
+                contactByPhone: 'contactByPhone',
+                phoneNumber: 'phoneNumber',
+                isHaveWhatsApp: 'isHaveWhatsApp',
+                contactByEmail: 'contactByEmail',
+                email: 'email',
+              }}
             />
             <div className="gap-2 flex justify-between items-center">
               <Tooltip>

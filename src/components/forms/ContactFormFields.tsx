@@ -19,6 +19,15 @@ import SavePhone from '@/components/forms/SavePhone'
 type Props<T extends FieldValues> = {
   form: UseFormReturn<T>
   translation: FormTranslationType
+  fieldNames: {
+    contactViaSite: Path<T>
+    contactByPhone: Path<T>
+    phoneNumber: Path<T>
+    isHaveWhatsApp: Path<T>
+    savePhone: Path<T>
+    contactByEmail: Path<T>
+    email: Path<T>
+  }
 }
 
 export default function ContactFormFields<T extends FieldValues>({

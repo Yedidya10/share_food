@@ -5,7 +5,7 @@ import AddressDisplay from './AddressDisplay'
 import CommunityBadges from './CommunityBadges'
 import AchievementTags from './AchievementTags'
 
-type UserWithCommunitiesAndTags = {
+type UserProfile = {
   id: string
   email: string
   createdAt: string
@@ -16,11 +16,10 @@ type UserWithCommunitiesAndTags = {
   avatarUrl: string
 }
 
-export default function ProfilePage({
-  user,
-}: {
-  user: UserWithCommunitiesAndTags
-}) {
+import { useTranslations } from 'next-intl'
+
+export default function ProfilePage({ user }: { user: UserProfile }) {
+  const t = useTranslations('profileCard')
   return (
     <main className="max-w-5xl mx-auto flex gap-8 px-6 py-12 rounded-lg shadow items-start">
       <section className="flex items-start gap-6">
@@ -44,18 +43,18 @@ export default function ProfilePage({
             />
             <AddressDisplay address={user.address} />
             <p className="text-xs text-gray-400">
-              הצטרפת ב: {new Date(user.createdAt).toLocaleDateString()}
+              {t('joinedAt')}: {new Date(user.createdAt).toLocaleDateString()}
             </p>
           </div>
         </section>
 
         <section className="rounded-xl shadow">
-          <h3 className="text-lg font-semibold mb-4">קהילות</h3>
+          <h3 className="text-lg font-semibold mb-4">{t('communities')}</h3>
           <CommunityBadges userId={user.id} />
         </section>
 
         <section className="rounded-xl shadow">
-          <h3 className="text-lg font-semibold mb-4">הישגים</h3>
+          <h3 className="text-lg font-semibold mb-4">{t('achievements')}</h3>
           <AchievementTags profileId={user.id} />
         </section>
       </div>

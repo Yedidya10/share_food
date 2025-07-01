@@ -8,20 +8,22 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { UseFormReturn } from 'react-hook-form'
+import { FieldValues, Path, UseFormReturn } from 'react-hook-form'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import PhoneInput from '@/components/forms/phoneInput/PhoneInput'
 import { useLocale } from 'next-intl'
 import { FormTranslationType } from '@/types/formTranslation'
-import type { EditItemFormSchema } from '@/lib/zod/item/editItemSchema'
 
-type Props = {
-  form: UseFormReturn<EditItemFormSchema>
+type Props<T extends FieldValues> = {
+  form: UseFormReturn<T>
   translation: FormTranslationType
 }
 
-export default function ContactFormFields({ form, translation }: Props) {
+export default function ContactFormFields<T extends FieldValues>({
+  form,
+  translation,
+}: Props<T>) {
   const locale = useLocale()
 
   return (
@@ -32,7 +34,7 @@ export default function ContactFormFields({ form, translation }: Props) {
       </p>
       <FormField
         control={form.control}
-        name={'contactViaSite'}
+        name={'contactViaSite' as Path<T>}
         render={() => (
           <FormItem className="rounded-lg border px-4 py-3 bg-muted/50 flex items-start gap-3">
             <FormControl>
@@ -60,7 +62,7 @@ export default function ContactFormFields({ form, translation }: Props) {
       <div className="rounded-lg border px-4 py-3">
         <FormField
           control={form.control}
-          name={'contactByPhone'}
+          name={'contactByPhone' as Path<T>}
           render={({ field }) => (
             <FormItem className="flex items-center gap-3">
               <FormControl>
@@ -70,7 +72,7 @@ export default function ContactFormFields({ form, translation }: Props) {
                   id="contactByPhone"
                   onCheckedChange={(checked) => {
                     field.onChange(checked)
-                    form.trigger('phoneNumber')
+                    form.trigger('phoneNumber' as Path<T>)
                   }}
                 />
               </FormControl>
@@ -84,12 +86,12 @@ export default function ContactFormFields({ form, translation }: Props) {
           )}
         />
         <div
-          className={`flex-col items-start gap-5 mr-8 py-4 ${form.watch('contactByPhone') ? 'flex' : 'hidden'}`}
+          className={`flex-col items-start gap-5 mr-8 py-4 ${form.watch('contactByPhone' as Path<T>) ? 'flex' : 'hidden'}`}
         >
           <FormField
             control={form.control}
-            disabled={!form.watch('contactByPhone')}
-            name={'phoneNumber'}
+            disabled={!form.watch('contactByPhone' as Path<T>)}
+            name={'phoneNumber' as Path<T>}
             render={({ field }) => (
               <FormItem
                 dir="ltr"
@@ -120,7 +122,7 @@ export default function ContactFormFields({ form, translation }: Props) {
           />
           <FormField
             control={form.control}
-            name={'isHaveWhatsApp'}
+            name={'isHaveWhatsApp' as Path<T>}
             render={({ field }) => (
               <FormItem className="flex flex-col gap-1">
                 <div className="flex items-center gap-3">
@@ -150,7 +152,7 @@ export default function ContactFormFields({ form, translation }: Props) {
       <div className="rounded-lg border px-4 py-3">
         <FormField
           control={form.control}
-          name={'contactByEmail'}
+          name={'contactByEmail' as Path<T>}
           render={({ field }) => (
             <FormItem className="flex items-center gap-3">
               <FormControl>
@@ -160,7 +162,7 @@ export default function ContactFormFields({ form, translation }: Props) {
                   checked={field.value}
                   onCheckedChange={(checked) => {
                     field.onChange(checked)
-                    form.trigger('email')
+                    form.trigger('email' as Path<T>)
                   }}
                 />
               </FormControl>
@@ -174,12 +176,12 @@ export default function ContactFormFields({ form, translation }: Props) {
           )}
         />
         <div
-          className={`flex-col items-start gap-5 py-4 ${form.watch('contactByEmail') ? 'flex' : 'hidden'}`}
+          className={`flex-col items-start gap-5 py-4 ${form.watch('contactByEmail' as Path<T>) ? 'flex' : 'hidden'}`}
         >
           <FormField
             control={form.control}
-            disabled={!form.watch('contactByEmail')}
-            name={'email'}
+            disabled={!form.watch('contactByEmail' as Path<T>)}
+            name={'email' as Path<T>}
             render={({ field }) => (
               <FormItem className="w-full max-w-xs mr-8">
                 <FormLabel

@@ -1,0 +1,14 @@
+{
+  "contact_details": "פרטי יצירת קשר",
+  "contact_via_site": "יצירת קשר דרך האתר",
+  "phone_number": "מספר טלפון",
+  "phone_number_placeholder": "למשל, 050-123-4567",
+  "phone_number_error": "אנא הכנס מספר טלפון תקין",
+  "save_phone": "שמור מספר טלפון",
+  "save_phone_tip": "לאחר שמירת מספר הטלפון, תוכל לעדכן אותו בכל עת דרך פרופיל המשתמש שלך.",
+  "is_have_whatsapp": "יש לך וואטסאפ?",
+  "is_have_whatsapp_tip": "סמן אם ניתן ליצור איתך קשר דרך וואטסאפ.",
+  "email": "דואר אלקטרוני",
+  "email_placeholder": "name@mail.com",
+  "email_error": "אנא הכנס דוא\"ל תקין"
+}

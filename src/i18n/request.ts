@@ -9,32 +9,38 @@ export default getRequestConfig(async ({ requestLocale }) => {
     : routing.defaultLocale
 
   // Dynamically import locale messages
-  const [common, header, generic, address, postItem, editItem, countries] =
-    await Promise.all([
-      import(`../../locales/${locale}/common.json`).then((m) => m.default),
-      import(`../../locales/${locale}/header.json`).then((m) => m.default),
-      import(`../../locales/${locale}/form/generic.json`).then(
-        (m) => m.default,
-      ),
-      import(`../../locales/${locale}/form/address.json`).then(
-        (m) => m.default,
-      ),
-
-      import(`../../locales/${locale}/form/postItem.json`).then(
-        (m) => m.default,
-      ),
-      import(`../../locales/${locale}/form/editItem.json`).then(
-        (m) => m.default,
-      ),
-      import(`../../locales/${locale}/countries.json`).then((m) => m.default),
-    ])
+  const [
+    common,
+    header,
+    profile,
+    generic,
+    address,
+    contact_details,
+    postItem,
+    editItem,
+    countries,
+  ] = await Promise.all([
+    import(`../../locales/${locale}/common.json`).then((m) => m.default),
+    import(`../../locales/${locale}/header.json`).then((m) => m.default),
+    import(`../../locales/${locale}/profile.json`).then((m) => m.default),
+    import(`../../locales/${locale}/form/generic.json`).then((m) => m.default),
+    import(`../../locales/${locale}/form/address.json`).then((m) => m.default),
+    import(`../../locales/${locale}/form/contact_details.json`).then(
+      (m) => m.default,
+    ),
+    import(`../../locales/${locale}/form/postItem.json`).then((m) => m.default),
+    import(`../../locales/${locale}/form/editItem.json`).then((m) => m.default),
+    import(`../../locales/${locale}/countries.json`).then((m) => m.default),
+  ])
 
   const messages = {
     common,
     header,
+    profile,
     form: {
       generic,
       address,
+      contact_details,
       postItem,
       editItem,
     },

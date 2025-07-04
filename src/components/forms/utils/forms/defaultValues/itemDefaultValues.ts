@@ -23,6 +23,7 @@ export function postItemDefaultFormValues(translation: FormTranslationType) {
 
 export const editItemDefaultFormValues = ({
   initialValues,
+  translation,
 }: {
   translation: FormTranslationType
   initialValues: EditItemFormValues
@@ -33,7 +34,9 @@ export const editItemDefaultFormValues = ({
     streetName: initialValues.streetName,
     streetNumber: initialValues.streetNumber,
     city: initialValues.city,
-    country: initialValues.country,
+    country:
+      (translation as Record<string, string>)[initialValues.country] ??
+      initialValues.country, // Use translation or fallback to original country
     postalCode: initialValues?.postalCode || '',
     contactViaSite: true, // Default to true for contact via site
     contactByPhone: initialValues.contactByPhone,
@@ -43,7 +46,7 @@ export const editItemDefaultFormValues = ({
     email: initialValues?.email || '',
     images: (initialValues.images || []).map((url, i) => ({
       id: `existing-${i}`,
-      url, // url is always a string here
+      url,
     })),
   }
 }

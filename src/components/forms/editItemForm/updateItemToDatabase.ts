@@ -2,10 +2,14 @@
 
 import { z } from 'zod'
 // Define your form schema using Zod
-import editItemSchema from '@/lib/zod/item/editItemSchema'
+import editItemSchema from '@/lib/zod/item/editItemSchema/editItemSchema'
 import { createClient } from '@/lib/supabase/server'
+import editItemImagesSchema from '@/lib/zod/item/editItemSchema/editItemImagesSchema'
 
 type EditItemFormSchema = z.infer<ReturnType<typeof editItemSchema>>
+type EditItemImage = z.infer<
+  ReturnType<typeof editItemImagesSchema>
+>['images'][number]
 
 export default async function updateItemToDatabase({
   values,
@@ -42,13 +46,15 @@ export default async function updateItemToDatabase({
 
     // 1️⃣ שמירת URLs קיימים
     values.images
-      .filter((img) => !img.file)
-      .forEach((img) => {
+      .filter((img: EditItemImage) => !img.file)
+      .forEach((img: EditItemImage) => {
         if (img.url) uploadedUrls.push(img.url)
       })
 
     // 2️⃣ העלאת חדשות
-    for (const img of values.images.filter((img) => !!img.file)) {
+    for (const img of values.images.filter(
+      (img: EditItemImage) => !!img.file,
+    )) {
       const file = img.file!
       const hash = img.hash!
       const ext = file.name.split('.').pop() || 'jpg'

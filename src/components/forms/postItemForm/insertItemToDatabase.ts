@@ -2,10 +2,14 @@
 
 import { z } from 'zod'
 // Define your form schema using Zod
-import postItemSchema from '@/lib/zod/item/postItemSchema'
+import postItemSchema from '@/lib/zod/item/postItemSchema/postItemSchema'
+import postItemImagesSchema from '@/lib/zod/item/postItemSchema/postItemImagesSchema'
 import { createClient } from '@/lib/supabase/server'
 
 type PostItemFormSchema = z.infer<ReturnType<typeof postItemSchema>>
+type PostItemImage = z.infer<
+  ReturnType<typeof postItemImagesSchema>
+>['images'][number]
 
 export default async function insertItemToDatabase(values: PostItemFormSchema) {
   try {
@@ -24,13 +28,15 @@ export default async function insertItemToDatabase(values: PostItemFormSchema) {
 
     // 1️⃣ קודם – שימור כל התמונות הקיימות (אין להן .file)
     values.images
-      .filter((img) => !img.file)
-      .forEach((img) => {
+      .filter((img: PostItemImage) => !img.file)
+      .forEach((img: PostItemImage) => {
         if (img.url) uploadedUrls.push(img.url)
       })
 
     // 2️⃣ אחר כך – העלאת התמונות החדשות
-    for (const img of values.images.filter((img) => !!img.file)) {
+    for (const img of values.images.filter(
+      (img: PostItemImage) => !!img.file,
+    )) {
       const file = img.file! // File
       const hash = img.hash! // string
       const ext = file.name.split('.').pop()

@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input'
 import { FormTranslationType } from '@/types/formTranslation'
 import imageCompression from 'browser-image-compression'
 import { UnifiedImage } from '@/types/item/unifiedImage'
-import type { EditItemFormSchema } from '@/lib/zod/item/editItemSchema'
+import type { EditItemFormSchema } from '@/lib/zod/item/editItemSchema/editItemSchema'
 
 type Props = {
   form: UseFormReturn<EditItemFormSchema>

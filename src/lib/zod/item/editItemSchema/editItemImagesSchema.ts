@@ -1,8 +1,7 @@
 import { z } from 'zod'
-import itemSchema from './itemSchema'
 import { FormTranslationType } from '@/types/formTranslation'
 
-export function editItemImagesSchema(translation: FormTranslationType) {
+export default function editItemImagesSchema(translation: FormTranslationType) {
   return z.object({
     images: z
       .array(
@@ -32,12 +31,3 @@ export function editItemImagesSchema(translation: FormTranslationType) {
       }),
   })
 }
-
-export default function editItemSchema(translation: FormTranslationType) {
-  return z.intersection(
-    itemSchema(translation),
-    editItemImagesSchema(translation),
-  )
-}
-
-export type EditItemFormSchema = z.infer<ReturnType<typeof editItemSchema>>

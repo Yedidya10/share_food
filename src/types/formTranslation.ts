@@ -6,6 +6,16 @@ export type FormErrorTranslationType = {
   invalidError: string
 }
 
+export type FormGeneralTranslationType = {
+  formTitle: string
+  formDescription: string
+  submitButton: string
+  submitButtonProcessing: string
+  cancel: string
+  required: string
+  reset: string
+}
+
 export type AddressFormTranslationBase = {
   addressDetails: string
   streetName: string
@@ -21,9 +31,9 @@ export type AddressFormTranslationBase = {
   postalCode: string
   postalCodePlaceholder: string
   postalCodeError: string
-  saveAddress: string
-  saveAddressTip: string
-  saveAddressError: string
+  saveAddress?: string
+  saveAddressTip?: string
+  saveAddressError?: string
 }
 
 export type PhoneFieldTranslationBase = {
@@ -41,23 +51,22 @@ export type EmailFormTranslationBase = {
 }
 
 export type ContactFormTranslationBase = {
+  contactDetails: string
   contactViaSite: string
-  contactByPhone: string
-  contactByEmail: string
-  savePhone: string
-  savePhoneTip: string
+  savePhone?: string
+  savePhoneTip?: string
 } & PhoneFieldTranslationBase &
   EmailFormTranslationBase
 
 export type AddressFormTranslationFull = AddressFormTranslationBase &
-  FormErrorTranslationType
+  FormErrorTranslationType &
+  FormGeneralTranslationType
 
 export type PhoneFieldTranslationFull = PhoneFieldTranslationBase &
-  FormErrorTranslationType
+  FormErrorTranslationType &
+  FormGeneralTranslationType
 
 export type FormTranslationType = {
-  formTitle: string
-  formDescription: string
   title: string
   titlePlaceholder: string
   titleRequired: string
@@ -70,12 +79,8 @@ export type FormTranslationType = {
   descriptionMaxLength: string
   uploadImages: string
   uploadImagesError: string
-  submitButton: string
-  submitButtonProcessing: string
-  cancel: string
-  required: string
-  reset: string
   israel: string
 } & AddressFormTranslationBase &
   ContactFormTranslationBase &
-  FormErrorTranslationType
+  FormErrorTranslationType &
+  FormGeneralTranslationType

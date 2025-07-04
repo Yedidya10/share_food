@@ -1,4 +1,5 @@
 {
+  "address_details": "פרטי כתובת",
   "street_name": "שם הרחוב",
   "street_name_placeholder": "למשל, ז'בוטינסקי",
   "street_name_error": "אנא הכנס שם רחוב תקף (2-50 תווים)",
@@ -11,5 +12,7 @@
   "postal_code": "מיקוד",
   "postal_code_placeholder": "למשל, 1234567",
   "postal_code_error": "אנא הכנס מיקוד תקף (7 ספרות)",
-  "country": "מדינה"
+  "country": "מדינה",
+  "country_placeholder": "בחר מדינה",
+  "country_error": "אנא בחר מדינה תקפה"
 }

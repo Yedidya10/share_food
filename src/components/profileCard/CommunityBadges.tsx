@@ -14,8 +14,6 @@ export default function CommunityBadges({ userId }: { userId: string }) {
     communityId: string
     communityName: string
   }) => {
-    'use server'
-
     if (!communityId || !userId) {
       console.error('Missing communityId or userId')
       return

@@ -1,7 +1,61 @@
 import ProfileCard from '@/components/profileCard/ProfileCard'
 import { createClient } from '@/lib/supabase/server'
+import { getTranslations } from 'next-intl/server'
 
 export default async function ProfilePage() {
+  const tFormGeneric = await getTranslations('form.generic')
+  const tFormContactDetails = await getTranslations('form.contact_details')
+  const tFormAddress = await getTranslations('form.address')
+
+  const genericTranslations = {
+    submitButton: tFormGeneric('submit_button'),
+    submitButtonProcessing: tFormGeneric('submit_button_processing'),
+    cancel: tFormGeneric('cancel'),
+    required: tFormGeneric('required'),
+    reset: tFormGeneric('reset'),
+  }
+
+  const addressTranslations = {
+    addressDetails: tFormAddress('address_details'),
+    streetName: tFormAddress('street_name'),
+    streetNumber: tFormAddress('street_number'),
+    city: tFormAddress('city'),
+    country: tFormAddress('country'),
+    postalCode: tFormAddress('postal_code'),
+    streetNamePlaceholder: tFormAddress('street_name_placeholder'),
+    streetNameError: tFormAddress('street_name_error'),
+    streetNumberPlaceholder: tFormAddress('street_number_placeholder'),
+    streetNumberError: tFormAddress('street_number_error'),
+    cityPlaceholder: tFormAddress('city_placeholder'),
+    cityError: tFormAddress('city_error'),
+    countryPlaceholder: tFormAddress('country_placeholder'),
+    countryError: tFormAddress('country_error'),
+    postalCodePlaceholder: tFormAddress('postal_code_placeholder'),
+    postalCodeError: tFormAddress('postal_code_error'),
+  }
+
+  // Email translations
+  const emailTranslations = {
+    email: tFormContactDetails('email'),
+    emailPlaceholder: tFormContactDetails('email_placeholder'),
+    emailError: tFormContactDetails('email_error'),
+  }
+
+  // Phone translations
+  const phoneTranslations = {
+    phoneNumber: tFormContactDetails('phone_number'),
+    phoneNumberPlaceholder: tFormContactDetails('phone_number_placeholder'),
+    phoneNumberError: tFormContactDetails('phone_number_error'),
+    isHaveWhatsApp: tFormContactDetails('is_have_whatsapp'),
+    isHaveWhatsAppTip: tFormContactDetails('is_have_whatsapp_tip'),
+  }
+
+  console.log('Translations:', {
+    genericTranslations,
+    addressTranslations,
+    phoneTranslations,
+  })
+
   try {
     const supabase = await createClient()
     const { data: userData, error: userError } = await supabase.auth.getUser()
@@ -13,7 +67,7 @@ export default async function ProfilePage() {
     const { data: profileData, error: profileError } = await supabase
       .from('profiles')
       .select(
-        'id, phone_number, is_have_whatsapp, main_address, first_name, last_name, avatar_url, communities (id, name)',
+        'id, email, phone_number, is_have_whatsapp, main_address, user_name, avatar_url, communities (id, name)',
       )
       .eq('id', userData.user.id)
       .single()
@@ -26,21 +80,27 @@ export default async function ProfilePage() {
     return (
       <ProfileCard
         user={{
-          email: user.email || '',
+          email: profileData?.email || user.email || '',
           createdAt: user.created_at || '',
           phone: profileData?.phone_number || '',
-          firstName:
-            profileData?.first_name ||
-            user.user_metadata?.full_name.split(' ')[0] ||
-            '',
-          lastName:
-            profileData?.last_name ||
-            user.user_metadata?.full_name.split(' ')[1] ||
-            '',
-          address: profileData?.main_address || '',
+          fullName:
+            profileData?.user_name || user.user_metadata?.full_name || '',
+          address: {
+            streetName: profileData?.main_address?.street_name || '',
+            streetNumber: profileData?.main_address?.street_number || '',
+            city: profileData?.main_address?.city || '',
+            country: profileData?.main_address?.country || '',
+            postalCode: profileData?.main_address?.postal_code || '',
+          },
           avatarUrl:
             profileData?.avatar_url || user.user_metadata?.avatar_url || '',
           id: user.id,
+        }}
+        translations={{
+          genericTranslations,
+          emailTranslations,
+          addressTranslations,
+          phoneTranslations,
         }}
       />
     )

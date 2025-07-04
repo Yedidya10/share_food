@@ -2,7 +2,6 @@
 
 import {
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -11,10 +10,10 @@ import {
 import { FieldValues, Path, UseFormReturn } from 'react-hook-form'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
-import PhoneInput from '@/components/forms/phoneInput/PhoneInput'
 import { useLocale } from 'next-intl'
 import { FormTranslationType } from '@/types/formTranslation'
 import SavePhone from '@/components/forms/SavePhone'
+import PhoneInputField from './phoneInputField/PhoneInputField'
 
 type Props<T extends FieldValues> = {
   form: UseFormReturn<T>
@@ -98,64 +97,9 @@ export default function ContactFormFields<T extends FieldValues>({
         <div
           className={`flex-col items-start gap-5 mr-8 py-4 ${form.watch('contactByPhone' as Path<T>) ? 'flex' : 'hidden'}`}
         >
-          <FormField
-            control={form.control}
-            disabled={!form.watch('contactByPhone' as Path<T>)}
-            name={'phoneNumber' as Path<T>}
-            render={({ field }) => (
-              <FormItem
-                dir="ltr"
-                className="w-full max-w-xs"
-              >
-                <FormLabel
-                  className="sr-only"
-                  htmlFor="phoneNumber"
-                  dir={locale === 'he' ? 'rtl' : 'ltr'}
-                >
-                  {translation.phoneNumber}
-                </FormLabel>
-                <FormControl>
-                  <PhoneInput
-                    {...field}
-                    id="phoneNumber"
-                    placeholder={translation.phoneNumberPlaceholder}
-                    international={false}
-                    defaultCountry={'IL'}
-                    inputMode="tel"
-                    autoComplete="tel"
-                    onChange={(value) => field.onChange(value)}
-                  />
-                </FormControl>
-                <FormMessage dir={locale === 'he' ? 'rtl' : 'ltr'} />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name={'isHaveWhatsApp' as Path<T>}
-            render={({ field }) => (
-              <FormItem className="flex flex-col gap-1">
-                <div className="flex items-center gap-3">
-                  <FormControl>
-                    <Checkbox
-                      className="h-5 w-5"
-                      id="isHaveWhatsApp"
-                      checked={field.value}
-                      onCheckedChange={(checked) => field.onChange(checked)}
-                    />
-                  </FormControl>
-                  <FormLabel
-                    className="m-0 font-medium"
-                    htmlFor="isHaveWhatsApp"
-                  >
-                    {translation.isHaveWhatsApp}
-                  </FormLabel>
-                </div>
-                <FormDescription className="text-xs text-muted-foreground mr-8">
-                  {translation.isHaveWhatsAppTip}
-                </FormDescription>
-              </FormItem>
-            )}
+          <PhoneInputField
+            form={form}
+            translation={translation}
           />
           <SavePhone form={form} />
         </div>

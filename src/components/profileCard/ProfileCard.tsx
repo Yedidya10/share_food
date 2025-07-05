@@ -1,5 +1,15 @@
 'use client'
 
+import Image from 'next/image'
+import EditableField from '@/components/forms/editableField/EditableField'
+import { Button } from '../ui/button'
+import AddressUpdateForm from '../forms/addressUpdateForm/AddressUpdateForm'
+import PhoneUpdateForm from '../forms/phoneUpdateForm/PhoneUpdateForm'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
+import { AtSignIcon, Home, Pencil, Phone } from 'lucide-react'
+import { useUpdateProfileField } from '@/hooks/db/useUpdateProfileField'
+
 type ProfileCard = {
   id: string
   email: string
@@ -15,16 +25,6 @@ type ProfileCard = {
   }
   avatarUrl: string
 }
-
-import Image from 'next/image'
-import EditableField from '@/components/forms/editableField/EditableField'
-import { Button } from '../ui/button'
-import AddressUpdateForm from '../forms/addressUpdateForm/AddressUpdateForm'
-import { useEffect, useState } from 'react'
-import { toast } from 'sonner'
-import { Pencil, Phone } from 'lucide-react'
-import PhoneUpdateForm from '../forms/phoneUpdateForm/PhoneUpdateForm'
-import { useUpdateProfileField } from '@/hooks/db/useUpdateProfileField'
 
 export default function ProfileCard({
   user,
@@ -44,6 +44,8 @@ export default function ProfileCard({
     null | boolean
   >(null)
 
+  const { mutateAsync: updateUserField } = useUpdateProfileField()
+
   useEffect(() => {
     if (isSubmitAddressSuccess) {
       setOpenAddressModal(false)
@@ -58,70 +60,60 @@ export default function ProfileCard({
     }
   }, [isSubmitPhoneSuccess])
 
-  const { mutateAsync: updateUserField } = useUpdateProfileField()
-
   const saveUserName = async (userName: string) => {
     try {
       const response = await updateUserField({
         field: 'user_name',
         value: userName,
       })
-
-      if (response?.success) {
-        toast.success('User name updated successfully')
-      }
+      if (response?.success)
+        toast.success(translations.toastTranslations.userNameUpdated)
     } catch (error) {
       console.error('Error updating user name:', error)
-      toast.error('Failed to update user name')
+      toast.error(translations.toastTranslations.userNameUpdateFailed)
     }
   }
 
   const saveUserEmail = async (email: string) => {
     try {
-      const response = await updateUserField({
-        field: 'email',
-        value: email,
-      })
-
-      if (response?.success) {
-        toast.success('Email updated successfully')
-      }
+      const response = await updateUserField({ field: 'email', value: email })
+      if (response?.success)
+        toast.success(translations.toastTranslations.emailUpdated)
     } catch (error) {
       console.error('Error updating email:', error)
-      toast.error('Failed to update email')
+      toast.error(translations.toastTranslations.emailUpdateFailed)
     }
   }
 
   return (
-    <div className="rounded-xl shadow p-8 flex gap-8 items-start space-between w-full">
+    <div
+      className="rounded-xl shadow p-6 flex flex-col lg:flex-row lg:justify-between
+     gap-6 items-start rtl:text-right"
+    >
       {/* Header */}
-      <div className="w-full flex items-start gap-6">
-        <div className="relative w-40 h-40 rounded-full overflow-hidden group">
+      <div className="flex flex-3 flex-row md:items-start items-center gap-6">
+        <div className="relative  w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden group">
           <Image
             src={user.avatarUrl}
             alt="avatar"
             fill
             className="object-cover"
           />
-          {/* overlay on hover */}
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-sm cursor-pointer">
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-xs bg-black/50 text-white cursor-pointer">
             Change
           </div>
         </div>
-        <div className="flex-1 space-y-2">
-          {/* First + Last */}
-          <div className="flex gap-2">
-            <EditableField
-              value={user.fullName}
-              placeholder="User Name"
-              onSave={saveUserName}
-              className="text-2xl"
-              inputClassName="w-[max-content] md:text-2xl py-5"
-            />
-          </div>
-          <p className="text-sm text-gray-500">
+        <div className="flex-1 p-2 space-y-2">
+          <EditableField
+            value={user.fullName}
+            placeholder="User Name"
+            onSave={saveUserName}
+            className="text-2xl font-semibold"
+            inputClassName="md:text-2xl py-2"
+          />
+          <p className="ps-2 text-sm text-gray-500">
             תאריך הצטרפות:{' '}
-            {new Date(user.createdAt).toLocaleDateString('en-US', {
+            {new Date(user.createdAt).toLocaleDateString('he-IL', {
               year: 'numeric',
               month: 'long',
               day: 'numeric',
@@ -130,81 +122,96 @@ export default function ProfileCard({
         </div>
       </div>
 
-      {/* Details grid */}
-      <div className="w-120 grid grid-cols-1 pe-5 gap-x-12 gap-y-4">
-        <div className="w-full flex items-center gap-3">
-          <span className=" w-20">Email</span>
+      {/* Details */}
+      <div className="flex flex-col divide-y rounded-md overflow-hidden">
+        {/* Email */}
+        <div className="md:grid md:grid-cols-[30px_120px_auto_30px] flex items-center gap-3 py-3 px-4">
+          <AtSignIcon
+            className="text-gray-500 "
+            size={18}
+          />
+          <span className="font-medium text-gray-700">
+            {translations.emailTranslations.email}
+          </span>
           <EditableField
             value={user.email}
             placeholder={translations.emailTranslations.emailPlaceholder}
             onSave={saveUserEmail}
-            className="flex-1 "
+            className="md:justify-self-start"
           />
         </div>
-        <div className="flex items-center justify-between gap-3">
-          <Phone />
-          <span className=" w-20">Phone</span>
-          {user.phone || 'No phone number provided'}
+
+        {/* Phone */}
+        <div className="md:grid md:grid-cols-[30px_120px_auto_30px] flex items-center gap-3 py-3 px-4">
+          <Phone
+            className="text-gray-500"
+            size={18}
+          />
+          <span className="font-medium text-gray-700">
+            {translations.phoneTranslations.phoneNumber}
+          </span>
+          <span className="text-gray-800 ps-2">
+            {user.phone || translations.phoneTranslations.noPhoneNumberProvided}
+          </span>
           <Button
             variant="ghost"
             size="icon"
             aria-label="Edit phone number"
-            onClick={() => {
-              setOpenPhoneModal(true)
-            }}
+            onClick={() => setOpenPhoneModal(true)}
           >
-            <Pencil />
+            <Pencil size={16} />
           </Button>
           <PhoneUpdateForm
             openModal={isOpenPhoneModal}
             setOpenModal={setOpenPhoneModal}
             onSubmitSuccess={setIsSubmitPhoneSuccess}
-            initialValues={{
-              phoneNumber: user.phone,
-              isHaveWhatsApp: false, // Assuming this is a default value, adjust as needed
+            initialValues={{ phoneNumber: user.phone, isHaveWhatsApp: false }}
+            translation={{
+              ...translations.phoneTranslations,
+              ...translations.genericTranslations,
             }}
-            translation={
-              translations.phoneTranslations
-            } /* Replace with a valid PhoneFormTranslationFull object */
           />
         </div>
-        <div className="flex items-center justify-between gap-3">
-          <span className="w-20">כתובת</span>
-          {user.address.streetName &&
-          user.address.streetNumber &&
-          user.address.city
-            ? user.address.streetName +
-              ' ' +
-              user.address.streetNumber +
-              ', ' +
-              user.address.city +
-              ', ' +
-              user.address.country
-            : 'No address provided'}
+
+        {/* Address */}
+        <div className="md:grid md:grid-cols-[30px_120px_auto_30px] flex items-center gap-3 py-3 px-4">
+          <Home
+            className="text-gray-500 "
+            size={18}
+          />
+          <span className="font-medium text-gray-700">
+            {translations.addressTranslations.addressDetails}
+          </span>
+          <span className="text-gray-800 ps-2">
+            {user.address.streetName &&
+            user.address.streetNumber &&
+            user.address.city
+              ? `${user.address.streetName} ${user.address.streetNumber}, ${user.address.city}, ${user.address.country}`
+              : translations.addressTranslations.noAddressProvided}
+          </span>
           <Button
             variant="ghost"
             size="icon"
             aria-label="Edit address"
-            onClick={() => {
-              setOpenAddressModal(true)
-            }}
+            onClick={() => setOpenAddressModal(true)}
           >
-            <Pencil />
+            <Pencil size={16} />
           </Button>
           <AddressUpdateForm
             openModal={isOpenAddressModal}
             setOpenModal={setOpenAddressModal}
             onSubmitSuccess={setIsSubmitAddressSuccess}
             initialValues={{
-              streetName: user.address.streetName || '', // Placeholder, adjust as needed
-              streetNumber: '', // Placeholder, adjust as needed
-              city: '', // Placeholder, adjust as needed
-              country: '', // Placeholder, adjust as needed
-              postalCode: '', // Placeholder, adjust as needed
+              streetName: user.address.streetName || '',
+              streetNumber: user.address.streetNumber || '',
+              city: user.address.city || '',
+              country: user.address.country || '',
+              postalCode: user.address.postalCode || '',
             }}
-            translation={
-              translations.addressTranslations
-            } /* Replace with a valid AddressFormTranslationFull object */
+            translation={{
+              ...translations.addressTranslations,
+              ...translations.genericTranslations,
+            }}
           />
         </div>
       </div>

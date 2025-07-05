@@ -21,11 +21,11 @@ export default async function updateUserAddress(values: PostItemFormSchema) {
       .from('profiles')
       .update({
         main_address: {
-          streetName: values.streetName,
-          streetNumber: values.streetNumber,
+          street_name: values.streetName,
+          street_number: values.streetNumber,
           city: values.city,
           country: values.country,
-          postalCode: values.postalCode,
+          postal_code: values.postalCode,
         },
       })
       .eq('id', userId)

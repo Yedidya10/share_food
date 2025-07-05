@@ -103,9 +103,9 @@ export default function OnboardingForm({
         last_name: values.last_name,
         phone: values.phoneNumber,
         main_address: {
+          street_name: values.streetName,
+          street_number: values.streetNumber,
           city: values.city,
-          street: values.streetName,
-          number: values.streetNumber,
         },
         full_name: `${values.first_name} ${values.last_name}`,
         community_name: values.community_name,

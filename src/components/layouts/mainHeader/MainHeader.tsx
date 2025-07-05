@@ -12,6 +12,7 @@ import PostItemButton from '@/components/postItemButton/PostItemButton'
 import { CheckCircle, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { LinkButton } from '@/components/ui/link-button'
+import { Badge } from '@/components/ui/badge'
 
 export default function MainHeader() {
   const pathname = usePathname()
@@ -116,20 +117,28 @@ export default function MainHeader() {
 
   return (
     <header className="h-[60px] flex items-center justify-between border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 bg-white dark:bg-gray-900 backdrop-blur-sm bg-opacity-50 dark:bg-opacity-50">
-      <Link
-        href="/"
-        className="flex items-center gap-2 h-full p-2 text-lg font-semibold"
-      >
-        <Image
-          src="/icon-192x192.png"
-          alt="Logo"
-          width={40}
-          height={40}
-          className="h-10 w-10 rounded-full"
-          priority
-        />
-        <span className="hidden md:inline">SpareBite</span>
-      </Link>
+      <div className="flex items-center gap-2">
+        <Link
+          href="/"
+          className="flex items-center gap-2 h-full p-2 text-lg font-semibold"
+        >
+          <Image
+            src="/icon-192x192.png"
+            alt="Logo"
+            width={40}
+            height={40}
+            className="h-10 w-10 rounded-full"
+            priority
+          />
+          <span className="hidden md:inline">SpareBite</span>
+        </Link>
+        <Badge
+          variant="secondary"
+          className="hidden md:inline p-2"
+        >
+          בהרצה!
+        </Badge>
+      </div>
       <div className="p-4">
         {user && isUserConnected ? (
           <div className="flex items-center justify-between gap-2">
@@ -208,6 +217,11 @@ export default function MainHeader() {
                 required: tGenericForm('required'),
                 reset: tGenericForm('reset'),
                 israel: tCountries('israel'),
+                requiredError: tGenericForm('required_error'),
+                maxLengthError: tGenericForm('max_length_error'),
+                minLengthError: tGenericForm('min_length_error'),
+                invalidError: tGenericForm('invalid_error'),
+                notFoundError: tGenericForm('not_found_error'),
               }}
             />
           </div>

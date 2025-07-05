@@ -6,9 +6,10 @@
   "loading": "טוען...",
   "error": "אירעה שגיאה",
   "required": "נדרש",
-  "max_length_error": "אורך מקסימלי הוא {max} תווים",
-  "min_length_error": "אורך מינימלי הוא {min} תווים",
+  "max_length_error": "אורך מקסימלי הוא max תווים",
+  "min_length_error": "אורך מינימלי הוא min תווים",
   "not_found_error": "לא נמצא",
+  "required_error": "שדה נדרש",
   "invalid_error": "לא תקין",
   "form_title": "טופס",
   "form_description": "אנא מלא את הפרטים הבאים"

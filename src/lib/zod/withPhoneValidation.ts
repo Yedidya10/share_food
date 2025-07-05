@@ -15,12 +15,21 @@ export default function withPhoneValidation<T extends z.ZodTypeAny>({
   schema: T
   translation: PhoneFieldTranslationFull
 }) {
+  const shape = schema instanceof z.ZodObject ? schema.shape : {}
+  const hasContactByPhone = shape && 'contactByPhone' in shape
+
   return schema.refine(
-    (data: FormData) =>
-      !data.contactByPhone ||
-      (data.phoneNumber?.trim() !== '' &&
-        isValidPhoneNumber(data.phoneNumber ?? '') &&
-        isPossiblePhoneNumber(data.phoneNumber ?? '')),
+    (data: FormData) => {
+      const phone = data.phoneNumber ?? ''
+      const phoneRequired = hasContactByPhone ? data.contactByPhone : true
+
+      return (
+        !phoneRequired ||
+        (phone.trim() !== '' &&
+          isValidPhoneNumber(phone) &&
+          isPossiblePhoneNumber(phone))
+      )
+    },
     { message: translation.phoneNumberError, path: ['phoneNumber'] },
   )
 }

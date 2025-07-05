@@ -1,0 +1,10 @@
+{
+  "user_name_updated": "שם המשתמש עודכן בהצלחה",
+  "user_name_update_failed": "אירעה שגיאה בעת עדכון שם המשתמש",
+  "email_updated": "כתובת האימייל עודכנה בהצלחה",
+  "email_update_failed": "אירעה שגיאה בעת עדכון כתובת האימייל",
+  "address_updated": "כתובת העדכון עודכנה בהצלחה",
+  "address_update_failed": "אירעה שגיאה בעת עדכון הכתובת",
+  "phone_updated": "מספר הטלפון עודכן בהצלחה",
+  "phone_update_failed": "אירעה שגיאה בעת עדכון מספר הטלפון"
+}

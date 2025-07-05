@@ -10,7 +10,7 @@ import {
 // import { Input } from "@/components/ui/input";
 // import { Label } from "@/components/ui/label";
 import { getLocale, getTranslations } from 'next-intl/server'
-import { signInWithOAuthServer } from '@/lib/supabase/actions/auth'
+import { signInWithOAuthServer } from '@/app/actions/auth'
 import { Link } from '@/i18n/navigation'
 
 export async function LoginForm({

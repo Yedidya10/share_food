@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { validateCity } from '@/lib/supabase/actions/locations'
+import { validateCity } from '@/app/actions/locations'
 import { AddressFormTranslationFull } from '@/types/formTranslation'
 
 export default function addressSchemaBase(

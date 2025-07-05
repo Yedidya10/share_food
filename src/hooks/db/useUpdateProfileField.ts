@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import updateProfileField from '@/lib/supabase/actions/updateProfileField'
+import updateProfileField from '@/app/actions/updateProfileField'
 
 export function useUpdateProfileField() {
   const queryClient = useQueryClient()

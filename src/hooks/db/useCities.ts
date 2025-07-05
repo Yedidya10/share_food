@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { searchCitiesInHebrew } from '@/lib/supabase/actions/locations'
+import { searchCitiesInHebrew } from '@/app/actions/locations'
 
 export function useCities(search: string) {
   return useQuery({

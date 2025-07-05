@@ -1,7 +1,7 @@
 import ChatBox from '@/components/chat/chatBox/ChatBox'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from '@/i18n/navigation'
-import { getItemById } from '@/lib/supabase/actions/getItemById'
+import { getItemById } from '@/app/actions/getItemById'
 
 export default async function ChatThread({
   params,

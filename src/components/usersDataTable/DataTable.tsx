@@ -43,7 +43,7 @@ import {
 } from '@/components/ui/select'
 
 // Import the server action
-import getListUsers from '@/lib/supabase/actions/getListUsers'
+import getListUsers from '@/app/actions/getListUsers'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]

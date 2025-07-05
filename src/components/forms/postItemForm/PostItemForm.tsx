@@ -30,8 +30,8 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import SaveAddress from '../address/SaveAddress'
-import { insertAddressToProfile } from '@/lib/supabase/actions/insertAddress'
-import { insertPhoneToProfile } from '@/lib/supabase/actions/insertPhoneToProfile'
+import { insertAddressToProfile } from '@/app/actions/insertAddress'
+import { insertPhoneToProfile } from '@/app/actions/insertPhoneToProfile'
 
 export default function PostItemForm({
   openModal,

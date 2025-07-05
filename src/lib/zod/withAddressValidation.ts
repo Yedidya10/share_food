@@ -1,5 +1,5 @@
 import { z, RefinementCtx } from 'zod'
-import { validateStreet } from '@/lib/supabase/actions/locations'
+import { validateStreet } from '@/app/actions/locations'
 import { AddressFormTranslationFull } from '@/types/formTranslation'
 
 export default function withAddressValidation<T extends z.ZodTypeAny>({

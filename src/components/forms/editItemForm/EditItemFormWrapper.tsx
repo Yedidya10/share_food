@@ -1,6 +1,6 @@
 // EditItemFormWrapper.tsx
 import EditItemForm from '@/components/forms/editItemForm/EditItemForm'
-import { getItemById } from '@/lib/supabase/actions/getItemById'
+import { getItemById } from '@/app/actions/getItemById'
 import { getTranslations } from 'next-intl/server'
 import { EditItemFormValues } from '@/types/item/item'
 

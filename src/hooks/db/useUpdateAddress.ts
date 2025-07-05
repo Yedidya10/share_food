@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import updateUserAddress from '@/lib/supabase/actions/updateUserAddress'
+import updateUserAddress from '@/app/actions/updateUserAddress'
 
 export function useUpdateAddress() {
   const queryClient = useQueryClient()

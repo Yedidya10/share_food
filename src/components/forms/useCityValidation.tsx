@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { validateCity } from '@/lib/supabase/actions/locations'
+import { validateCity } from '@/app/actions/locations'
 
 export default function useCityValidation(city: string) {
   const [isValid, setIsValid] = useState(false)

@@ -1,4 +1,4 @@
-import { getUserAchievements } from '@/lib/supabase/actions/getUserAchievements'
+import { getUserAchievements } from '@/app/actions/getUserAchievements'
 import Image from 'next/image'
 import { use } from 'react'
 

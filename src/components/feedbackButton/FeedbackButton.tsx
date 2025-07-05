@@ -11,7 +11,7 @@ import {
 import { Lightbulb, Trash } from 'lucide-react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import { submitFeedbackReport } from '@/lib/supabase/actions/submitFeedback'
+import { submitFeedbackReport } from '@/app/actions/submitFeedback'
 
 type Rect = {
   x1: number

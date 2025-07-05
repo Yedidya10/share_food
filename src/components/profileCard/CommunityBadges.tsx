@@ -1,7 +1,7 @@
 import { use } from 'react'
 import JoinCommunityMenu from './JoinCommunityMenu'
 import { createClient } from '@/lib/supabase/server'
-import { getUserCommunities } from '@/lib/supabase/actions/getUserCommunities'
+import { getUserCommunities } from '@/app/actions/getUserCommunities'
 import { toast } from 'sonner'
 
 export default function CommunityBadges({ userId }: { userId: string }) {

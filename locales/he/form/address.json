@@ -1,5 +1,6 @@
 {
   "address_details": "פרטי כתובת",
+  "no_address_provided": "לא סופקה כתובת",
   "street_name": "שם הרחוב",
   "street_name_placeholder": "למשל, ז'בוטינסקי",
   "street_name_error": "אנא הכנס שם רחוב תקף (2-50 תווים)",

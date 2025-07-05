@@ -1,4 +1,3 @@
-// lib/hooks/useInsertItem.ts
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import insertItemToDatabase from '@/components/forms/postItemForm/insertItemToDatabase'
 

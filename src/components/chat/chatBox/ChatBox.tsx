@@ -29,7 +29,7 @@ export default function ChatBox({
   userId,
   item,
 }: {
-  otherUser: { id: string; full_name: string; avatar_url: string }
+  otherUser: { id: string; user_name: string; avatar_url: string }
   conversationId: string
   userId?: string
   item?: DbFoodItem | null
@@ -148,7 +148,7 @@ export default function ChatBox({
       {/* HEADER */}
       <div className="border-b sticky top-0 z-20 bg-background">
         <ChatHeader
-          fullName={otherUser.full_name}
+          fullName={otherUser.user_name}
           avatarUrl={otherUser.avatar_url}
         />
       </div>

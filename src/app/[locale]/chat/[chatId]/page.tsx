@@ -50,7 +50,7 @@ export default async function ChatThread({
 
     const { data: otherUser, error: otherUserError } = await supabase
       .from('profiles')
-      .select('id, full_name, avatar_url')
+      .select('id, user_name, avatar_url')
       .eq('id', otherUserId)
       .single()
 

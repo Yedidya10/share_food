@@ -14,6 +14,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     header,
     profile,
     generic,
+    toast,
     address,
     contact_details,
     postItem,
@@ -24,6 +25,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     import(`../../locales/${locale}/header.json`).then((m) => m.default),
     import(`../../locales/${locale}/profile.json`).then((m) => m.default),
     import(`../../locales/${locale}/form/generic.json`).then((m) => m.default),
+    import(`../../locales/${locale}/form/toast.json`).then((m) => m.default),
     import(`../../locales/${locale}/form/address.json`).then((m) => m.default),
     import(`../../locales/${locale}/form/contact_details.json`).then(
       (m) => m.default,
@@ -39,6 +41,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     profile,
     form: {
       generic,
+      toast,
       address,
       contact_details,
       postItem,

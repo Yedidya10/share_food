@@ -85,6 +85,11 @@ export async function EditItemFormWrapper({ itemId }: { itemId: string }) {
         required: tGenericForm('required'),
         reset: tGenericForm('reset'),
         israel: tCountries('israel'),
+        maxLengthError: tGenericForm('max_length_error'),
+        minLengthError: tGenericForm('min_length_error'),
+        requiredError: tGenericForm('required_error'),
+        notFoundError: tGenericForm('not_found_error'),
+        invalidError: tGenericForm('invalid_error'),
       }}
     />
   )

@@ -225,7 +225,7 @@ export default function Item({
               <TooltipTrigger asChild>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="icon"
                   >
                     <span className="sr-only">פתיחת תפריט</span>

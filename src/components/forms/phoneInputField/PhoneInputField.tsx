@@ -29,7 +29,6 @@ export default function ContactFormFields<T extends FieldValues>({
     <>
       <FormField
         control={form.control}
-        disabled={!form.watch('contactByPhone' as Path<T>)}
         name={'phoneNumber' as Path<T>}
         render={({ field }) => (
           <FormItem

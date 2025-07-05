@@ -18,6 +18,7 @@ export type FormGeneralTranslationType = {
 
 export type AddressFormTranslationBase = {
   addressDetails: string
+  noAddressProvided?: string
   streetName: string
   streetNamePlaceholder: string
   streetNameError: string
@@ -42,6 +43,7 @@ export type PhoneFieldTranslationBase = {
   phoneNumberError: string
   isHaveWhatsApp: string
   isHaveWhatsAppTip: string
+  noPhoneProvided?: string
 }
 
 export type EmailFormTranslationBase = {

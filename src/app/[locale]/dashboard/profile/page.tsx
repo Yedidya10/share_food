@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server'
 
 export default async function ProfilePage() {
   const tFormGeneric = await getTranslations('form.generic')
+  const tFormToast = await getTranslations('form.toast')
   const tFormContactDetails = await getTranslations('form.contact_details')
   const tFormAddress = await getTranslations('form.address')
 
@@ -15,8 +16,21 @@ export default async function ProfilePage() {
     reset: tFormGeneric('reset'),
   }
 
+  // Toast translations
+  const toastTranslations = {
+    userNameUpdated: tFormToast('user_name_updated'),
+    userNameUpdateFailed: tFormToast('user_name_update_failed'),
+    addressUpdated: tFormToast('address_updated'),
+    phoneUpdated: tFormToast('phone_updated'),
+    emailUpdated: tFormToast('email_updated'),
+    AddressUpdateFailed: tFormToast('address_update_failed'),
+    PhoneUpdateFailed: tFormToast('phone_update_failed'),
+    EmailUpdateFailed: tFormToast('email_update_failed'),
+  }
+
   const addressTranslations = {
     addressDetails: tFormAddress('address_details'),
+    noAddressProvided: tFormAddress('no_address_provided'),
     streetName: tFormAddress('street_name'),
     streetNumber: tFormAddress('street_number'),
     city: tFormAddress('city'),
@@ -44,6 +58,7 @@ export default async function ProfilePage() {
   // Phone translations
   const phoneTranslations = {
     phoneNumber: tFormContactDetails('phone_number'),
+    noPhoneNumberProvided: tFormContactDetails('no_phone_number_provided'),
     phoneNumberPlaceholder: tFormContactDetails('phone_number_placeholder'),
     phoneNumberError: tFormContactDetails('phone_number_error'),
     isHaveWhatsApp: tFormContactDetails('is_have_whatsapp'),
@@ -98,6 +113,7 @@ export default async function ProfilePage() {
         }}
         translations={{
           genericTranslations,
+          toastTranslations,
           emailTranslations,
           addressTranslations,
           phoneTranslations,

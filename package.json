@@ -5,7 +5,8 @@
   "scripts": {
     "validate-env": "tsx scripts/validate-env.ts",
     "dev": "npm run validate-env && next dev --turbopack --experimental-https",
-    "build": "npm run validate-env && next build",
+    "build": "npm run validate-env && npm run gen-types && next build",
+    "gen-types": "node scripts/gen-types.mjs",
     "start": "next start",
     "lint": "next lint",
     "test": "echo \"No tests specified\" && exit 0",
@@ -102,6 +103,7 @@
     "tailwindcss": "^4",
     "tsx": "^4.20.3",
     "tw-animate-css": "^1.3.0",
+    "type-fest": "^4.41.0",
     "typescript": "^5"
   }
 }

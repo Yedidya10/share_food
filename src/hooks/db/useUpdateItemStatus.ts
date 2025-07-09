@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
-import { ItemStatusEnum } from '@/types/item/item'
+import { Database } from '@/types/supabase-fixed'
 
 export function useUpdateItemStatus() {
   const supabase = createClient()
@@ -13,7 +13,7 @@ export function useUpdateItemStatus() {
       status,
     }: {
       id: string
-      status: ItemStatusEnum
+      status: Database['public']['Enums']['item_status']
     }) => {
       const { error } = await supabase
         .from('items')
@@ -27,7 +27,10 @@ export function useUpdateItemStatus() {
       return { id, status }
     },
     onSuccess: ({ status }) => {
-      const statusMessages: Record<ItemStatusEnum, string> = {
+      const statusMessages: Record<
+        Database['public']['Enums']['item_status'],
+        string
+      > = {
         published: 'הפריט פורסם בהצלחה',
         draft: 'הפריט נשמר כטיוטה',
         pending_publication: 'הפריט ממתין לפרסום',
@@ -35,9 +38,10 @@ export function useUpdateItemStatus() {
         update_pending: 'הפריט ממתין לעדכון',
         rejected: 'הפריט נדחה',
         expired: 'הפריט פג תוקף',
+        archived: 'הפריט הועבר לארכיון',
       }
 
-      toast.success(statusMessages[status as ItemStatusEnum] ?? '')
+      toast.success(statusMessages[status] ?? '')
       queryClient.invalidateQueries({ queryKey: ['items'] })
     },
     onError: (error) => {

@@ -8,13 +8,13 @@ import { toast } from 'sonner'
 import useItems from '@/hooks/db/useItems'
 import { useInView } from 'react-intersection-observer'
 import Item from '@/components/core/item/Item'
-import { DbFoodItem } from '@/types/item/item'
+import { Database } from '@/types/supabase'
 
 export default function MyItemsList({
   initialItems,
   includeUserId,
 }: {
-  initialItems?: DbFoodItem[]
+  initialItems?: Database['public']['Views']['active_items']['Row'][]
   includeUserId?: string | null
 }) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useItems({
@@ -101,7 +101,7 @@ export default function MyItemsList({
         </div>
       )} */}
       <div className={itemsWrapper}>
-        {items?.map((item: DbFoodItem) => (
+        {items?.map((item) => (
           <Item
             key={item.id}
             item={item}

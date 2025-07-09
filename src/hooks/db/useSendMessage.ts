@@ -2,7 +2,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { Message } from '@/types/chat/chat'
-import { DbFoodItem } from '@/types/item/item'
+import { Database } from '@/types/supabase-fixed'
 import { v4 as uuidv4 } from 'uuid'
 
 type SendMessageInput = {
@@ -10,7 +10,7 @@ type SendMessageInput = {
   userId: string
   content: string
   shouldSendPreview: boolean
-  item?: DbFoodItem | null
+  item?: Database['public']['Views']['active_items']['Row']
 }
 
 export function useSendMessage() {
@@ -25,7 +25,13 @@ export function useSendMessage() {
       shouldSendPreview,
       item,
     }) => {
-      const toInsert: Partial<Message>[] = []
+      const toInsert: {
+        conversation_id: string
+        sender_id: string
+        type: 'system' | 'user'
+        content: string
+        metadata?: { item_id: string }
+      }[] = []
 
       if (shouldSendPreview && item) {
         toInsert.push({

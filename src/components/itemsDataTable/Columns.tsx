@@ -13,58 +13,78 @@ import {
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import ItemActions from '@/components/itemActions/ItemActions'
-import { DbFoodItem } from '@/types/item/item'
 import HoverImageCarousel from '@/components/hoverImageCarousel/HoverImageCarousel'
 import { Badge } from '@/components/ui/badge'
-import { ItemStatusEnum } from '@/types/item/item'
+import { Database } from '@/types/supabase-fixed'
 
-function getStatusBadge(status: ItemStatusEnum) {
+function getStatusBadge(
+  status: Database['public']['Enums']['item_status'] | string | null,
+) {
   const statusMap: Record<
-    ItemStatusEnum,
+    Database['public']['Enums']['item_status'],
     {
       label: string
       icon: React.ElementType
       variant?: 'default' | 'secondary' | 'destructive' | 'outline'
     }
   > = {
-    [ItemStatusEnum.Draft]: {
+    draft: {
       label: 'טיוטה',
       icon: FilePen,
       variant: 'secondary',
     },
-    [ItemStatusEnum.PendingPublication]: {
+    pending_publication: {
       label: 'ממתין לאישור',
       icon: Loader,
       variant: 'outline',
     },
-    [ItemStatusEnum.Published]: {
+    published: {
       label: 'פורסם',
       icon: CheckCircle,
       variant: 'default',
     },
-    [ItemStatusEnum.UpdatePending]: {
+    update_pending: {
       label: 'עדכון ממתין',
       icon: Clock,
       variant: 'outline',
     },
-    [ItemStatusEnum.Rejected]: {
+    archived: {
+      label: 'ארכיון',
+      icon: Clock,
+      variant: 'outline',
+    },
+    rejected: {
       label: 'נדחה',
       icon: XCircle,
       variant: 'destructive',
     },
-    [ItemStatusEnum.Expired]: {
+    expired: {
       label: 'פג תוקף',
       icon: Hourglass,
       variant: 'destructive',
     },
-    [ItemStatusEnum.GivenAway]: {
+    given_away: {
       label: 'נמסר',
       icon: CheckCircle,
       variant: 'secondary',
     },
   }
 
-  const statusData = statusMap[status] || {
+  if (!status) {
+    return (
+      <Badge
+        variant="outline"
+        className="flex items-center gap-1"
+      >
+        <Clock className="h-4 w-4 rtl:ml-1 ltr:mr-1" />
+        לא ידוע
+      </Badge>
+    )
+  }
+
+  const statusData = statusMap[
+    status as Database['public']['Enums']['item_status']
+  ] || {
     label: status,
     icon: Clock,
     variant: 'outline',
@@ -83,7 +103,9 @@ function getStatusBadge(status: ItemStatusEnum) {
   )
 }
 
-export const Columns: ColumnDef<DbFoodItem>[] = [
+export const Columns: ColumnDef<
+  Database['public']['Views']['active_items']['Row']
+>[] = [
   {
     id: 'select',
     header: ({ table }) => (

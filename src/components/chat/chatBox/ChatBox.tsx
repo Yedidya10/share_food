@@ -13,14 +13,12 @@ import { createClient } from '@/lib/supabase/client'
 import ChatHeader from '@/components/chat/chatHeader/ChatHeader'
 import MessageBubble from '@/components/chat/messageBubble/MessageBubble'
 import ItemPreviewMessage from '@/components/chat/itemPreviewMessage/ItemPreviewMessage'
-
+import { Database } from '@/types/supabase-fixed'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
-
-import { DbFoodItem } from '@/types/item/item'
 import { Message } from '@/types/chat/chat'
 
 export default function ChatBox({
@@ -32,7 +30,7 @@ export default function ChatBox({
   otherUser: { id: string; user_name: string; avatar_url: string }
   conversationId: string
   userId?: string
-  item?: DbFoodItem | null
+  item?: Database['public']['Views']['active_items']['Row'] | null
 }) {
   const supabase = createClient()
   const queryClient = useQueryClient()
@@ -42,7 +40,9 @@ export default function ChatBox({
   const { data: messages = [] } = useChatMessages(conversationId)
   const { mutate: sendMessage, isPending: isSending } = useSendMessage()
 
-  const [itemsMap, setItemsMap] = useState<Record<string, DbFoodItem>>({})
+  const [itemsMap, setItemsMap] = useState<
+    Record<string, Database['public']['Views']['active_items']['Row']>
+  >({})
   const [sendOnEnter, setSendOnEnter] = useState(true)
 
   // האם כבר קיימת הודעת פריט ב־DB?
@@ -132,7 +132,7 @@ export default function ChatBox({
       userId: userId!,
       content: data.message,
       shouldSendPreview: !previewExistsInDb,
-      item: item ?? null,
+      item: item ?? undefined,
     })
     form.reset()
   })

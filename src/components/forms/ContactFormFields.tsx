@@ -14,6 +14,7 @@ import { useLocale } from 'next-intl'
 import { FormTranslationType } from '@/types/formTranslation'
 import SavePhone from '@/components/forms/SavePhone'
 import PhoneInputField from './phoneInputField/PhoneInputField'
+import useProfile from '@/hooks/db/useProfile'
 
 type Props<T extends FieldValues> = {
   form: UseFormReturn<T>
@@ -34,6 +35,7 @@ export default function ContactFormFields<T extends FieldValues>({
   translation,
 }: Props<T>) {
   const locale = useLocale()
+  const userProfile = useProfile()
 
   return (
     <div className="flex flex-col space-y-4">
@@ -101,7 +103,7 @@ export default function ContactFormFields<T extends FieldValues>({
             form={form}
             translation={translation}
           />
-          <SavePhone form={form} />
+          {!userProfile.data?.phone_number && <SavePhone form={form} />}
         </div>
       </div>
       <div className="rounded-lg border px-4 py-3">

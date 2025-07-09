@@ -32,6 +32,7 @@ import {
 import SaveAddress from '../address/SaveAddress'
 import { insertAddressToProfile } from '@/app/actions/insertAddress'
 import { insertPhoneToProfile } from '@/app/actions/insertPhoneToProfile'
+import useProfile from '@/hooks/db/useProfile'
 
 export default function PostItemForm({
   openModal,
@@ -49,7 +50,7 @@ export default function PostItemForm({
   translation: FormTranslationType
 }) {
   const locale = useLocale()
-  // const supabase = createClient();
+  const userProfile = useProfile()
 
   // Define your form schema using Zod
   const formSchema = postItemSchema(translation)
@@ -57,6 +58,7 @@ export default function PostItemForm({
 
   // Define default values for the form
   const defaultValues = postItemDefaultFormValues(translation)
+  const mainAddress = userProfile.data?.main_address
 
   // Define your form
   const postItemForm = useForm<PostItemFormSchema>({
@@ -64,7 +66,19 @@ export default function PostItemForm({
     mode: 'onBlur',
     reValidateMode: 'onBlur',
     criteriaMode: 'firstError',
-    defaultValues: defaultValues,
+    defaultValues: {
+      ...defaultValues,
+      // If user profile has a main address, use its values
+      streetName: mainAddress?.street_name || '',
+      streetNumber: mainAddress?.street_number || '',
+      city: mainAddress?.city || '',
+      country: mainAddress?.country || defaultValues.country,
+      postalCode: mainAddress?.postal_code || '',
+      // If user profile has a contact details, use them
+      email: userProfile.data?.email || '',
+      phoneNumber: userProfile.data?.phone_number || '',
+      isHaveWhatsApp: userProfile.data?.is_have_whatsapp || false,
+    },
   })
 
   const { mutateAsync: insertItem, isPending } = useInsertItem()
@@ -72,9 +86,6 @@ export default function PostItemForm({
   // Handle form submission
   const onSubmit = async (values: PostItemFormSchema) => {
     try {
-      // Log the form values for debugging
-      console.log('Form submitted with values:', values)
-
       // Save the address to profile if it is new
       if (values.saveAddress) {
         const { streetName, streetNumber, city, country, postalCode } = values
@@ -168,7 +179,9 @@ export default function PostItemForm({
               {translation.addressDetails}
             </h3>
             <AddressFormFields form={postItemForm} />
-            <SaveAddress form={postItemForm} />
+            {!userProfile.data?.main_address && (
+              <SaveAddress form={postItemForm} />
+            )}
             <Separator />
             <ContactFormFields
               form={postItemForm}

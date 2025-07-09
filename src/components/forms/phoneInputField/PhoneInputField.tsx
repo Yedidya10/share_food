@@ -13,6 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import PhoneInput from '@/components/forms/phoneInput/PhoneInput'
 import { useLocale } from 'next-intl'
 import { PhoneFieldTranslationFull } from '@/types/formTranslation'
+import useProfile from '@/hooks/db/useProfile'
 
 type Props<T extends FieldValues> = {
   form: UseFormReturn<T>
@@ -24,6 +25,7 @@ export default function ContactFormFields<T extends FieldValues>({
   translation,
 }: Props<T>) {
   const locale = useLocale()
+  const userProfile = useProfile()
 
   return (
     <>
@@ -51,6 +53,7 @@ export default function ContactFormFields<T extends FieldValues>({
                 defaultCountry={'IL'}
                 inputMode="tel"
                 autoComplete="tel"
+                value={field.value || userProfile.data?.phone_number || ''}
                 onChange={(value) => field.onChange(value)}
               />
             </FormControl>

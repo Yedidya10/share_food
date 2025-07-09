@@ -27,11 +27,11 @@ export async function insertAddressToProfile({
       .from('profiles')
       .update({
         main_address: {
-          streetName,
-          streetNumber,
-          city,
-          country,
-          postalCode,
+          street_name: streetName,
+          street_number: streetNumber,
+          city: city,
+          country: country,
+          postal_code: postalCode.trim(),
         },
       })
       .eq('id', userData.user.id)

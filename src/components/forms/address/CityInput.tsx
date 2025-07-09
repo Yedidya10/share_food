@@ -77,7 +77,6 @@ export default function CityInput<T extends { city: string }>({
                   id="city"
                   autoFocus
                   placeholder={tAddress('city_placeholder')}
-                  value={field.value as string}
                   onChange={(e) => {
                     field.onChange(e.target.value)
                     debouncedSetSearch(e.target.value)

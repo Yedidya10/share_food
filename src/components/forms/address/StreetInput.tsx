@@ -85,7 +85,6 @@ export default function StreetInput<T extends { streetName: string }>({
                   id="streetName"
                   className="text-right"
                   disabled={!isCityValid}
-                  value={field.value}
                   onChange={(e) => {
                     field.onChange(e.target.value)
                     debouncedSetSearch(e.target.value)

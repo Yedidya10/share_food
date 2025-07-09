@@ -53,10 +53,11 @@ export default function AddressFormFields<
               </FormLabel>
               <FormControl>
                 <Input
+                  {...field}
                   id="streetNumber"
                   required
                   placeholder={tAddress('street_number_placeholder')}
-                  {...field}
+                  autoComplete="off"
                 />
               </FormControl>
               <FormMessage className="text-xs text-red-500" />

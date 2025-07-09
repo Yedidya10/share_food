@@ -34,7 +34,6 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { DbFoodItem, ItemStatusEnum } from '@/types/item/item'
 import { useLocale, useTranslations } from 'next-intl'
 import { useDeleteItem } from '@/hooks/db/useDeleteItem'
 import { DirectionProvider } from '@radix-ui/react-direction'
@@ -45,12 +44,13 @@ import {
 } from '@/components/ui/tooltip'
 import { useRouter } from '@/i18n/navigation'
 import { useUpdateItemStatus } from '@/hooks/db/useUpdateItemStatus'
+import { Database } from '@/types/supabase'
 
 export default function Item({
   item,
   layout,
 }: {
-  item: DbFoodItem
+  item: Database['public']['Views']['active_items']['Row']
   layout: 'grid-md' | 'list'
 }) {
   // Hooks
@@ -107,11 +107,11 @@ export default function Item({
             <div className={itemImageWrapper}>
               <Image
                 src={
-                  typeof item.images[0] === 'string'
-                    ? item.images[0]
+                  typeof item.images?.[0] === 'string'
+                    ? item.images?.[0]
                     : '/placeholder-image.png'
                 }
-                alt={item.title}
+                alt={item.title || 'Item Image'}
                 className="object-cover rounded-md"
                 fill
                 sizes="(max-width: 768px) 100vw, (min-width: 769px) 50vw"
@@ -185,15 +185,15 @@ export default function Item({
           {/* <EditItemButton onClick={() => handleEditItemClick(item.id)}>
             <Pencil className='w-4 h-4' />
           </EditItemButton> */}
-          {item.status === ItemStatusEnum.Published && (
+          {item.status === 'published' && (
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="default"
                   onClick={() =>
                     updateItemStatus({
-                      id: item.id,
-                      status: ItemStatusEnum.GivenAway,
+                      id: item.id!,
+                      status: 'given_away',
                     })
                   }
                   disabled={isUpdatingStatus}
@@ -238,21 +238,21 @@ export default function Item({
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>פעולות</DropdownMenuLabel>
               <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(item.title)}
+                onClick={() => navigator.clipboard.writeText(item.title!)}
               >
                 <ClipboardCopy />
                 העתק כותרת פריט
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(item.description)}
+                onClick={() => navigator.clipboard.writeText(item.description!)}
               >
                 <ClipboardCopy />
                 העתק תיאור פריט
               </DropdownMenuItem>
-              {(item.status === ItemStatusEnum.Published ||
-                item.status === ItemStatusEnum.UpdatePending ||
-                item.status === ItemStatusEnum.PendingPublication ||
-                item.status === ItemStatusEnum.Draft) && (
+              {(item.status === 'published' ||
+                item.status === 'pending_publication' ||
+                item.status === 'update_pending' ||
+                item.status === 'draft') && (
                 <>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
@@ -264,7 +264,7 @@ export default function Item({
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     variant="destructive"
-                    onClick={() => handleDeleteItemClick.mutate(item.id)}
+                    onClick={() => handleDeleteItemClick.mutate(item.id!)}
                     className="flex gap-2"
                   >
                     <Trash2 />
@@ -272,19 +272,19 @@ export default function Item({
                   </DropdownMenuItem>
                 </>
               )}
-              {item.status !== ItemStatusEnum.GivenAway && (
+              {item.status !== 'given_away' && (
                 <DropdownMenuSub>
                   <DropdownMenuSeparator />
                   <DropdownMenuSubTrigger>עדכון סטטוס</DropdownMenuSubTrigger>
                   <DropdownMenuSubContent>
-                    {(item.status === ItemStatusEnum.Published ||
-                      item.status === ItemStatusEnum.UpdatePending ||
-                      item.status === ItemStatusEnum.PendingPublication) && (
+                    {(item.status === 'published' ||
+                      item.status === 'update_pending' ||
+                      item.status === 'pending_publication') && (
                       <DropdownMenuItem
                         onClick={() =>
                           updateItemStatus({
-                            id: item.id,
-                            status: ItemStatusEnum.Draft,
+                            id: item.id!,
+                            status: 'draft',
                           })
                         }
                         className="flex gap-2 items-center"
@@ -293,15 +293,16 @@ export default function Item({
                         <span>שמור כטיוטה</span>
                       </DropdownMenuItem>
                     )}
-                    {(item.status === ItemStatusEnum.Draft ||
-                      item.status === ItemStatusEnum.PendingPublication ||
-                      item.status === ItemStatusEnum.UpdatePending ||
-                      item.status === ItemStatusEnum.Published) && (
+                    {(item.status === 'draft' ||
+                      item.status === 'pending_publication' ||
+                      item.status === 'update_pending' ||
+                      item.status === 'published') && (
                       <DropdownMenuItem
                         onClick={() =>
                           updateItemStatus({
-                            id: item.id,
-                            status: ItemStatusEnum.Expired,
+                            // TODO: Add logic to handle typescript error
+                            id: item.id!,
+                            status: 'expired',
                           })
                         }
                         className="flex gap-2 items-center"

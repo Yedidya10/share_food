@@ -1,5 +1,6 @@
 import ProfileCard from '@/components/profileCard/ProfileCard'
 import { createClient } from '@/lib/supabase/server'
+import { FixedProfile } from '@/types/supabase-fixed'
 import { getTranslations } from 'next-intl/server'
 
 export default async function ProfilePage() {
@@ -85,7 +86,7 @@ export default async function ProfilePage() {
         'id, email, phone_number, is_have_whatsapp, main_address, user_name, avatar_url, communities (id, name)',
       )
       .eq('id', userData.user.id)
-      .single()
+      .single<FixedProfile & { communities: { id: string; name: string }[] }>()
 
     if (profileError) {
       throw profileError

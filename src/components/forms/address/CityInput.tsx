@@ -75,7 +75,7 @@ export default function CityInput<T extends { city: string }>({
                 <Input
                   className="text-right"
                   id="city"
-                  autoFocus
+                  value={field.value as string}
                   placeholder={tAddress('city_placeholder')}
                   onChange={(e) => {
                     field.onChange(e.target.value)

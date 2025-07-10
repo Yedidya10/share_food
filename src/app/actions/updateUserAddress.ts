@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/server'
 type PostItemFormSchema = z.infer<ReturnType<typeof postItemSchema>>
 
 export default async function updateUserAddress(values: PostItemFormSchema) {
+  console.log('updateUserAddress called with values:', values)
   try {
     const supabase = await createClient()
     const { data: userData, error: userError } = await supabase.auth.getUser()
@@ -38,10 +39,14 @@ export default async function updateUserAddress(values: PostItemFormSchema) {
     } else {
       return {
         success: true,
-        message: 'Item inserted successfully',
+        message: 'Address inserted successfully',
       }
     }
   } catch (error) {
     console.error(error)
+    return {
+      success: false,
+      message: `Error inserting item: ${error instanceof Error ? error.message : 'Unknown error'}`,
+    }
   }
 }

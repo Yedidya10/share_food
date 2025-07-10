@@ -36,15 +36,16 @@ export default function FilterDrawerDialog({
         onOpenChange={setOpenFilter}
       >
         <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>סינון פריטים</DialogTitle>
-            <DialogDescription>
-              <p className="text-sm text-muted-foreground">
-                השתמש בסינון כדי למצוא פריטים מתאימים לצרכים שלך.
-              </p>
+          <DialogHeader className="py-3">
+            <DialogTitle className="text-center">סינון פריטים</DialogTitle>
+            <DialogDescription className="text-center text-sm text-muted-foreground">
+              השתמש בסינון כדי למצוא פריטים מתאימים לצרכים שלך.
             </DialogDescription>
           </DialogHeader>
-          <FilterForm />
+          <FilterForm
+            onOpenChange={setOpenFilter}
+            open={openFilter}
+          />
         </DialogContent>
       </Dialog>
     )
@@ -57,14 +58,16 @@ export default function FilterDrawerDialog({
     >
       <DrawerContent>
         <DrawerHeader className="text-left">
-          <DrawerTitle>סינון פריטים</DrawerTitle>
-          <DrawerDescription>
-            <p className="text-sm text-muted-foreground">
-              השתמש בסינון כדי למצוא פריטים מתאימים לצרכים שלך.
-            </p>
+          <DrawerTitle className="text-center">סינון פריטים</DrawerTitle>
+          <DrawerDescription className="rtl:text-right ltr:text-left text-sm text-muted-foreground">
+            השתמש בסינון כדי למצוא פריטים מתאימים לצרכים שלך.
           </DrawerDescription>
         </DrawerHeader>
-        <FilterForm className="px-4" />
+        <FilterForm
+          onOpenChange={setOpenFilter}
+          open={openFilter}
+          className="px-4"
+        />
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>
             <Button variant="outline">Cancel</Button>

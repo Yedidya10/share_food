@@ -16,17 +16,13 @@ import { Button } from '@/components/ui/button'
 import { LocateIcon } from 'lucide-react'
 import { getCoordinatesFromAddress } from '@/lib/googleMaps/location'
 
-export function SortForm({
-  userDefaultAddress,
-}: {
-  userDefaultAddress?: string
-}) {
+export function SortForm({ userMainAddress }: { userMainAddress?: string }) {
   const searchParams = useSearchParams()
   const router = useRouter()
 
   const [sortBy, setSortBy] = useState(searchParams.get('sort') ?? 'date')
   const [distanceType, setDistanceType] = useState(
-    userDefaultAddress ? 'profile' : 'manual',
+    userMainAddress ? 'profile' : 'manual',
   )
   const [manualAddress, setManualAddress] = useState('')
 
@@ -51,6 +47,7 @@ export function SortForm({
     if (sortBy === 'distance') {
       if (distanceType === 'manual' && manualAddress) {
         const coords = await getCoordinatesFromAddress(manualAddress)
+        console.log('Coordinates from manual address:', coords)
         if (coords) {
           updateUrlParams({
             sort: 'distance',
@@ -58,7 +55,9 @@ export function SortForm({
             lng: coords.lng.toString(),
           })
         }
-      } else if (distanceType === 'geo') {
+      }
+
+      if (distanceType === 'geo') {
         navigator.geolocation.getCurrentPosition((pos) => {
           updateUrlParams({
             sort: 'distance',
@@ -66,9 +65,17 @@ export function SortForm({
             lng: pos.coords.longitude.toString(),
           })
         })
-      } else {
-        // פרופיל - לא מוגדר פה, אבל תוכל לשלוח lat/lng דרך props
-        updateUrlParams({ sort: 'distance' })
+      }
+
+      if (distanceType === 'profile' && userMainAddress) {
+        const coords = await getCoordinatesFromAddress(userMainAddress)
+        if (coords) {
+          updateUrlParams({
+            sort: 'distance',
+            lat: coords.lat.toString(),
+            lng: coords.lng.toString(),
+          })
+        }
       }
     } else {
       updateUrlParams({
@@ -114,9 +121,9 @@ export function SortForm({
               <SelectValue placeholder="בחר מקור מיקום" />
             </SelectTrigger>
             <SelectContent>
-              {userDefaultAddress && (
+              {userMainAddress && (
                 <SelectItem value="profile">
-                  מהפרופיל: {userDefaultAddress}
+                  כתובת ראשית: {userMainAddress}
                 </SelectItem>
               )}
               <SelectItem value="manual">כתובת ידנית</SelectItem>
@@ -136,7 +143,17 @@ export function SortForm({
             <Button
               type="button"
               variant="outline"
-              onClick={handleSortChange}
+              onClick={() => {
+                navigator.geolocation.getCurrentPosition((pos) => {
+                  updateUrlParams({
+                    sort: 'distance',
+                    lat: pos.coords.latitude.toString(),
+                    lng: pos.coords.longitude.toString(),
+                  })
+                })
+
+                setDistanceType('geo') // עדכון סוג המיקום
+              }}
             >
               <LocateIcon className="mr-2 h-4 w-4" /> אתר אותי
             </Button>

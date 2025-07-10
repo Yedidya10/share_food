@@ -99,7 +99,7 @@ export default function ProfileCard({
             fill
             className="object-cover"
           />
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-xs bg-black/50 text-white cursor-pointer">
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-xs bg-black/50 cursor-pointer">
             Change
           </div>
         </div>
@@ -111,7 +111,7 @@ export default function ProfileCard({
             className="text-2xl font-semibold"
             inputClassName="md:text-2xl py-2"
           />
-          <p className="ps-2 text-sm text-gray-500">
+          <p className="ps-2 text-sm">
             תאריך הצטרפות:{' '}
             {new Date(user.createdAt).toLocaleDateString('he-IL', {
               year: 'numeric',
@@ -127,10 +127,10 @@ export default function ProfileCard({
         {/* Email */}
         <div className="md:grid md:grid-cols-[30px_120px_auto_30px] flex items-center gap-3 py-3 px-4">
           <AtSignIcon
-            className="text-gray-500 "
+            className=" "
             size={18}
           />
-          <span className="font-medium text-gray-700">
+          <span className="font-medium">
             {translations.emailTranslations.email}
           </span>
           <EditableField
@@ -144,13 +144,13 @@ export default function ProfileCard({
         {/* Phone */}
         <div className="md:grid md:grid-cols-[30px_120px_auto_30px] flex items-center gap-3 py-3 px-4">
           <Phone
-            className="text-gray-500"
+            className=""
             size={18}
           />
-          <span className="font-medium text-gray-700">
+          <span className="font-medium">
             {translations.phoneTranslations.phoneNumber}
           </span>
-          <span className="text-gray-800 ps-2">
+          <span className="ps-2">
             {user.phone || translations.phoneTranslations.noPhoneNumberProvided}
           </span>
           <Button
@@ -176,13 +176,13 @@ export default function ProfileCard({
         {/* Address */}
         <div className="md:grid md:grid-cols-[30px_120px_auto_30px] flex items-center gap-3 py-3 px-4">
           <Home
-            className="text-gray-500 "
+            className=" "
             size={18}
           />
-          <span className="font-medium text-gray-700">
+          <span className="font-medium">
             {translations.addressTranslations.addressDetails}
           </span>
-          <span className="text-gray-800 ps-2">
+          <span className="ps-2 dark:text-gray-700 text-gray-500">
             {user.address.streetName &&
             user.address.streetNumber &&
             user.address.city

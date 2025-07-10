@@ -2,6 +2,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { useMemo } from 'react'
 
+// TODO: Define the types for the items by Database schema
 type Coords = { lat: number; lng: number }
 
 export type UseInfiniteItemsOptions = {
@@ -74,14 +75,14 @@ export default function useItems(options: UseInfiniteItemsOptions = {}) {
 
       const { data, error } = await supabase.rpc('get_items_nearby', {
         sort_by: sortBy,
-        category_filter: category?.length ? category : null,
-        status_filter: status?.length ? status : null,
-        search_term: search ?? null,
-        max_distance_km: maxDistanceKm ?? null,
-        from_date: fromDate ?? null,
-        to_date: toDate ?? null,
-        include_user_id: includeUserId ?? null,
-        exclude_user_id: excludeUserId ?? null,
+        category_filter: category?.length ? category : undefined,
+        status_filter: status?.length ? status : undefined,
+        search_term: search ?? undefined,
+        max_distance_km: maxDistanceKm ?? undefined,
+        from_date: fromDate ? fromDate.toISOString() : undefined,
+        to_date: toDate ? toDate.toISOString() : undefined,
+        include_user_id: includeUserId ?? undefined,
+        exclude_user_id: excludeUserId ?? undefined,
         limit_count: pageSize,
         offset_count: pageParam,
         // רק אם צריך לחשב מרחק:

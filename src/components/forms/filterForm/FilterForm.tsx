@@ -16,19 +16,25 @@ import { format } from 'date-fns'
 import { he } from 'date-fns/locale'
 import { useSearchParams } from 'next/navigation'
 import { useRouter } from '@/i18n/navigation'
-import { Checkbox } from '@/components/ui/checkbox'
+// import { Checkbox } from '@/components/ui/checkbox'
 
-type Props = React.ComponentProps<'form'>
+// const CATEGORIES = [
+//   { value: 'vegan', label: 'טבעוני' },
+//   { value: 'vegetarian', label: 'צמחוני' },
+//   { value: 'glutenfree', label: 'ללא גלוטן' },
+//   { value: 'organic', label: 'אורגני' },
+//   // הוסף עוד קטגוריות לפי הצורך
+// ]
 
-const CATEGORIES = [
-  { value: 'vegan', label: 'טבעוני' },
-  { value: 'vegetarian', label: 'צמחוני' },
-  { value: 'glutenfree', label: 'ללא גלוטן' },
-  { value: 'organic', label: 'אורגני' },
-  // הוסף עוד קטגוריות לפי הצורך
-]
-
-export function FilterForm({ className }: Props) {
+export function FilterForm({
+  className,
+  onOpenChange,
+  open,
+}: {
+  className?: string
+  onOpenChange: ((open: boolean) => void) | undefined
+  open: boolean
+}) {
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -76,6 +82,10 @@ export function FilterForm({ className }: Props) {
           ? selectedCategories.join(',')
           : undefined,
     })
+
+    if (open) {
+      onOpenChange?.(false) // סגירת הדיאלוג או הדראוור אם פתוח
+    }
   }
 
   const handleReset = () => {
@@ -95,7 +105,7 @@ export function FilterForm({ className }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className={cn('grid gap-4', className)}
+      className={cn('grid gap-6', className)}
     >
       {/* מרחק */}
       <div className="grid gap-2">
@@ -154,7 +164,7 @@ export function FilterForm({ className }: Props) {
       </div>
 
       {/* קטגוריות */}
-      <div className="grid gap-2">
+      {/* <div className="grid gap-2">
         <Label>קטגוריות</Label>
         <div className="flex flex-col space-y-1">
           {CATEGORIES.map(({ value, label }) => (
@@ -176,7 +186,7 @@ export function FilterForm({ className }: Props) {
             </label>
           ))}
         </div>
-      </div>
+      </div> */}
 
       <div className="grid grid-cols-2 gap-2 mt-2">
         <Button type="submit">החל סינון</Button>

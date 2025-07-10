@@ -3,35 +3,23 @@ import { googleConfig } from '../envConfig'
 export async function getCoordinatesFromAddress(
   address: string,
 ): Promise<{ lat: number; lng: number } | null> {
-  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${googleConfig.mapsApiKey}`
+  try {
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${googleConfig.mapsApiKey}`
 
-  const res = await fetch(url)
-  const data = await res.json()
+    const res = await fetch(url)
+    const data = await res.json()
 
-  if (data.status === 'OK') {
+    if (data.status !== 'OK') {
+      throw new Error(`Geocoding error: ${data.status}`)
+    }
+
     const location = data.results[0].geometry.location
-    return { lat: location.lat, lng: location.lng }
+    return {
+      lat: location.lat,
+      lng: location.lng,
+    }
+  } catch (error) {
+    console.error('Error fetching geocoding data:', error)
+    return null
   }
-
-  return null
-}
-
-export async function getDistanceInKm({
-  from,
-  to,
-}: {
-  from: string
-  to: string
-}): Promise<number | null> {
-  const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(from)}&destinations=${encodeURIComponent(to)}&units=metric&key=${googleConfig.mapsApiKey}`
-
-  const res = await fetch(url)
-  const data = await res.json()
-
-  if (data.status === 'OK' && data.rows[0]?.elements[0]?.status === 'OK') {
-    const meters = data.rows[0].elements[0].distance.value
-    return meters / 1000
-  }
-
-  return null
 }

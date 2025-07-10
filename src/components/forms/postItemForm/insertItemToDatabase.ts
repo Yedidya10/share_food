@@ -5,6 +5,7 @@ import { z } from 'zod'
 import postItemSchema from '@/lib/zod/item/postItemSchema/postItemSchema'
 import postItemImagesSchema from '@/lib/zod/item/postItemSchema/postItemImagesSchema'
 import { createClient } from '@/lib/supabase/server'
+import { getCoordinatesFromAddress } from '@/lib/googleMaps/location'
 
 type PostItemFormSchema = z.infer<ReturnType<typeof postItemSchema>>
 type PostItemImage = z.infer<
@@ -72,6 +73,18 @@ export default async function insertItemToDatabase(values: PostItemFormSchema) {
       }
     }
 
+    //  Geocoding location
+    let location: string | null = null
+    console.log('Values for geocoding:', values)
+    if (values.streetName && values.streetNumber && values.city) {
+      const address = `${values.streetName} ${values.streetNumber}, ${values.city}, ${values.country}`
+      const geocodingResponse = await getCoordinatesFromAddress(address)
+      console.log('Geocoding response:', geocodingResponse)
+      if (geocodingResponse) {
+        location = `POINT(${geocodingResponse.lng} ${geocodingResponse.lat})`
+      }
+    }
+
     const { error: insertError } = await supabase.from('items').insert([
       {
         title: values.title,
@@ -82,6 +95,7 @@ export default async function insertItemToDatabase(values: PostItemFormSchema) {
         city: values.city,
         country: values.country,
         postal_code: values.postalCode?.trim(),
+        location,
         full_name: userData?.user?.user_metadata?.full_name || null,
         phone_number: values.phoneNumber || null,
         is_have_whatsapp: values.phoneNumber ? values.isHaveWhatsApp : false,

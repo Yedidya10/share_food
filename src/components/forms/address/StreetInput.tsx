@@ -84,6 +84,7 @@ export default function StreetInput<T extends { streetName: string }>({
                 <Input
                   id="streetName"
                   className="text-right"
+                  value={field.value as string}
                   disabled={!isCityValid}
                   onChange={(e) => {
                     field.onChange(e.target.value)

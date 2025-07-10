@@ -22,40 +22,28 @@ export async function getItemsNearby(
   const supabase = await createClient()
 
   // Use a more specific type for rpcParams
-  const rpcParams: {
-    sort_by: string
-    category_filter: string[] | null
-    status_filter: string[] | null
-    search_term: string | null
-    max_distance_km: number | null
-    from_date: string | null
-    to_date: string | null
-    include_user_id: string | null
-    exclude_user_id: string | null
-    limit_count: number
-    offset_count: number
-    user_lat?: number
-    user_lng?: number
-  } = {
+  const rpcParams = {
     sort_by: sortBy,
-    category_filter: category?.length ? category : null,
-    status_filter: status?.length ? status : null,
-    search_term: search ?? null,
-    max_distance_km: maxDistanceKm ?? null,
+    category_filter: category?.length ? category : undefined,
+    status_filter: status?.length ? status : undefined,
+    search_term: search ?? undefined,
+    max_distance_km: maxDistanceKm ?? undefined,
     from_date: fromDate
       ? typeof fromDate === 'string'
         ? fromDate
         : fromDate.toISOString()
-      : null,
+      : undefined,
     to_date: toDate
       ? typeof toDate === 'string'
         ? toDate
         : toDate.toISOString()
-      : null,
-    include_user_id: includeUserId ?? null,
-    exclude_user_id: excludeUserId ?? null,
+      : undefined,
+    include_user_id: includeUserId ?? undefined,
+    exclude_user_id: excludeUserId ?? undefined,
     limit_count: pageSize,
     offset_count: offset,
+    user_lat: undefined as number | undefined,
+    user_lng: undefined as number | undefined,
   }
 
   if (sortBy === 'distance') {

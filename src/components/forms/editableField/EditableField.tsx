@@ -56,7 +56,7 @@ export default function EditableField({
           className={`
             w-[max-content] p-2 truncate
             hover:border border-gray-300 rounded-md
-            ${value ? 'text-gray-900' : 'text-gray-400 italic'}
+            ${value ? 'dark:text-gray-200' : 'dark:text-gray-400 text-opacity-70'}
           `}
         >
           {value || placeholder || '—'}

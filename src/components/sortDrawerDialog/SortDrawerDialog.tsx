@@ -19,6 +19,8 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer'
 import { SortForm } from '../forms/sortForm/SortForm'
+import { DirectionProvider } from '@radix-ui/react-direction'
+import { useLocale } from 'next-intl'
 
 export default function SortDrawerDialog({
   openSort,
@@ -27,50 +29,53 @@ export default function SortDrawerDialog({
   openSort: boolean
   setOpenSort: React.Dispatch<React.SetStateAction<boolean>>
 }) {
+  const local = useLocale()
   const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 768
 
   if (isDesktop) {
     return (
-      <Dialog
-        open={openSort}
-        onOpenChange={setOpenSort}
-      >
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>סינון פריטים</DialogTitle>
-            <DialogDescription>
-              <p className="text-sm text-muted-foreground">
-                השתמש בסינון כדי למצוא פריטים מתאימים לצרכים שלך.
-              </p>
-            </DialogDescription>
-          </DialogHeader>
-          <SortForm />
-        </DialogContent>
-      </Dialog>
+      <DirectionProvider dir={local === 'he' ? 'rtl' : 'ltr'}>
+        <Dialog
+          open={openSort}
+          onOpenChange={setOpenSort}
+        >
+          <DialogContent className="sm:max-w-[425px] p-6">
+            <DialogHeader className="py-2">
+              <DialogTitle className="text-center ">מיון פריטים</DialogTitle>
+              <DialogDescription className="rtl:text-right ltr:text-left text-sm text-muted-foreground">
+                בחר את אופן המיון של הפריטים המוצגים. ניתן למיין לפי תאריך פרסום
+                או מרחק.
+              </DialogDescription>
+            </DialogHeader>
+            <SortForm />
+          </DialogContent>
+        </Dialog>
+      </DirectionProvider>
     )
   }
 
   return (
-    <Drawer
-      open={openSort}
-      onOpenChange={setOpenSort}
-    >
-      <DrawerContent>
-        <DrawerHeader className="text-left">
-          <DrawerTitle>סינון פריטים</DrawerTitle>
-          <DrawerDescription>
-            <p className="text-sm text-muted-foreground">
-              השתמש בסינון כדי למצוא פריטים מתאימים לצרכים שלך.
-            </p>
-          </DrawerDescription>
-        </DrawerHeader>
-        <SortForm />
-        <DrawerFooter className="pt-2">
-          <DrawerClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DrawerClose>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+    <DirectionProvider dir={local === 'he' ? 'rtl' : 'ltr'}>
+      <Drawer
+        open={openSort}
+        onOpenChange={setOpenSort}
+      >
+        <DrawerContent>
+          <DrawerHeader className="py-2">
+            <DrawerTitle className="text-center">מיון פריטים</DrawerTitle>
+            <DrawerDescription className="rtl:text-right ltr:text-left text-sm text-muted-foreground">
+              בחר את אופן המיון של הפריטים המוצגים. ניתן למיין לפי תאריך פרסום
+              או מרחק.
+            </DrawerDescription>
+          </DrawerHeader>
+          <SortForm />
+          <DrawerFooter className="pt-2">
+            <DrawerClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    </DirectionProvider>
   )
 }

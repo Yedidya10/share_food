@@ -76,19 +76,19 @@ export default function ItemsGrid() {
     if (!date) {
       return 'תאריך לא זמין'
     }
-    const createdAt = new Date(date)
+    const publishedAt = new Date(date)
     const now = new Date()
-    const minutes = differenceInMinutes(now, createdAt)
-    const hours = differenceInHours(now, createdAt)
-    const days = differenceInDays(now, createdAt)
+    const minutes = differenceInMinutes(now, publishedAt)
+    const hours = differenceInHours(now, publishedAt)
+    const days = differenceInDays(now, publishedAt)
 
     if (minutes < 60) {
-      return `פורסם לפני ${formatDistanceToNow(createdAt, {
+      return `פורסם לפני ${formatDistanceToNow(publishedAt, {
         locale: he,
         addSuffix: false,
       })}`
     } else if (hours < 24) {
-      return `פורסם לפני ${formatDistanceToNow(createdAt, {
+      return `פורסם לפני ${formatDistanceToNow(publishedAt, {
         locale: he,
         addSuffix: false,
       })}`
@@ -97,7 +97,7 @@ export default function ItemsGrid() {
     } else if (days < 7) {
       return `פורסם ב־${days} הימים האחרונים`
     } else {
-      return `פורסם ב־${format(createdAt, 'd בMMMM yyyy', {
+      return `פורסם ב־${format(publishedAt, 'd בMMMM yyyy', {
         locale: he,
       })}`
     }

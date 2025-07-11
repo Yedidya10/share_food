@@ -33,6 +33,7 @@ import SaveAddress from '../address/SaveAddress'
 import { insertAddressToProfile } from '@/app/actions/insertAddress'
 import { insertPhoneToProfile } from '@/app/actions/insertPhoneToProfile'
 import useProfile from '@/hooks/db/useProfile'
+import { useEffect, useMemo } from 'react'
 
 export default function PostItemForm({
   openModal,
@@ -50,15 +51,17 @@ export default function PostItemForm({
   translation: FormTranslationType
 }) {
   const locale = useLocale()
-  const userProfile = useProfile()
+  const { data: userProfile } = useProfile()
 
   // Define your form schema using Zod
   const formSchema = postItemSchema(translation)
   type PostItemFormSchema = z.infer<typeof formSchema>
 
   // Define default values for the form
-  const defaultValues = postItemDefaultFormValues(translation)
-  const mainAddress = userProfile.data?.main_address
+  const defaultValues = useMemo(
+    () => postItemDefaultFormValues(translation),
+    [translation],
+  )
 
   // Define your form
   const postItemForm = useForm<PostItemFormSchema>({
@@ -66,20 +69,25 @@ export default function PostItemForm({
     mode: 'onBlur',
     reValidateMode: 'onBlur',
     criteriaMode: 'firstError',
-    defaultValues: {
-      ...defaultValues,
-      // If user profile has a main address, use its values
-      streetName: mainAddress?.street_name || '',
-      streetNumber: mainAddress?.street_number || '',
-      city: mainAddress?.city || '',
-      country: mainAddress?.country || defaultValues.country,
-      postalCode: mainAddress?.postal_code || '',
-      // If user profile has a contact details, use them
-      email: userProfile.data?.email || '',
-      phoneNumber: userProfile.data?.phone_number || '',
-      isHaveWhatsApp: userProfile.data?.is_have_whatsapp || false,
-    },
+    defaultValues: defaultValues,
   })
+
+  useEffect(() => {
+    if (userProfile) {
+      const mainAddress = userProfile.main_address
+      postItemForm.reset({
+        ...defaultValues,
+        streetName: mainAddress?.street_name || '',
+        streetNumber: mainAddress?.street_number || '',
+        city: mainAddress?.city || '',
+        country: mainAddress?.country || defaultValues.country,
+        postalCode: mainAddress?.postal_code || '',
+        email: userProfile.email || '',
+        phoneNumber: userProfile.phone_number || '',
+        isHaveWhatsApp: userProfile.is_have_whatsapp || false,
+      })
+    }
+  }, [userProfile, postItemForm, defaultValues])
 
   const { mutateAsync: insertItem, isPending } = useInsertItem()
 
@@ -179,9 +187,7 @@ export default function PostItemForm({
               {translation.addressDetails}
             </h3>
             <AddressFormFields form={postItemForm} />
-            {!userProfile.data?.main_address && (
-              <SaveAddress form={postItemForm} />
-            )}
+            {!userProfile?.main_address && <SaveAddress form={postItemForm} />}
             <Separator />
             <ContactFormFields
               form={postItemForm}

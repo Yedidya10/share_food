@@ -12,6 +12,7 @@ import {
   PackageCheck,
   X,
   ClipboardCopy,
+  BookCheck,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
@@ -214,6 +215,35 @@ export default function Item({
               <TooltipContent>סמן כנמסר</TooltipContent>
             </Tooltip>
           )}
+          {item.status === 'draft' && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="default"
+                  onClick={() =>
+                    updateItemStatus({
+                      id: item.id!,
+                      status: 'pending_publication',
+                    })
+                  }
+                  disabled={isUpdatingStatus}
+                >
+                  {isUpdatingStatus ? (
+                    <Loader
+                      className="animate-spin ml-2"
+                      size={16}
+                    />
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <BookCheck />
+                      <span>פרסם פריט</span>
+                    </div>
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>פרסם פריט</TooltipContent>
+            </Tooltip>
+          )}
           <DropdownMenu
             onOpenChange={(open) => {
               if (open) {
@@ -272,7 +302,7 @@ export default function Item({
                   </DropdownMenuItem>
                 </>
               )}
-              {item.status !== 'given_away' && (
+              {item.status !== 'given_away' && item.status !== 'expired' && (
                 <DropdownMenuSub>
                   <DropdownMenuSeparator />
                   <DropdownMenuSubTrigger>עדכון סטטוס</DropdownMenuSubTrigger>

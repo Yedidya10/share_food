@@ -19,13 +19,16 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer'
 import { FilterForm } from '../forms/filterForm/FilterForm'
+import { MainAddress } from '@/types/supabase-fixed'
 
 export default function FilterDrawerDialog({
   openFilter,
   setOpenFilter,
+  userMainAddress,
 }: {
   openFilter: boolean
   setOpenFilter: (open: boolean) => void
+  userMainAddress?: MainAddress
 }) {
   const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 768
 
@@ -45,6 +48,7 @@ export default function FilterDrawerDialog({
           <FilterForm
             onOpenChange={setOpenFilter}
             open={openFilter}
+            userMainAddress={userMainAddress}
           />
         </DialogContent>
       </Dialog>
@@ -66,6 +70,7 @@ export default function FilterDrawerDialog({
         <FilterForm
           onOpenChange={setOpenFilter}
           open={openFilter}
+          userMainAddress={userMainAddress}
           className="px-4"
         />
         <DrawerFooter className="pt-2">

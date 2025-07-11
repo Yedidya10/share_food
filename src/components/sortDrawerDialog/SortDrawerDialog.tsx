@@ -21,13 +21,16 @@ import {
 import { SortForm } from '../forms/sortForm/SortForm'
 import { DirectionProvider } from '@radix-ui/react-direction'
 import { useLocale } from 'next-intl'
+import { MainAddress } from '@/types/supabase-fixed'
 
 export default function SortDrawerDialog({
   openSort,
   setOpenSort,
+  userMainAddress,
 }: {
   openSort: boolean
   setOpenSort: React.Dispatch<React.SetStateAction<boolean>>
+  userMainAddress?: MainAddress
 }) {
   const local = useLocale()
   const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 768
@@ -47,7 +50,7 @@ export default function SortDrawerDialog({
                 או מרחק.
               </DialogDescription>
             </DialogHeader>
-            <SortForm />
+            <SortForm userMainAddress={userMainAddress} />
           </DialogContent>
         </Dialog>
       </DirectionProvider>
@@ -68,7 +71,7 @@ export default function SortDrawerDialog({
               או מרחק.
             </DrawerDescription>
           </DrawerHeader>
-          <SortForm />
+          <SortForm userMainAddress={userMainAddress} />
           <DrawerFooter className="pt-2">
             <DrawerClose asChild>
               <Button variant="outline">Cancel</Button>

@@ -5,6 +5,7 @@ import { z } from 'zod'
 import editItemSchema from '@/lib/zod/item/editItemSchema/editItemSchema'
 import { createClient } from '@/lib/supabase/server'
 import editItemImagesSchema from '@/lib/zod/item/editItemSchema/editItemImagesSchema'
+import { getCoordinatesFromAddress } from '@/lib/googleMaps/location'
 
 type EditItemFormSchema = z.infer<ReturnType<typeof editItemSchema>>
 type EditItemImage = z.infer<
@@ -28,14 +29,14 @@ export default async function updateItemToDatabase({
     }
 
     // Get user role from profiles table
-    const { data: profileData, error: profileError } = await supabase
-      .from('profiles')
+    const { data: roleData, error: roleError } = await supabase
+      .from('user_roles')
       .select('role')
-      .eq('id', userData.user.id)
+      .eq('user_id', userData.user.id)
       .single()
 
-    if (profileError) {
-      throw new Error(`Error fetching user profile: ${profileError.message}`)
+    if (roleError) {
+      throw new Error(`Error fetching user profile: ${roleError.message}`)
     }
 
     const storage = supabase.storage.from('share-food-images')
@@ -87,6 +88,17 @@ export default async function updateItemToDatabase({
       }
     }
 
+    //  Geocoding location
+    let location: string | null = null
+    console.log('Values for geocoding:', values)
+    if (values.streetName && values.streetNumber && values.city) {
+      const address = `${values.streetName} ${values.streetNumber}, ${values.city}, ${values.country}`
+      const geocodingResponse = await getCoordinatesFromAddress(address)
+      if (geocodingResponse) {
+        location = `POINT(${geocodingResponse.lng} ${geocodingResponse.lat})`
+      }
+    }
+
     const { error: updateError } = await supabase
       .from('items')
       .update({
@@ -98,19 +110,21 @@ export default async function updateItemToDatabase({
         city: values.city,
         country: values.country,
         postal_code: values.postalCode?.trim() || null,
+        location,
         phone_number: values.contactByPhone ? values.phoneNumber?.trim() : null,
         is_have_whatsapp: values.contactByPhone
           ? !!values.isHaveWhatsApp
           : false,
         email: values.contactByEmail ? values.email?.trim() : null,
         status:
-          profileData?.role === 'admin'
+          roleData?.role === 'admin'
             ? 'published'
             : itemStatus === 'pending_publication'
               ? 'pending_publication'
               : itemStatus === 'published'
                 ? 'update_pending'
                 : itemStatus,
+        updated_at: new Date(),
       })
       .eq('id', itemId)
 

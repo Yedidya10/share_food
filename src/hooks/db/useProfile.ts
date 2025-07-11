@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
+import { FixedProfile } from '@/types/supabase-fixed'
+import { PostgrestError } from '@supabase/supabase-js'
 
 export default function useProfile() {
   return useQuery({
@@ -10,7 +12,13 @@ export default function useProfile() {
 
       if (errorUser) throw new Error(errorUser.message)
 
-      const { data: profileData, error: profileError } = await supabase
+      const {
+        data: profileData,
+        error: profileError,
+      }: {
+        data: FixedProfile | null
+        error: PostgrestError | null
+      } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', dataUser?.user?.id)

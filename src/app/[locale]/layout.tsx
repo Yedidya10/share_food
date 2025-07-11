@@ -11,6 +11,7 @@ import FeedbackButton from '@/components/feedbackButton/FeedbackButton'
 import QueryProvider from '@/lib/reactQuery/QueryProvider'
 import { Toaster } from '@/components/ui/sonner'
 import WelcomeEmailEffect from '@/components/WelcomeEmailEffect'
+import { LocationProvider } from '@/context/LocationContext'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -141,25 +142,27 @@ export default async function LocaleLayout({
         >
           <NextIntlClientProvider>
             <QueryProvider>
-              <WelcomeEmailEffect />
-              <MainHeader />
-              <Toaster
-                position="top-center"
-                richColors
-                closeButton={false}
-                toastOptions={{
-                  className:
-                    'bg-white dark:bg-gray-800 text-gray-900 dark:text-white',
-                  style: {
-                    borderRadius: '8px',
-                    padding: '16px',
-                  },
-                }}
-              />
-              {auth}
-              {editItem}
-              {children}
-              <FeedbackButton />
+              <LocationProvider>
+                <WelcomeEmailEffect />
+                <MainHeader />
+                <Toaster
+                  position="top-center"
+                  richColors
+                  closeButton={false}
+                  toastOptions={{
+                    className:
+                      'bg-white dark:bg-gray-800 text-gray-900 dark:text-white',
+                    style: {
+                      borderRadius: '8px',
+                      padding: '16px',
+                    },
+                  }}
+                />
+                {auth}
+                {editItem}
+                {children}
+                <FeedbackButton />
+              </LocationProvider>
             </QueryProvider>
           </NextIntlClientProvider>
         </ThemeProvider>

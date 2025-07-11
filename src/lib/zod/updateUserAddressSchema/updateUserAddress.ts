@@ -1,12 +1,12 @@
-import { z } from 'zod'
 import withAddressValidation from '@/lib/zod/withAddressValidation'
 import { AddressFormTranslationFull } from '@/types/formTranslation'
+import addressSchemaBase from '@/lib/zod/addressSchemaBase'
 
 export default function updateUserAddressSchema(
   translation: AddressFormTranslationFull,
 ) {
   return withAddressValidation({
-    schema: z.object({}),
+    schema: addressSchemaBase(translation),
     translation,
   })
 }

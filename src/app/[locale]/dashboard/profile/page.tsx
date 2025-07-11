@@ -8,6 +8,7 @@ export default async function ProfilePage() {
   const tFormToast = await getTranslations('form.toast')
   const tFormContactDetails = await getTranslations('form.contact_details')
   const tFormAddress = await getTranslations('form.address')
+  const tCountries = await getTranslations('countries')
 
   const genericTranslations = {
     submitButton: tFormGeneric('submit_button'),
@@ -35,7 +36,7 @@ export default async function ProfilePage() {
     streetName: tFormAddress('street_name'),
     streetNumber: tFormAddress('street_number'),
     city: tFormAddress('city'),
-    country: tFormAddress('country'),
+    israel: tCountries('israel'),
     postalCode: tFormAddress('postal_code'),
     streetNamePlaceholder: tFormAddress('street_name_placeholder'),
     streetNameError: tFormAddress('street_name_error'),
@@ -102,11 +103,11 @@ export default async function ProfilePage() {
           fullName:
             profileData?.user_name || user.user_metadata?.full_name || '',
           address: {
-            streetName: profileData?.main_address?.street_name || '',
-            streetNumber: profileData?.main_address?.street_number || '',
-            city: profileData?.main_address?.city || '',
-            country: profileData?.main_address?.country || '',
-            postalCode: profileData?.main_address?.postal_code || '',
+            streetName: profileData?.main_address?.street_name || undefined,
+            streetNumber: profileData?.main_address?.street_number || undefined,
+            city: profileData?.main_address?.city || undefined,
+            country: profileData?.main_address?.country || undefined,
+            postalCode: profileData?.main_address?.postal_code || undefined,
           },
           avatarUrl:
             profileData?.avatar_url || user.user_metadata?.avatar_url || '',

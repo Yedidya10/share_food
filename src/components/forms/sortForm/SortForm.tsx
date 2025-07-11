@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useRouter } from '@/i18n/navigation'
 import { Label } from '@/components/ui/label'
@@ -11,71 +10,65 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { LocateIcon } from 'lucide-react'
+import ManualAddressInput from '@/components/forms/manualAddressInput/ManualAddressInput'
+import { useLocationContext } from '@/context/LocationContext'
+import { useGeocodedCoordinates } from '@/hooks/useGeocodedCoordinates'
+import { useCurrentLocation } from '@/hooks/useCurrentLocation'
+import { useState } from 'react'
+import { MainAddress } from '@/types/supabase-fixed'
 import { getCoordinatesFromAddress } from '@/lib/googleMaps/location'
 
-export function SortForm({ userMainAddress }: { userMainAddress?: string }) {
+export function SortForm({
+  userMainAddress,
+}: {
+  userMainAddress?: MainAddress
+}) {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const { distanceType, setDistanceType, manualAddress } = useLocationContext()
 
   const [sortBy, setSortBy] = useState(searchParams.get('sort') ?? 'date')
-  const [distanceType, setDistanceType] = useState(
-    userMainAddress ? 'profile' : 'manual',
+
+  // hooks שמחזירים coords בהתאם לבחירה
+  const { data: manualCoords } = useGeocodedCoordinates(
+    manualAddress,
+    distanceType === 'manual',
   )
-  const [manualAddress, setManualAddress] = useState('')
+  const { data: geoCoords } = useCurrentLocation(distanceType === 'geo')
 
-  useEffect(() => {
-    setSortBy(searchParams.get('sort') ?? 'date')
-  }, [searchParams])
-
+  // פונקציה שמעדכנת את כתובת ה-URL
   const updateUrlParams = (params: Record<string, string | undefined>) => {
     const current = new URLSearchParams(searchParams.toString())
-
     Object.entries(params).forEach(([key, value]) => {
       if (value) current.set(key, value)
       else current.delete(key)
     })
-
-    current.set('page', '0') // אפס את עמוד האינסוף
-
+    current.set('page', '0')
     router.replace('?' + current.toString())
   }
 
-  const handleSortChange = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
     if (sortBy === 'distance') {
-      if (distanceType === 'manual' && manualAddress) {
-        const coords = await getCoordinatesFromAddress(manualAddress)
-        console.log('Coordinates from manual address:', coords)
-        if (coords) {
-          updateUrlParams({
-            sort: 'distance',
-            lat: coords.lat.toString(),
-            lng: coords.lng.toString(),
-          })
-        }
-      }
+      let coords: { lat: number; lng: number } | null | undefined = null
 
-      if (distanceType === 'geo') {
-        navigator.geolocation.getCurrentPosition((pos) => {
-          updateUrlParams({
-            sort: 'distance',
-            lat: pos.coords.latitude.toString(),
-            lng: pos.coords.longitude.toString(),
-          })
-        })
-      }
-
+      if (distanceType === 'manual') coords = manualCoords || undefined
+      if (distanceType === 'geo') coords = geoCoords || undefined
       if (distanceType === 'profile' && userMainAddress) {
-        const coords = await getCoordinatesFromAddress(userMainAddress)
-        if (coords) {
-          updateUrlParams({
-            sort: 'distance',
-            lat: coords.lat.toString(),
-            lng: coords.lng.toString(),
-          })
-        }
+        coords = await getCoordinatesFromAddress(
+          `${userMainAddress.street_name} ${userMainAddress.street_number}, ${userMainAddress.city}, ${userMainAddress.country}`,
+        )
+      }
+
+      if (coords) {
+        updateUrlParams({
+          sort: 'distance',
+          lat: coords.lat.toString(),
+          lng: coords.lng.toString(),
+        })
       }
     } else {
       updateUrlParams({
@@ -88,10 +81,7 @@ export function SortForm({ userMainAddress }: { userMainAddress?: string }) {
 
   return (
     <form
-      onSubmit={(e) => {
-        e.preventDefault()
-        handleSortChange()
-      }}
+      onSubmit={handleSubmit}
       className="grid gap-4"
     >
       <div className="grid gap-2">
@@ -123,7 +113,8 @@ export function SortForm({ userMainAddress }: { userMainAddress?: string }) {
             <SelectContent>
               {userMainAddress && (
                 <SelectItem value="profile">
-                  כתובת ראשית: {userMainAddress}
+                  כתובת ראשית:{' '}
+                  {`${userMainAddress.street_name} ${userMainAddress.street_number}, ${userMainAddress.city}, ${userMainAddress.country}`}
                 </SelectItem>
               )}
               <SelectItem value="manual">כתובת ידנית</SelectItem>
@@ -131,31 +122,14 @@ export function SortForm({ userMainAddress }: { userMainAddress?: string }) {
             </SelectContent>
           </Select>
 
-          {distanceType === 'manual' && (
-            <Input
-              placeholder="הזן את הכתובת שלך"
-              value={manualAddress}
-              onChange={(e) => setManualAddress(e.target.value)}
-            />
-          )}
+          {distanceType === 'manual' && <ManualAddressInput />}
 
           {distanceType === 'geo' && (
             <Button
               type="button"
               variant="outline"
-              onClick={() => {
-                navigator.geolocation.getCurrentPosition((pos) => {
-                  updateUrlParams({
-                    sort: 'distance',
-                    lat: pos.coords.latitude.toString(),
-                    lng: pos.coords.longitude.toString(),
-                  })
-                })
-
-                setDistanceType('geo') // עדכון סוג המיקום
-              }}
             >
-              <LocateIcon className="mr-2 h-4 w-4" /> אתר אותי
+              <LocateIcon className="mr-2 h-4 w-4" /> משתמש במיקום נוכחי
             </Button>
           )}
         </div>

@@ -104,11 +104,13 @@ export default async function updateItemToDatabase({
           : false,
         email: values.contactByEmail ? values.email?.trim() : null,
         status:
-          profileData.role === 'admin'
+          profileData?.role === 'admin'
             ? 'published'
             : itemStatus === 'pending_publication'
               ? 'pending_publication'
-              : 'update_pending',
+              : itemStatus === 'published'
+                ? 'update_pending'
+                : itemStatus,
       })
       .eq('id', itemId)
 

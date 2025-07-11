@@ -11,20 +11,24 @@ import {
 } from '@/components/ui/tooltip'
 import { useState } from 'react'
 import SortDrawerDialog from '@/components/sortDrawerDialog/SortDrawerDialog'
+import useProfile from '@/hooks/db/useProfile'
 
 export default function FilterAndSearchBar() {
   const [openFilter, setOpenFilter] = useState(false)
   const [openSort, setOpenSort] = useState(false)
+  const { data: profileData } = useProfile()
 
   return (
     <div className="flex p-3 gap-3 w-full sticky top-[60px] z-50 bg-white dark:bg-[black] opacity-98">
       <FilterDrawerDialog
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
+        userMainAddress={profileData?.main_address ?? undefined}
       />
       <SortDrawerDialog
         openSort={openSort}
         setOpenSort={setOpenSort}
+        userMainAddress={profileData?.main_address ?? undefined}
       />
       <ProductSearchBar />
       <Tooltip>

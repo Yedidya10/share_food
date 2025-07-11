@@ -7,7 +7,7 @@ import ThemeProvider from '@/components/theme/ThemeProvider'
 import './globals.css'
 import OneTapComponent from '@/components/OneTapComponent'
 import MainHeader from '@/components/layouts/mainHeader/MainHeader'
-import FeedbackButton from '@/components/feedbackButton/FeedbackButton'
+// import FeedbackButton from '@/components/feedbackButton/FeedbackButton'
 import QueryProvider from '@/lib/reactQuery/QueryProvider'
 import { Toaster } from '@/components/ui/sonner'
 import WelcomeEmailEffect from '@/components/WelcomeEmailEffect'
@@ -161,7 +161,7 @@ export default async function LocaleLayout({
                 {auth}
                 {editItem}
                 {children}
-                <FeedbackButton />
+                {/* <FeedbackButton /> */}
               </LocationProvider>
             </QueryProvider>
           </NextIntlClientProvider>

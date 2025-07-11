@@ -79,7 +79,6 @@ export default async function insertItemToDatabase(values: PostItemFormSchema) {
     if (values.streetName && values.streetNumber && values.city) {
       const address = `${values.streetName} ${values.streetNumber}, ${values.city}, ${values.country}`
       const geocodingResponse = await getCoordinatesFromAddress(address)
-      console.log('Geocoding response:', geocodingResponse)
       if (geocodingResponse) {
         location = `POINT(${geocodingResponse.lng} ${geocodingResponse.lat})`
       }

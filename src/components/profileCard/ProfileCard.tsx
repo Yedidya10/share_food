@@ -205,7 +205,8 @@ export default function ProfileCard({
               streetName: user.address.streetName || '',
               streetNumber: user.address.streetNumber || '',
               city: user.address.city || '',
-              country: user.address.country || '',
+              country:
+                user.address.country || translations.addressTranslations.israel, // Default
               postalCode: user.address.postalCode || '',
             }}
             translation={{

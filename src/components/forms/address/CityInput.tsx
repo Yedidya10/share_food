@@ -63,7 +63,7 @@ export default function CityInput<T extends { city: string }>({
           <FormLabel htmlFor="city">
             {tAddress('city')}
             <span className="text-xs text-muted-foreground">
-              {tGeneric('required')}
+              ({tGeneric('required')})
             </span>
           </FormLabel>
           <Popover
@@ -73,8 +73,9 @@ export default function CityInput<T extends { city: string }>({
             <PopoverTrigger asChild>
               <FormControl>
                 <Input
-                  className="text-right"
+                  className="rtl:text-right"
                   id="city"
+                  required
                   value={field.value as string}
                   placeholder={tAddress('city_placeholder')}
                   onChange={(e) => {

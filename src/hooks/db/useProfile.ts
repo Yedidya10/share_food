@@ -21,7 +21,12 @@ export default function useProfile() {
         return null
       }
 
-      return profileData || null
+      if (!profileData) {
+        console.warn('No profile data found for user:', dataUser?.user?.id)
+        return null
+      }
+
+      return profileData
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
   })

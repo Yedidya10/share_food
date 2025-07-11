@@ -118,7 +118,7 @@ export function SortForm({
                 </SelectItem>
               )}
               <SelectItem value="manual">כתובת ידנית</SelectItem>
-              <SelectItem value="geo">מיקום נוכחי</SelectItem>
+              {/* <SelectItem value="geo">מיקום נוכחי</SelectItem> */}
             </SelectContent>
           </Select>
 

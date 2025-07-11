@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { AtSignIcon, Home, Pencil, Phone } from 'lucide-react'
 import { useUpdateProfileField } from '@/hooks/db/useUpdateProfileField'
+import formatPhoneNumberInternational from '@/utils/formatPhoneNumberInternational'
 
 type ProfileCard = {
   id: string
@@ -87,8 +88,8 @@ export default function ProfileCard({
 
   return (
     <div
-      className="rounded-xl shadow p-6 flex flex-col lg:flex-row lg:justify-between
-     gap-6 items-start rtl:text-right"
+      className="rounded-xl shadow dark:shadow-gray-800/50
+       p-6 flex flex-col lg:flex-row lg:justify-between gap-6 items-start rtl:text-right"
     >
       {/* Header */}
       <div className="flex flex-3 flex-row md:items-start items-center gap-6">
@@ -151,7 +152,8 @@ export default function ProfileCard({
             {translations.phoneTranslations.phoneNumber}
           </span>
           <span className="ps-2">
-            {user.phone || translations.phoneTranslations.noPhoneNumberProvided}
+            {formatPhoneNumberInternational(user.phone) ||
+              translations.phoneTranslations.noPhoneNumberProvided}
           </span>
           <Button
             variant="ghost"
@@ -182,7 +184,15 @@ export default function ProfileCard({
           <span className="font-medium">
             {translations.addressTranslations.addressDetails}
           </span>
-          <span className="ps-2 dark:text-gray-700 text-gray-500">
+          <span
+            className={`ps-2 ${
+              user.address.streetName &&
+              user.address.streetNumber &&
+              user.address.city
+                ? ''
+                : 'dark:text-gray-700 text-gray-500'
+            }`}
+          >
             {user.address.streetName &&
             user.address.streetNumber &&
             user.address.city

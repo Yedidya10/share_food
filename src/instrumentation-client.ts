@@ -1,6 +1,8 @@
 import { isDev, externalServices } from '@/lib/envConfig'
 import posthog from 'posthog-js'
 
+const toDebug = false
+
 posthog.init(externalServices.posthog.apiKey, {
   api_host: 'https://us.posthog.com',
   ui_host: 'https://us.posthog.com',
@@ -8,5 +10,5 @@ posthog.init(externalServices.posthog.apiKey, {
   capture_pageleave: true,
   capture_exceptions: true,
   autocapture: true,
-  debug: isDev,
+  debug: isDev && toDebug,
 })

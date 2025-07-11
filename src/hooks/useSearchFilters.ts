@@ -46,7 +46,7 @@ export function useSearchFilters() {
         ? new Date(getParam('fromDate')!)
         : undefined,
       toDate: getParam('toDate') ? new Date(getParam('toDate')!) : undefined,
-      pageSize: 10,
+      pageSize: 20,
     },
 
     // שליטה על פרמטרים:

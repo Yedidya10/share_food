@@ -83,8 +83,9 @@ export default function StreetInput<T extends { streetName: string }>({
               <FormControl>
                 <Input
                   id="streetName"
-                  className="text-right"
+                  className="rtl:text-right"
                   value={field.value as string}
+                  required
                   disabled={!isCityValid}
                   onChange={(e) => {
                     field.onChange(e.target.value)
@@ -104,6 +105,7 @@ export default function StreetInput<T extends { streetName: string }>({
                 <CommandInput
                   value={field.value}
                   onValueChange={(val) => {
+                    field.onChange(val)
                     field.onChange(val)
                     debouncedSetSearch(val)
                   }}

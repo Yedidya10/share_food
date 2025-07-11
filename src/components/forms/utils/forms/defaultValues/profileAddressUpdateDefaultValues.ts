@@ -6,8 +6,9 @@ const profileAddressUpdateDefaultValues = ({
   translation,
 }: {
   translation: AddressFormTranslationFull
-  initialValues?: AddressFields
+  initialValues: AddressFields
 }) => {
+  console.log('Default values for address update form:', translation.israel)
   return {
     streetName: initialValues?.streetName || '',
     streetNumber: initialValues?.streetNumber || '',
@@ -16,7 +17,7 @@ const profileAddressUpdateDefaultValues = ({
       initialValues?.country !== undefined
         ? ((translation as Record<string, string>)[initialValues.country] ??
           initialValues.country)
-        : '',
+        : translation.israel, // Default
     postalCode: initialValues?.postalCode || '',
   }
 }

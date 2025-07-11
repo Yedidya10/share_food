@@ -29,6 +29,7 @@ export type AddressFormTranslationBase = {
   cityPlaceholder: string
   cityError: string
   country: string
+  israel: string
   postalCode: string
   postalCodePlaceholder: string
   postalCodeError: string
@@ -81,7 +82,6 @@ export type FormTranslationType = {
   descriptionMaxLength: string
   uploadImages: string
   uploadImagesError: string
-  israel: string
 } & AddressFormTranslationBase &
   ContactFormTranslationBase &
   FormErrorTranslationType &

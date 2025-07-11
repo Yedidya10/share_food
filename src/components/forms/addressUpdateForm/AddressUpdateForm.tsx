@@ -23,7 +23,6 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import addressUpdateFormSchema from '@/lib/zod/updateUserAddressSchema/updateUserAddress'
-import profileAddressUpdateDefaultValues from '@/components/forms/utils/forms/defaultValues/profileAddressUpdateDefaultValues'
 import { AddressFormTranslationFull } from '@/types/formTranslation'
 
 export default function AddressUpdateForm({
@@ -33,12 +32,12 @@ export default function AddressUpdateForm({
   onSubmitSuccess,
   translation,
 }: {
-  initialValues?: {
-    streetName?: string
-    streetNumber?: string
-    city?: string
-    country?: string
-    postalCode?: string
+  initialValues: {
+    streetName: string
+    streetNumber: string
+    city: string
+    country: string
+    postalCode: string
   }
   openModal: boolean
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>
@@ -46,35 +45,20 @@ export default function AddressUpdateForm({
   translation: AddressFormTranslationFull
 }) {
   const locale = useLocale()
+  const { mutateAsync: updateAddress, isPending } = useUpdateAddress()
 
   // Define your form schema using Zod
   const formSchema = addressUpdateFormSchema(translation)
   type AddressUpdateFormSchema = z.infer<typeof formSchema>
 
-  // Define default values for the form
-  const defaultValues = profileAddressUpdateDefaultValues({
-    translation,
-    initialValues: initialValues
-      ? {
-          streetName: initialValues.streetName ?? '',
-          streetNumber: initialValues.streetNumber ?? '',
-          city: initialValues.city ?? '',
-          country: initialValues.country ?? '',
-          postalCode: initialValues.postalCode ?? '',
-        }
-      : undefined,
-  })
-
   // Define your form
-  const postItemForm = useForm<AddressUpdateFormSchema>({
+  const addressUpdateForm = useForm<AddressUpdateFormSchema>({
     resolver: zodResolver(formSchema),
     mode: 'onBlur',
     reValidateMode: 'onBlur',
     criteriaMode: 'firstError',
-    defaultValues: defaultValues,
+    defaultValues: initialValues,
   })
-
-  const { mutateAsync: updateAddress, isPending } = useUpdateAddress()
 
   // Handle form submission
   const onSubmit = async (values: AddressUpdateFormSchema) => {
@@ -85,7 +69,7 @@ export default function AddressUpdateForm({
       if (insertItemResponse?.success) {
         onSubmitSuccess(true)
         setOpenModal(false)
-        postItemForm.reset()
+        addressUpdateForm.reset()
       } else {
         onSubmitSuccess(false)
         setOpenModal(false)
@@ -98,9 +82,9 @@ export default function AddressUpdateForm({
 
   // Check if form can be submitted
   const canSubmit =
-    postItemForm.formState.isValid &&
-    !postItemForm.formState.isSubmitting &&
-    postItemForm.formState.isDirty &&
+    addressUpdateForm.formState.isValid &&
+    !addressUpdateForm.formState.isSubmitting &&
+    addressUpdateForm.formState.isDirty &&
     !isPending
 
   return (
@@ -120,12 +104,12 @@ export default function AddressUpdateForm({
             {translation.formDescription}
           </DialogDescription>
         </DialogHeader>
-        <Form {...postItemForm}>
+        <Form {...addressUpdateForm}>
           <form
-            onSubmit={postItemForm.handleSubmit(onSubmit)}
+            onSubmit={addressUpdateForm.handleSubmit(onSubmit)}
             className="space-y-8"
           >
-            <AddressFormFields form={postItemForm} />
+            <AddressFormFields form={addressUpdateForm} />
             <div className="gap-2 flex justify-between items-center">
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -133,9 +117,9 @@ export default function AddressUpdateForm({
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => postItemForm.reset()}
+                      onClick={() => addressUpdateForm.reset()}
                       className="min-w-[120px]"
-                      disabled={!postItemForm.formState.isDirty}
+                      disabled={!addressUpdateForm.formState.isDirty}
                     >
                       <RotateCcw />
                       {translation.reset}
@@ -143,7 +127,7 @@ export default function AddressUpdateForm({
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>
-                  {postItemForm.formState.isDirty
+                  {addressUpdateForm.formState.isDirty
                     ? 'לחץ כדי לאפס את הטופס לערכים המקוריים'
                     : 'לא בוצעו שינויים בטופס'}
                 </TooltipContent>
@@ -172,7 +156,8 @@ export default function AddressUpdateForm({
                         type="submit"
                         disabled={!canSubmit}
                       >
-                        {isPending || postItemForm.formState.isSubmitting ? (
+                        {isPending ||
+                        addressUpdateForm.formState.isSubmitting ? (
                           <div className="flex items-center gap-2">
                             <Loader className="animate-spin mr-2 h-4 w-4" />
                             <span className="sr-only">

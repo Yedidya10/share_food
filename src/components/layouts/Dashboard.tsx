@@ -31,7 +31,7 @@ export default function DashboardLayout({
   return (
     <div className="flex flex-col md:flex-row">
       {/* תפריט מובייל - עם Trigger */}
-      <div className="md:hidden sticky z-50 w-full top-[60px] bg-white dark:bg-gray-900">
+      <div className="md:hidden sticky z-50 w-full top-[60px]">
         <NavigationMenu className="block max-w-full">
           <NavigationMenuList>
             <NavigationMenuItem className="w-full">
@@ -67,7 +67,7 @@ export default function DashboardLayout({
             </NavigationMenuItem>
           </NavigationMenuList>
           <NavigationMenuViewport
-            className="absolute left-0 top-full mt-1 w-full overflow-hidden rounded-md bg-white dark:bg-gray-900 shadow-lg"
+            className="absolute left-0 top-full mt-1 w-full overflow-hidden rounded-md shadow-lg"
             style={
               {
                 '--radix-navigation-menu-viewport-width': '100%',
@@ -81,7 +81,7 @@ export default function DashboardLayout({
       <aside
         className={cn(
           'hidden md:flex fixed top-[60px] inset-inline-start-0 w-[max(180px,18%)] h-[calc(100vh-60px)]',
-          'bg-gray-100 border-inline-end border-gray-200 dark:bg-gray-800 dark:border-gray-700',
+          'border-inline-end shadow-md dark:shadow-gray-800',
         )}
       >
         <ul className="p-2 space-y-1 w-full">

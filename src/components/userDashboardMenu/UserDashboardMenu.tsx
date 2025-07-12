@@ -63,7 +63,7 @@ export default function UserDashboardMenu() {
             </NavigationMenuItem>
           </NavigationMenuList>
           <NavigationMenuViewport
-            className="absolute left-0 top-full mt-1 w-full overflow-hidden rounded-md bg-white dark:bg-gray-900 shadow-lg"
+            className="absolute left-0 top-full mt-1 w-full overflow-hidden rounded-md shadow-lg"
             style={
               {
                 '--radix-navigation-menu-viewport-width': '100%',
@@ -74,7 +74,7 @@ export default function UserDashboardMenu() {
       </div>
       <nav
         className="hidden md:block
-          w-[max(180px,18%)] sticky top-0 h-full bg-gray-100 border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700"
+          w-[max(180px,18%)] sticky top-0 h-full border-r border-gray-200"
       >
         <ul className="p-1 space-y-1">
           {navItems.map((item) => (

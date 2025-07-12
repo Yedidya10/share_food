@@ -23,7 +23,6 @@ export default function PostItemButton({
     <>
       {/* For Desktop */}
       <Button
-        variant="outline"
         onClick={handleClick}
         disabled={disabled}
         aria-label="Create Item"

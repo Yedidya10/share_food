@@ -1,4 +1,19 @@
 {
   "hello": "שלום",
-  "welcome": "ברוך הבא"
+  "welcome": "ברוך הבא",
+  "community": {
+    "no_communities": "לא הצטרפת לקהילות עדיין",
+    "join_community": "הצטרף לקהילה",
+    "leave_community": "עזוב קהילה",
+    "community_name": "שם הקהילה",
+    "community_description": "תיאור הקהילה",
+    "community_members": "חברי הקהילה",
+    "community_joined": "הצטרפת לקהילה בהצלחה",
+    "community_left": "עזבת את הקהילה בהצלחה",
+    "communities": {
+      "huji_student_village": "כפר הסטודנטים של האוניברסיטה העברית",
+      "other_community": "קהילה אחרת"
+    }
+  },
+  "no_items": "אין פריטים זמינים"
 }

@@ -113,10 +113,10 @@ export default function ItemsGrid() {
             (item: Database['public']['Views']['active_items']['Row']) => (
               <Card
                 key={item.id}
-                className="rounded-2xl shadow-lg hover:shadow-xl gap-3 transition-shadow p-0 overflow-hidden"
+                className="p-0 rounded-xl overflow-hidden"
               >
-                <CardContent className="p-0 space-y-2 flex flex-col h-full">
-                  <div className="rounded-2xl overflow-hidden h-[191.2px] relative">
+                <CardContent className="p-0">
+                  <div className="overflow-hidden rounded-xl">
                     <Carousel
                       className="w-full m-auto p-0 rounded h-full"
                       opts={{
@@ -201,7 +201,7 @@ export default function ItemsGrid() {
                       >
                         <DialogTrigger asChild>
                           <Button
-                            variant="outline"
+                            variant="secondary"
                             className="w-full mt-2"
                             onClick={() => {
                               setOpenItemId(item.id)
@@ -313,48 +313,52 @@ export default function ItemsGrid() {
                                     <User2 className="w-5 h-5 text-muted-foreground" />
                                     {item.full_name}
                                   </p>
-                                  <div className="grid grid-cols-1 gap-2 text-base">
-                                    <LinkButton
-                                      href={`https://mail.google.com/mail/?view=cm&to=${item.email}&su=${encodeURIComponent('פנייה מהאתר SpareBite')}&body=${encodeURIComponent(`לגבי הפריט ${item.title}`)}`}
-                                      target="_blank"
-                                      className="flex items-center gap-2 w-full"
-                                    >
-                                      <Mail />
-                                      שלח דוא&quot;ל
-                                    </LinkButton>
-                                    {item.phone_number && (
-                                      <div className="flex align-center gap-2 w-full">
-                                        <LinkButton
-                                          href={`tel:${item.phone_number}`}
-                                          className="flex items-center gap-2 flex-1"
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                        >
-                                          <Smartphone />
-                                          <span>התקשר</span>
-                                        </LinkButton>
-                                        {item.is_have_whatsapp && (
-                                          <Tooltip>
-                                            <LinkButton
-                                              href={`https://wa.me/${item.phone_number.replace(
-                                                /[^0-9]/g,
-                                                '',
-                                              )}`}
-                                              target="_blank"
-                                              rel="noopener noreferrer"
-                                              className="flex-1"
-                                            >
-                                              <FaWhatsapp size={20} />
-                                              <span>שלח הודעת וואטסאפ</span>
-                                            </LinkButton>
-                                          </Tooltip>
-                                        )}
-                                      </div>
-                                    )}
+                                  <div className="grid grid-cols-1 gap-4 text-base">
                                     <StartChatButton
                                       targetUserId={item.user_id}
                                       itemId={item.id}
                                     />
+                                    <>
+                                      {item.phone_number && (
+                                        <div className="flex align-center gap-2 w-full">
+                                          <LinkButton
+                                            variant={'outline'}
+                                            href={`tel:${item.phone_number}`}
+                                            className="flex items-center gap-2 flex-1"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                          >
+                                            <Smartphone />
+                                            <span>התקשר</span>
+                                          </LinkButton>
+                                          {item.is_have_whatsapp && (
+                                            <Tooltip>
+                                              <LinkButton
+                                                variant={'outline'}
+                                                href={`https://wa.me/${item.phone_number.replace(
+                                                  /[^0-9]/g,
+                                                  '',
+                                                )}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex-1"
+                                              >
+                                                <FaWhatsapp size={20} />
+                                                <span>שלח הודעת וואטסאפ</span>
+                                              </LinkButton>
+                                            </Tooltip>
+                                          )}
+                                        </div>
+                                      )}
+                                      {item.email && (
+                                        <div className="flex items-center gap-2 w-full">
+                                          <Mail />
+                                          <span className="flex items-center gap-2">
+                                            {item.email}
+                                          </span>
+                                        </div>
+                                      )}
+                                    </>
                                   </div>
                                 </div>
                               ) : (

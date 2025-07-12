@@ -10,6 +10,7 @@ import { toast } from 'sonner'
 import { AtSignIcon, Home, Pencil, Phone } from 'lucide-react'
 import { useUpdateProfileField } from '@/hooks/db/useUpdateProfileField'
 import formatPhoneNumberInternational from '@/utils/formatPhoneNumberInternational'
+import AvatarUpdateForm from '../forms/avatarUpdateForm/AvatarUpdateForm'
 
 type ProfileCard = {
   id: string
@@ -37,6 +38,7 @@ export default function ProfileCard({
   translations: any
 }) {
   const [isOpenAddressModal, setOpenAddressModal] = useState(false)
+  const [isOpenAvatarModal, setOpenAvatarModal] = useState(false)
   const [isSubmitAddressSuccess, setIsSubmitAddressSuccess] = useState<
     null | boolean
   >(null)
@@ -93,16 +95,37 @@ export default function ProfileCard({
     >
       {/* Header */}
       <div className="flex flex-3 flex-row md:items-start items-center gap-6">
-        <div className="relative  w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden group">
+        <div className="relative  w-24 h-24 md:w-32 md:h-32 rounded-full group">
           <Image
             src={user.avatarUrl}
             alt="avatar"
             fill
-            className="object-cover"
+            className="object-cover rounded-full"
           />
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-xs bg-black/50 cursor-pointer">
-            Change
-          </div>
+          {/* <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setOpenAvatarModal(true)}
+            className="absolute bottom-1 right-1 p-1 bg-white dark:bg-gray-800 rounded-full shadow hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            aria-label="Change avatar"
+          >
+            <Camera size={16} />
+          </Button> */}
+          <AvatarUpdateForm
+            openModal={isOpenAvatarModal}
+            setOpenModal={setOpenAvatarModal}
+            onSubmitSuccess={() => {
+              setOpenAvatarModal(false)
+              toast.success(translations.toastTranslations.avatarUpdated)
+            }}
+            avatarUrl={user.avatarUrl}
+            userId={user.id}
+            translation={{
+              avatarUpdated: translations.toastTranslations.avatarUpdated,
+              avatarUpdateFailed:
+                translations.toastTranslations.avatarUpdateFailed,
+            }}
+          />
         </div>
         <div className="flex-1 p-2 space-y-2">
           <EditableField

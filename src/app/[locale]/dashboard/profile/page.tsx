@@ -1,3 +1,4 @@
+import CommunitiesCard from '@/components/profileCard/CommunitiesCard'
 import ProfileCard from '@/components/profileCard/ProfileCard'
 import { createClient } from '@/lib/supabase/server'
 import { FixedProfile } from '@/types/supabase-fixed'
@@ -9,6 +10,8 @@ export default async function ProfilePage() {
   const tFormContactDetails = await getTranslations('form.contact_details')
   const tFormAddress = await getTranslations('form.address')
   const tCountries = await getTranslations('countries')
+  const tCommunity = await getTranslations('common.community')
+  const tCommunities = await getTranslations('common.community.communities')
 
   const genericTranslations = {
     submitButton: tFormGeneric('submit_button'),
@@ -93,34 +96,76 @@ export default async function ProfilePage() {
       throw profileError
     }
 
+    const { data: profileCommunities, error: profileCommunitiesError } =
+      await supabase
+        .from('profile_communities')
+        .select('community_id')
+        .eq('profile_id', userData.user.id)
+
+    if (profileCommunitiesError) {
+      throw profileCommunitiesError
+    }
+
+    const profileCommunitiesIds =
+      profileCommunities?.map((item) => item.community_id) || []
+
+    const { data: communitiesData, error: communitiesError } = await supabase
+      .from('communities')
+      .select('id, name')
+      .in('id', profileCommunitiesIds)
+
+    if (communitiesError) {
+      throw communitiesError
+    }
+
+    const translatedCommunities = communitiesData.reduce(
+      (acc, community) => {
+        acc[community.name] = tCommunities(community.name)
+        return acc
+      },
+      {} as Record<string, string>,
+    )
+
     const user = userData?.user
     return (
-      <ProfileCard
-        user={{
-          email: profileData?.email || user.email || '',
-          createdAt: user.created_at || '',
-          phone: profileData?.phone_number || '',
-          fullName:
-            profileData?.user_name || user.user_metadata?.full_name || '',
-          address: {
-            streetName: profileData?.main_address?.street_name || undefined,
-            streetNumber: profileData?.main_address?.street_number || undefined,
-            city: profileData?.main_address?.city || undefined,
-            country: profileData?.main_address?.country || undefined,
-            postalCode: profileData?.main_address?.postal_code || undefined,
-          },
-          avatarUrl:
-            profileData?.avatar_url || user.user_metadata?.avatar_url || '',
-          id: user.id,
-        }}
-        translations={{
-          genericTranslations,
-          toastTranslations,
-          emailTranslations,
-          addressTranslations,
-          phoneTranslations,
-        }}
-      />
+      <div className="flex flex-col justify-center gap-3">
+        <ProfileCard
+          user={{
+            email: profileData?.email || user.email || '',
+            createdAt: user.created_at || '',
+            phone: profileData?.phone_number || '',
+            fullName:
+              profileData?.user_name || user.user_metadata?.full_name || '',
+            address: {
+              streetName: profileData?.main_address?.street_name || undefined,
+              streetNumber:
+                profileData?.main_address?.street_number || undefined,
+              city: profileData?.main_address?.city || undefined,
+              country: profileData?.main_address?.country || undefined,
+              postalCode: profileData?.main_address?.postal_code || undefined,
+            },
+            avatarUrl:
+              profileData?.avatar_url || user.user_metadata?.avatar_url || '',
+            id: user.id,
+          }}
+          translations={{
+            genericTranslations,
+            toastTranslations,
+            emailTranslations,
+            addressTranslations,
+            phoneTranslations,
+          }}
+        />
+        <CommunitiesCard
+          communities={communitiesData || []}
+          translations={{
+            noCommunities: tCommunity('no_communities'),
+            joinCommunity: tCommunity('join_community'),
+            leaveCommunity: tCommunity('leave_community'),
+            communities: translatedCommunities,
+          }}
+        />
+      </div>
     )
   } catch (error) {
     console.error(error)

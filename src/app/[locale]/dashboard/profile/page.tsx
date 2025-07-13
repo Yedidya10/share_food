@@ -1,7 +1,6 @@
 import CommunitiesCard from '@/components/profileCard/CommunitiesCard'
 import ProfileCard from '@/components/profileCard/ProfileCard'
 import { createClient } from '@/lib/supabase/server'
-import { FixedProfile } from '@/types/supabase-fixed'
 import { getTranslations } from 'next-intl/server'
 
 export default async function ProfilePage() {
@@ -87,27 +86,30 @@ export default async function ProfilePage() {
     const { data: profileData, error: profileError } = await supabase
       .from('profiles')
       .select(
-        'id, email, phone_number, is_have_whatsapp, main_address, user_name, avatar_url, communities (id, name)',
+        `
+    id,
+    email,
+    phone_number,
+    is_have_whatsapp,
+    main_address,
+    user_name,
+    avatar_url,
+    profile_communities (
+      community_id
+    )
+  `,
       )
       .eq('id', userData.user.id)
-      .single<FixedProfile & { communities: { id: string; name: string }[] }>()
+      .single()
 
     if (profileError) {
       throw profileError
     }
 
-    const { data: profileCommunities, error: profileCommunitiesError } =
-      await supabase
-        .from('profile_communities')
-        .select('community_id')
-        .eq('profile_id', userData.user.id)
-
-    if (profileCommunitiesError) {
-      throw profileCommunitiesError
-    }
-
     const profileCommunitiesIds =
-      profileCommunities?.map((item) => item.community_id) || []
+      profileData?.profile_communities?.map(
+        (community) => community.community_id,
+      ) || []
 
     const { data: communitiesData, error: communitiesError } = await supabase
       .from('communities')

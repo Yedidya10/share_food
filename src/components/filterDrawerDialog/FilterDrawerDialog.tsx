@@ -25,10 +25,18 @@ export default function FilterDrawerDialog({
   openFilter,
   setOpenFilter,
   userMainAddress,
+  userCommunities,
 }: {
   openFilter: boolean
   setOpenFilter: (open: boolean) => void
   userMainAddress?: MainAddress
+  userCommunities?: {
+    community_id: string
+    communities: {
+      id: string
+      name: string
+    } | null
+  }[]
 }) {
   const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 768
 
@@ -49,6 +57,7 @@ export default function FilterDrawerDialog({
             onOpenChange={setOpenFilter}
             open={openFilter}
             userMainAddress={userMainAddress}
+            userCommunities={userCommunities}
           />
         </DialogContent>
       </Dialog>
@@ -71,6 +80,7 @@ export default function FilterDrawerDialog({
           onOpenChange={setOpenFilter}
           open={openFilter}
           userMainAddress={userMainAddress}
+          userCommunities={userCommunities}
           className="px-4"
         />
         <DrawerFooter className="pt-2">

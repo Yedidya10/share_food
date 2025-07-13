@@ -20,8 +20,16 @@ import LocationSourceSelector from '../locationSourceSelector/LocationSourceSele
 
 export function SortForm({
   userMainAddress,
+  userCommunities,
 }: {
   userMainAddress?: MainAddress
+  userCommunities?: {
+    community_id: string
+    communities: {
+      id: string
+      name: string
+    } | null
+  }[]
 }) {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -68,13 +76,26 @@ export function SortForm({
           sort: 'distance',
           lat: coords.lat.toString(),
           lng: coords.lng.toString(),
+          communities: undefined,
         })
       }
+    } else if (sortBy === 'community') {
+      // נוציא את כל IDs של הקהילות שהמשתמש חבר בהן
+      const communityIds = userCommunities
+        ?.filter((c) => c.communities != null)
+        .map((c) => c.communities!.id)
+        .join(',')
+
+      updateUrlParams({
+        sort: 'community',
+        communities: communityIds || undefined,
+      })
     } else {
       updateUrlParams({
         sort: 'date',
         lat: undefined,
         lng: undefined,
+        communities: undefined,
       })
     }
   }
@@ -95,6 +116,9 @@ export function SortForm({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="date">תאריך פרסום (ברירת מחדל)</SelectItem>
+            {userCommunities && userCommunities.length > 0 && (
+              <SelectItem value="community">חברי הקהילה שלי תחילה</SelectItem>
+            )}
             <SelectItem value="distance">מרחק ממני</SelectItem>
           </SelectContent>
         </Select>

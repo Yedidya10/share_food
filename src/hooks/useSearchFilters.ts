@@ -30,23 +30,35 @@ export function useSearchFilters() {
     ? categoriesParam.split(',').filter(Boolean)
     : undefined
 
+  const communitiesParam = getParam('communities')
+  const communityIds = communitiesParam
+    ? communitiesParam.split(',').filter(Boolean)
+    : undefined
+
+  const sortParam = getParam('sort')
+  const sortBy: 'distance' | 'date' | 'community' =
+    sortParam === 'distance'
+      ? 'distance'
+      : sortParam === 'community'
+        ? 'community'
+        : 'date'
+
   return {
     // ערכים מוכנים להוקי נתונים:
     filters: {
       userCoords: coords,
       search: getParam('search') ?? undefined,
-      sortBy: (searchParams.get('sort') === 'distance'
-        ? 'distance'
-        : 'date') as 'distance' | 'date',
+      sortBy,
       maxDistanceKm: getParam('distance')
         ? parseFloat(getParam('distance')!)
         : undefined,
-      categories,
+      category: categories,
       fromDate: getParam('fromDate')
         ? new Date(getParam('fromDate')!)
         : undefined,
       toDate: getParam('toDate') ? new Date(getParam('toDate')!) : undefined,
       pageSize: 20,
+      communityIds, // 👈 הוספנו את זה
     },
 
     // שליטה על פרמטרים:

@@ -24,11 +24,13 @@ export default function FilterAndSearchBar() {
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
         userMainAddress={profileData?.main_address ?? undefined}
+        userCommunities={profileData?.profile_communities ?? []}
       />
       <SortDrawerDialog
         openSort={openSort}
         setOpenSort={setOpenSort}
         userMainAddress={profileData?.main_address ?? undefined}
+        userCommunities={profileData?.profile_communities ?? []}
       />
       <ProductSearchBar />
       <Tooltip>

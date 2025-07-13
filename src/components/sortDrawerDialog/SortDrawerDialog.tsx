@@ -27,10 +27,18 @@ export default function SortDrawerDialog({
   openSort,
   setOpenSort,
   userMainAddress,
+  userCommunities,
 }: {
   openSort: boolean
   setOpenSort: React.Dispatch<React.SetStateAction<boolean>>
   userMainAddress?: MainAddress
+  userCommunities?: {
+    community_id: string
+    communities: {
+      id: string
+      name: string
+    } | null
+  }[]
 }) {
   const local = useLocale()
   const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 768
@@ -50,7 +58,10 @@ export default function SortDrawerDialog({
                 או מרחק.
               </DialogDescription>
             </DialogHeader>
-            <SortForm userMainAddress={userMainAddress} />
+            <SortForm
+              userMainAddress={userMainAddress}
+              userCommunities={userCommunities}
+            />
           </DialogContent>
         </Dialog>
       </DirectionProvider>
@@ -71,7 +82,10 @@ export default function SortDrawerDialog({
               או מרחק.
             </DrawerDescription>
           </DrawerHeader>
-          <SortForm userMainAddress={userMainAddress} />
+          <SortForm
+            userMainAddress={userMainAddress}
+            userCommunities={userCommunities}
+          />
           <DrawerFooter className="pt-2">
             <DrawerClose asChild>
               <Button variant="outline">Cancel</Button>

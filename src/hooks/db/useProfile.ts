@@ -3,6 +3,16 @@ import { createClient } from '@/lib/supabase/client'
 import { FixedProfile } from '@/types/supabase-fixed'
 import { PostgrestError } from '@supabase/supabase-js'
 
+type ProfileWithCommunities = FixedProfile & {
+  profile_communities: {
+    community_id: string
+    communities: {
+      id: string
+      name: string
+    } | null
+  }[]
+}
+
 export default function useProfile() {
   return useQuery({
     queryKey: ['profile'],
@@ -16,11 +26,19 @@ export default function useProfile() {
         data: profileData,
         error: profileError,
       }: {
-        data: FixedProfile | null
+        data: ProfileWithCommunities | null
         error: PostgrestError | null
       } = await supabase
         .from('profiles')
-        .select('*')
+        .select(
+          `
+          *,
+          profile_communities (
+            community_id,
+            communities ( id, name )
+          )
+        `,
+        )
         .eq('id', dataUser?.user?.id)
         .single()
 

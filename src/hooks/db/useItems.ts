@@ -2,12 +2,11 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { useMemo } from 'react'
 
-// TODO: Define the types for the items by Database schema
 type Coords = { lat: number; lng: number }
 
 export type UseInfiniteItemsOptions = {
   userCoords?: Coords
-  sortBy?: 'distance' | 'date'
+  sortBy?: 'distance' | 'date' | 'community' // 👈 הוספנו גם community
   category?: string[]
   search?: string
   maxDistanceKm?: number
@@ -17,6 +16,7 @@ export type UseInfiniteItemsOptions = {
   includeUserId?: string
   status?: string[]
   pageSize?: number
+  communityIds?: string[] // 👈 חדש
 }
 
 export default function useItems(options: UseInfiniteItemsOptions = {}) {
@@ -32,6 +32,7 @@ export default function useItems(options: UseInfiniteItemsOptions = {}) {
     includeUserId,
     status,
     pageSize = 20,
+    communityIds, // 👈 חדש
   } = options
 
   const queryKey = useMemo(
@@ -49,6 +50,7 @@ export default function useItems(options: UseInfiniteItemsOptions = {}) {
         status,
         lat: userCoords?.lat,
         lng: userCoords?.lng,
+        communityIds, // 👈 חדש
       },
     ],
     [
@@ -63,10 +65,12 @@ export default function useItems(options: UseInfiniteItemsOptions = {}) {
       status,
       userCoords?.lat,
       userCoords?.lng,
+      communityIds, // 👈 חדש
     ],
   )
 
-  const shouldUseDistance = sortBy === 'distance' && userCoords
+  const shouldUseDistance =
+    (sortBy === 'distance' || sortBy === 'community') && userCoords
 
   return useInfiniteQuery({
     queryKey,
@@ -83,9 +87,9 @@ export default function useItems(options: UseInfiniteItemsOptions = {}) {
         to_date: toDate ? toDate.toISOString() : undefined,
         include_user_id: includeUserId ?? undefined,
         exclude_user_id: excludeUserId ?? undefined,
+        community_ids: communityIds?.length ? communityIds : undefined, // 👈 חדש
         limit_count: pageSize,
         offset_count: pageParam,
-        // רק אם צריך לחשב מרחק:
         ...(shouldUseDistance && {
           user_lat: userCoords!.lat,
           user_lng: userCoords!.lng,

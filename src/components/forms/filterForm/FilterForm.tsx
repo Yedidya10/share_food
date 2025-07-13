@@ -11,7 +11,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from '@/components/ui/popover'
-import { CalendarIcon, XIcon } from 'lucide-react'
+import { CalendarIcon, CheckIcon, XIcon } from 'lucide-react'
 import { format } from 'date-fns'
 import { he } from 'date-fns/locale'
 import { useSearchParams } from 'next/navigation'
@@ -21,15 +21,30 @@ import { useGeocodedCoordinates } from '@/hooks/useGeocodedCoordinates'
 import { MainAddress } from '@/types/supabase-fixed'
 import { getCoordinatesFromAddress } from '@/lib/googleMaps/location'
 import LocationSourceSelector from '../locationSourceSelector/LocationSourceSelector'
+import {
+  Command,
+  CommandInput,
+  CommandItem,
+  CommandGroup,
+  CommandEmpty,
+} from '@/components/ui/command'
 
 export function FilterForm({
   className,
   onOpenChange,
   userMainAddress,
+  userCommunities,
   open,
 }: {
   className?: string
   onOpenChange: ((open: boolean) => void) | undefined
+  userCommunities?: {
+    community_id: string
+    communities: {
+      id: string
+      name: string
+    } | null
+  }[]
   userMainAddress?: MainAddress
   open: boolean
 }) {
@@ -58,6 +73,10 @@ export function FilterForm({
   const { data: manualCoords } = useGeocodedCoordinates(
     manualAddress,
     distanceType === 'manual',
+  )
+
+  const [selectedCommunity, setSelectedCommunity] = useState<string | null>(
+    searchParams.get('community') || null,
   )
 
   const updateUrlParams = (params: Record<string, string | undefined>) => {
@@ -101,10 +120,13 @@ export function FilterForm({
       toDate: undefined,
       lat: undefined,
       lng: undefined,
+      community: undefined,
     })
     setMaxDistance('')
     setFromDate(undefined)
     setToDate(undefined)
+    setGeoLocation(null)
+    setSelectedCommunity(null)
   }
 
   return (
@@ -112,6 +134,53 @@ export function FilterForm({
       onSubmit={handleSubmit}
       className={cn('grid gap-6', className)}
     >
+      {/* הקהילות שלי */}
+      <div className="grid gap-2">
+        <Label>קהילה</Label>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              className="justify-between"
+            >
+              {selectedCommunity
+                ? userCommunities?.find(
+                    (c) => c.communities?.id === selectedCommunity,
+                  )?.communities?.name
+                : 'בחר קהילה'}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="p-0">
+            <Command>
+              <CommandInput placeholder="חפש קהילה..." />
+              <CommandEmpty>לא נמצאו קהילות</CommandEmpty>
+              <CommandGroup>
+                {userCommunities
+                  ?.filter((c) => c.communities != null)
+                  .map((c) => (
+                    <CommandItem
+                      key={c.community_id}
+                      onSelect={() => {
+                        setSelectedCommunity(
+                          c.communities!.id === selectedCommunity
+                            ? null
+                            : c.communities!.id,
+                        )
+                      }}
+                    >
+                      {c.communities!.name}
+                      {selectedCommunity === c.communities!.id && (
+                        <CheckIcon className="ml-auto h-4 w-4" />
+                      )}
+                    </CommandItem>
+                  ))}
+              </CommandGroup>
+            </Command>
+          </PopoverContent>
+        </Popover>
+      </div>
+
       {/* מרחק */}
       <div className="grid gap-2">
         <Label htmlFor="maxDistance">מרחק מקסימלי (ק״מ)</Label>

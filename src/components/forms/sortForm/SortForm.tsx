@@ -11,14 +11,12 @@ import {
   SelectItem,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { LocateIcon } from 'lucide-react'
-import ManualAddressInput from '@/components/forms/manualAddressInput/ManualAddressInput'
 import { useLocationContext } from '@/context/LocationContext'
 import { useGeocodedCoordinates } from '@/hooks/useGeocodedCoordinates'
-import { useCurrentLocation } from '@/hooks/useCurrentLocation'
 import { useState } from 'react'
 import { MainAddress } from '@/types/supabase-fixed'
 import { getCoordinatesFromAddress } from '@/lib/googleMaps/location'
+import LocationSourceSelector from '../locationSourceSelector/LocationSourceSelector'
 
 export function SortForm({
   userMainAddress,
@@ -28,7 +26,10 @@ export function SortForm({
   const searchParams = useSearchParams()
   const router = useRouter()
   const { distanceType, setDistanceType, manualAddress } = useLocationContext()
-
+  const [geoLocation, setGeoLocation] = useState<{
+    lat: number
+    lng: number
+  } | null>(null)
   const [sortBy, setSortBy] = useState(searchParams.get('sort') ?? 'date')
 
   // hooks שמחזירים coords בהתאם לבחירה
@@ -36,7 +37,6 @@ export function SortForm({
     manualAddress,
     distanceType === 'manual',
   )
-  const { data: geoCoords } = useCurrentLocation(distanceType === 'geo')
 
   // פונקציה שמעדכנת את כתובת ה-URL
   const updateUrlParams = (params: Record<string, string | undefined>) => {
@@ -56,7 +56,7 @@ export function SortForm({
       let coords: { lat: number; lng: number } | null | undefined = null
 
       if (distanceType === 'manual') coords = manualCoords || undefined
-      if (distanceType === 'geo') coords = geoCoords || undefined
+      if (distanceType === 'geo') coords = geoLocation || undefined
       if (distanceType === 'profile' && userMainAddress) {
         coords = await getCoordinatesFromAddress(
           `${userMainAddress.street_name} ${userMainAddress.street_number}, ${userMainAddress.city}, ${userMainAddress.country}`,
@@ -101,38 +101,12 @@ export function SortForm({
       </div>
 
       {sortBy === 'distance' && (
-        <div className="grid gap-2">
-          <Label>מקור מיקום</Label>
-          <Select
-            value={distanceType}
-            onValueChange={setDistanceType}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="בחר מקור מיקום" />
-            </SelectTrigger>
-            <SelectContent>
-              {userMainAddress && (
-                <SelectItem value="profile">
-                  כתובת ראשית:{' '}
-                  {`${userMainAddress.street_name} ${userMainAddress.street_number}, ${userMainAddress.city}, ${userMainAddress.country}`}
-                </SelectItem>
-              )}
-              <SelectItem value="manual">כתובת ידנית</SelectItem>
-              {/* <SelectItem value="geo">מיקום נוכחי</SelectItem> */}
-            </SelectContent>
-          </Select>
-
-          {distanceType === 'manual' && <ManualAddressInput />}
-
-          {distanceType === 'geo' && (
-            <Button
-              type="button"
-              variant="outline"
-            >
-              <LocateIcon className="mr-2 h-4 w-4" /> משתמש במיקום נוכחי
-            </Button>
-          )}
-        </div>
+        <LocationSourceSelector
+          userMainAddress={userMainAddress}
+          setDistanceType={setDistanceType}
+          distanceType={distanceType}
+          setGeoLocation={setGeoLocation}
+        />
       )}
 
       <Button

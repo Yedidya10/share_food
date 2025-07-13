@@ -11,13 +11,6 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from '@/components/ui/popover'
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from '@/components/ui/select'
 import { CalendarIcon, XIcon } from 'lucide-react'
 import { format } from 'date-fns'
 import { he } from 'date-fns/locale'
@@ -25,10 +18,9 @@ import { useSearchParams } from 'next/navigation'
 import { useRouter } from '@/i18n/navigation'
 import { useLocationContext } from '@/context/LocationContext'
 import { useGeocodedCoordinates } from '@/hooks/useGeocodedCoordinates'
-import { useCurrentLocation } from '@/hooks/useCurrentLocation'
-import ManualAddressInput from '@/components/forms/manualAddressInput/ManualAddressInput'
 import { MainAddress } from '@/types/supabase-fixed'
 import { getCoordinatesFromAddress } from '@/lib/googleMaps/location'
+import LocationSourceSelector from '../locationSourceSelector/LocationSourceSelector'
 
 export function FilterForm({
   className,
@@ -44,6 +36,10 @@ export function FilterForm({
   const searchParams = useSearchParams()
   const router = useRouter()
   const { distanceType, setDistanceType, manualAddress } = useLocationContext()
+  const [geoLocation, setGeoLocation] = useState<{
+    lat: number
+    lng: number
+  } | null>(null)
 
   const [maxDistance, setMaxDistance] = useState(
     searchParams.get('distance') || '',
@@ -63,7 +59,6 @@ export function FilterForm({
     manualAddress,
     distanceType === 'manual',
   )
-  const { data: geoCoords } = useCurrentLocation(distanceType === 'geo')
 
   const updateUrlParams = (params: Record<string, string | undefined>) => {
     const current = new URLSearchParams(searchParams.toString())
@@ -80,7 +75,7 @@ export function FilterForm({
     let coords: { lat: number; lng: number } | undefined
 
     if (distanceType === 'manual') coords = manualCoords || undefined
-    if (distanceType === 'geo') coords = geoCoords || undefined
+    if (distanceType === 'geo') coords = geoLocation || undefined
     if (distanceType === 'profile' && userMainAddress) {
       const fetched = await getCoordinatesFromAddress(
         `${userMainAddress.street_name} ${userMainAddress.street_number}, ${userMainAddress.city}, ${userMainAddress.country}`,
@@ -130,30 +125,12 @@ export function FilterForm({
       </div>
 
       {/* מקור מיקום */}
-      <div className="grid gap-2">
-        <Label>מקור מיקום</Label>
-        <Select
-          value={distanceType}
-          onValueChange={(value) =>
-            setDistanceType(value as 'manual' | 'geo' | 'profile')
-          }
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="בחר מקור מיקום" />
-          </SelectTrigger>
-          <SelectContent>
-            {userMainAddress && (
-              <SelectItem value="profile">
-                כתובת ראשית:{' '}
-                {`${userMainAddress.street_name} ${userMainAddress.street_number}, ${userMainAddress.city}`}
-              </SelectItem>
-            )}
-            <SelectItem value="manual">כתובת ידנית</SelectItem>
-            {/* <SelectItem value="geo">מיקום נוכחי</SelectItem> */}
-          </SelectContent>
-        </Select>
-        {distanceType === 'manual' && <ManualAddressInput />}
-      </div>
+      <LocationSourceSelector
+        userMainAddress={userMainAddress}
+        setDistanceType={setDistanceType}
+        distanceType={distanceType}
+        setGeoLocation={setGeoLocation}
+      />
 
       {/* טווח תאריכים */}
       <div className="grid gap-2">

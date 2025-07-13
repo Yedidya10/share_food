@@ -3,7 +3,7 @@
 
 import React, { createContext, useContext, useState } from 'react'
 
-type DistanceType = 'profile' | 'manual' | 'geo'
+export type DistanceType = 'profile' | 'manual' | 'geo'
 
 type LocationContextType = {
   distanceType: DistanceType
